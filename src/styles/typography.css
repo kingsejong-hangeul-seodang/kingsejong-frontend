@@ -1,0 +1,67 @@
+/* Foundation의 표기 규격. CSS Modules와 함께 필요할 때 사용하는 공통 클래스. */
+.type-title {
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-title);
+  line-height: var(--line-height-title);
+  font-weight: var(--font-weight-title);
+}
+
+.type-h2 {
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-h2);
+  line-height: var(--line-height-h2);
+  font-weight: var(--font-weight-h2);
+}
+
+.type-strong {
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-strong);
+  line-height: var(--line-height-strong);
+  font-weight: var(--font-weight-strong);
+}
+
+.type-body {
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-body);
+  line-height: var(--line-height-body);`
+  font-weight: var(--font-weight-body);
+}
+
+.type-sub-bold {
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-sub-bold);
+  line-height: var(--line-height-sub-bold);
+  font-weight: var(--font-weight-sub-bold);
+}
+
+.type-sub-strong {
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-sub-strong);
+  line-height: var(--line-height-sub-strong);
+  font-weight: var(--font-weight-sub-strong);
+}
+
+.type-sub {
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-sub);
+  line-height: var(--line-height-sub);
+  font-weight: var(--font-weight-sub);
+}
+
+.type-caption {
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-caption);
+  line-height: var(--line-height-caption);
+  font-weight: var(--font-weight-caption);
+}
+
+.type-caption-regular {
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-caption-regular);
+  line-height: var(--line-height-caption-regular);
+  font-weight: var(--font-weight-caption-regular);
+}
+
+.type-handwriting {
+  font-family: var(--font-family-handwriting);
+}

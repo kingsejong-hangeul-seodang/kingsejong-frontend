@@ -1,0 +1,163 @@
+/* Figma Foundation (3:56)에서 가져온 값. 원본: src/styles/tokens.json */
+:root,
+[data-theme='juhong'] {
+  --color-bg: #f6f4f1;
+  --color-surface: #fefefe;
+  --color-paper: #fbf8f1;
+  --color-line: #edeae6;
+  --color-line-strong: #c0bebc;
+  --color-text-1: #28221b;
+  --color-text-2: #5a5044;
+  --color-text-3: #776c5f;
+  --color-text-disabled: #a29f9c;
+  --color-brand: #b8472a;
+  --color-on-brand: #ffffff;
+  --color-brand-tint: #f7ebe8;
+  --color-brand-pressed: #a74328;
+  --color-danger: #e1292f;
+  --color-danger-tint: #fcefef;
+  --color-danger-tint-text: #d61e24;
+  --color-success: #1a8347;
+  --color-success-tint: #e8f4ed;
+  --color-success-tint-text: #187b43;
+  --color-warning: #9b6c00;
+  --color-warning-tint: #fcf4e4;
+  --color-warning-tint-text: #916500;
+  --color-info: #146fe9;
+  --color-info-tint: #e9f1fc;
+  --color-thumb-1: #f3ddd0;
+  --color-thumb-2: #dce6ef;
+  --color-thumb-3: #e3ecdd;
+  --color-thumb-4: #f4e8c6;
+  --color-wongoji-line: #2f5d8c;
+}
+
+[data-theme='jjokbit'] {
+  --color-bg: #f6f4f1;
+  --color-surface: #fefefe;
+  --color-paper: #fbf8f1;
+  --color-line: #edeae6;
+  --color-line-strong: #c0bebc;
+  --color-text-1: #28221b;
+  --color-text-2: #5a5044;
+  --color-text-3: #776c5f;
+  --color-text-disabled: #a29f9c;
+  --color-brand: #2f5d8c;
+  --color-on-brand: #ffffff;
+  --color-brand-tint: #e9eef2;
+  --color-brand-pressed: #2e567e;
+  --color-danger: #e1292f;
+  --color-danger-tint: #fcefef;
+  --color-danger-tint-text: #d61e24;
+  --color-success: #1a8347;
+  --color-success-tint: #e8f4ed;
+  --color-success-tint-text: #187b43;
+  --color-warning: #9b6c00;
+  --color-warning-tint: #fcf4e4;
+  --color-warning-tint-text: #916500;
+  --color-info: #7257ff;
+  --color-info-tint: #f1eefe;
+  --color-thumb-1: #f3ddd0;
+  --color-thumb-2: #dce6ef;
+  --color-thumb-3: #e3ecdd;
+  --color-thumb-4: #f4e8c6;
+  --color-wongoji-line: #2f5d8c;
+}
+
+[data-theme='solip'] {
+  --color-bg: #f6f4f1;
+  --color-surface: #fefefe;
+  --color-paper: #fbf8f1;
+  --color-line: #edeae6;
+  --color-line-strong: #c0bebc;
+  --color-text-1: #28221b;
+  --color-text-2: #5a5044;
+  --color-text-3: #776c5f;
+  --color-text-disabled: #a29f9c;
+  --color-brand: #3e7b57;
+  --color-on-brand: #ffffff;
+  --color-brand-tint: #ebf1ed;
+  --color-brand-pressed: #3b7050;
+  --color-danger: #e1292f;
+  --color-danger-tint: #fcefef;
+  --color-danger-tint-text: #d61e24;
+  --color-success: #0c8375;
+  --color-success-tint: #e6f4f2;
+  --color-success-tint-text: #0b7a6d;
+  --color-warning: #9b6c00;
+  --color-warning-tint: #fcf4e4;
+  --color-warning-tint-text: #916500;
+  --color-info: #146fe9;
+  --color-info-tint: #e9f1fc;
+  --color-thumb-1: #f3ddd0;
+  --color-thumb-2: #dce6ef;
+  --color-thumb-3: #e3ecdd;
+  --color-thumb-4: #f4e8c6;
+  --color-wongoji-line: #2f5d8c;
+}
+
+:root {
+  --space-stack-s: 8px;
+  --space-block-gap: 12px;
+  --space-stack-m: 16px;
+  --space-block-pad: 24px;
+  --space-stack-l: 32px;
+  --space-page-x: 40px;
+  --radius-s: 8px;
+  --radius-m: 12px;
+  --radius-l: 16px;
+  --radius-pill: 999px;
+
+  /* 폰트 파일은 미포함. 로컬 설치 글꼴이 없으면 시스템 글꼴로 표시됩니다. */
+  --font-family-base:
+    'Noto Sans KR', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-family-handwriting: 'Nanum Pen', 'Nanum Pen Script', cursive;
+
+  --font-size-title: 1.75rem;
+  --line-height-title: 2.375rem;
+  --font-weight-title: 700;
+  --font-size-h2: 1.25rem;
+  --line-height-h2: 1.75rem;
+  --font-weight-h2: 700;
+  --font-size-strong: 1rem;
+  --line-height-strong: 1.5rem;
+  --font-weight-strong: 500;
+  --font-size-body: 1rem;
+  --line-height-body: 1.5625rem;
+  --font-weight-body: 400;
+  --font-size-sub-bold: 0.875rem;
+  --line-height-sub-bold: 1.3125rem;
+  --font-weight-sub-bold: 700;
+  --font-size-sub-strong: 0.875rem;
+  --line-height-sub-strong: 1.3125rem;
+  --font-weight-sub-strong: 500;
+  --font-size-sub: 0.875rem;
+  --line-height-sub: 1.3125rem;
+  --font-weight-sub: 400;
+  --font-size-caption: 0.75rem;
+  --line-height-caption: 1.125rem;
+  --font-weight-caption: 500;
+  --font-size-caption-regular: 0.75rem;
+  --line-height-caption-regular: 1.125rem;
+  --font-weight-caption-regular: 400;
+
+  /* 초기 세팅에서 사용한 숫자 간격 이름. 4px은 프로젝트 보조 값입니다. */
+  --space-1: 4px;
+  --space-2: var(--space-stack-s);
+  --space-3: var(--space-block-gap);
+  --space-4: var(--space-stack-m);
+  --space-6: var(--space-block-pad);
+  --space-8: var(--space-stack-l);
+  --radius-sm: var(--radius-s);
+  --radius-lg: var(--radius-l);
+}
+
+/* 테마가 중첩된 컨테이너에서도 의미 기반 별칭을 다시 계산합니다. */
+:root,
+[data-theme] {
+  --color-primary: var(--color-brand);
+  --color-background: var(--color-bg);
+  --color-border: var(--color-line);
+  --color-text: var(--color-text-1);
+  --color-text-muted: var(--color-text-2);
+}
