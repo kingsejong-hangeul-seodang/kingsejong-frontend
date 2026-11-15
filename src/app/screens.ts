@@ -2,9 +2,9 @@ import { lazy, type ComponentType } from 'react'
 
 const modules = import.meta.glob<{ default: ComponentType }>('../features/*/screens/*.tsx')
 function page(group: string, name: string) {
-  return lazy<ComponentType>(() => {
+  return lazy(() => {
     const load = modules[`../features/${group}/screens/${name}.tsx`]
-    if (!load) return Promise.resolve({ default: () => '준비 중인 화면이에요.' })
+    if (!load) return Promise.reject(new Error(`Screen not found: ${name}`))
     return load()
   })
 }

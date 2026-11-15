@@ -1694,6 +1694,53 @@
   width: 100%;
 }
 
+.evoItem215 {
+  background: var(--color-brand-tint);
+  border-width: 2px;
+  border-color: var(--color-brand);
+  border-style: solid;
+  align-content: stretch;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: center;
+  padding-left: var(--space-stack-s);
+  padding-right: var(--space-stack-s);
+  padding-top: var(--space-stack-m);
+  padding-bottom: var(--space-stack-m);
+  position: relative;
+  border-radius: var(--radius-m);
+  flex-shrink: 0;
+  width: 131.7px;
+}
+
+.evoArt216 {
+  align-content: stretch;
+  display: flex;
+  height: 120px;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.evoItem218 {
+  background: var(--color-bg);
+  align-content: stretch;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: center;
+  padding-left: var(--space-stack-s);
+  padding-right: var(--space-stack-s);
+  padding-top: var(--space-stack-m);
+  padding-bottom: var(--space-stack-m);
+  position: relative;
+  border-radius: var(--radius-m);
+  flex-shrink: 0;
+  width: 131.7px;
+}
+
 .clip224 {
   background: var(--color-surface);
   align-content: stretch;
