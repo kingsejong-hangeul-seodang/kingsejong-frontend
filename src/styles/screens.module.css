@@ -1448,3 +1448,123 @@
   width: 44px;
   height: 44px;
 }
+
+.evo192 {
+  align-content: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-stack-m);
+  align-items: center;
+  position: relative;
+  flex-shrink: 0;
+  width: 100%;
+}
+
+.evoItem193 {
+  background: var(--color-bg);
+  align-content: stretch;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: center;
+  padding-left: var(--space-stack-s);
+  padding-right: var(--space-stack-s);
+  padding-top: var(--space-stack-m);
+  padding-bottom: var(--space-stack-m);
+  position: relative;
+  border-radius: var(--radius-m);
+  flex-shrink: 0;
+  width: 187.7px;
+}
+
+.evoArt194 {
+  align-content: stretch;
+  display: flex;
+  height: 180px;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.35;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.img195 {
+  height: 176px;
+  position: relative;
+  flex-shrink: 0;
+  width: 108.3px;
+}
+
+.element196 {
+  word-break: break-word;
+  font-family: var(--font-family-base);
+  font-weight: 700;
+  line-height: 21px;
+  position: relative;
+  flex-shrink: 0;
+  font-size: 14px;
+  color: var(--color-text-1);
+  text-align: center;
+  letter-spacing: -0.28px;
+  white-space: nowrap;
+}
+
+.element197 {
+  word-break: break-word;
+  font-family: var(--font-family-base);
+  font-weight: 400;
+  line-height: 18px;
+  position: relative;
+  flex-shrink: 0;
+  font-size: 12px;
+  color: var(--color-text-3);
+  text-align: center;
+  letter-spacing: -0.24px;
+  white-space: nowrap;
+}
+
+.evoArrow198 {
+  align-content: stretch;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.evoItem199 {
+  background: var(--color-brand-tint);
+  border-width: 2px;
+  border-color: var(--color-brand);
+  border-style: solid;
+  align-content: stretch;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: center;
+  padding-left: var(--space-stack-s);
+  padding-right: var(--space-stack-s);
+  padding-top: var(--space-stack-m);
+  padding-bottom: var(--space-stack-m);
+  position: relative;
+  border-radius: var(--radius-m);
+  flex-shrink: 0;
+  width: 187.7px;
+}
+
+.evoArt200 {
+  align-content: stretch;
+  display: flex;
+  height: 180px;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.img201 {
+  height: 176px;
+  position: relative;
+  flex-shrink: 0;
+  width: 117.9px;
+}
