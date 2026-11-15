@@ -1866,6 +1866,219 @@
   color: var(--color-text-1);
 }
 
+.vs268 {
+  background: var(--color-paper);
+  border-width: 1px;
+  border-color: var(--color-line);
+  border-style: solid;
+  align-content: stretch;
+  filter: drop-shadow(0px 2px 4px rgba(40, 34, 27, 0.08));
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-stack-l);
+  align-items: center;
+  padding: var(--space-block-pad);
+  position: relative;
+  border-radius: var(--radius-l);
+  flex-shrink: 0;
+}
+
+.vsLine269 {
+  align-content: stretch;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-stack-s);
+  align-items: flex-start;
+  padding-bottom: 20px;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.vsLine272 {
+  align-content: stretch;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-stack-s);
+  align-items: flex-start;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.player274 {
+  align-content: stretch;
+  display: flex;
+  gap: var(--space-stack-m);
+  align-items: center;
+  position: relative;
+  flex-shrink: 0;
+  width: 692px;
+}
+
+.btn275 {
+  background: var(--color-brand-tint);
+  align-content: stretch;
+  display: flex;
+  gap: var(--space-stack-s);
+  height: 44px;
+  align-items: center;
+  justify-content: center;
+  padding-left: var(--space-stack-m);
+  padding-right: var(--space-stack-m);
+  position: relative;
+  border-radius: var(--radius-m);
+  flex-shrink: 0;
+}
+
+.element276 {
+  word-break: break-word;
+  font-family: var(--font-family-base);
+  font-weight: 500;
+  line-height: 21px;
+  position: relative;
+  flex-shrink: 0;
+  font-size: 14px;
+  color: var(--color-brand);
+  letter-spacing: -0.28px;
+  white-space: nowrap;
+}
+
+.xp277 {
+  background: var(--color-line);
+  align-content: stretch;
+  display: flex;
+  flex: 1 0 0;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 1px;
+  overflow: clip;
+  position: relative;
+  border-radius: var(--radius-pill);
+}
+
+.compare2285 {
+  align-content: flex-start;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-stack-m);
+  align-items: flex-start;
+  position: relative;
+  flex-shrink: 0;
+  width: 100%;
+}
+
+.figure286 {
+  align-content: stretch;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-stack-s);
+  align-items: center;
+  position: relative;
+  flex-shrink: 0;
+  width: 337.7px;
+}
+
+.strokeBox287 {
+  background: var(--color-paper);
+  border-width: 1.5px;
+  border-color: var(--color-wongoji-line);
+  border-style: solid;
+  align-content: stretch;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  border-radius: var(--radius-l);
+  flex-shrink: 0;
+  width: 320px;
+  height: 320px;
+}
+
+.icon288 {
+  overflow: clip;
+  position: relative;
+  flex-shrink: 0;
+  width: 260px;
+  height: 260px;
+}
+
+.Vector289 {
+  position: absolute;
+  inset: 23.08% 23.08% 76.92% 23.08%;
+}
+
+.element290 {
+  position: absolute;
+  inset: -13px -9.29%;
+}
+
+.Vector291 {
+  position: absolute;
+  inset: 23.08% 21.15% 23.08% 23.08%;
+}
+
+.element292 {
+  position: absolute;
+  inset: -9.29% -8.97%;
+}
+
+.Vector293 {
+  position: absolute;
+  inset: 36.92% 82.31% 52.31% 6.92%;
+}
+
+.element294 {
+  word-break: break-word;
+  position: absolute;
+  font-family: var(--font-family-base);
+  font-weight: 700;
+  inset: 37.65% 85.02% 53.89% 10.75%;
+  line-height: normal;
+  color: #fefefe;
+  font-size: 18px;
+  white-space: nowrap;
+}
+
+.Vector295 {
+  position: absolute;
+  inset: 9.23% 80.77% 80% 8.46%;
+}
+
+.element296 {
+  word-break: break-word;
+  position: absolute;
+  font-family: var(--font-family-base);
+  font-weight: 700;
+  inset: 9.95% 83.98% 81.58% 11.79%;
+  line-height: normal;
+  color: #fefefe;
+  font-size: 18px;
+  white-space: nowrap;
+}
+
+.element297 {
+  word-break: break-word;
+  position: absolute;
+  font-family: var(--font-family-base);
+  font-weight: 700;
+  inset: 9.95% 83.48% 81.58% 12.28%;
+  line-height: normal;
+  color: #fefefe;
+  font-size: 18px;
+  white-space: nowrap;
+}
+
+.element298 {
+  word-break: break-word;
+  position: absolute;
+  font-family: var(--font-family-base);
+  font-weight: 700;
+  inset: 37.65% 85.52% 53.89% 10.25%;
+  line-height: normal;
+  color: #fefefe;
+  font-size: 18px;
+  white-space: nowrap;
+}
+
 .clip299 {
   background: var(--color-surface);
   align-content: stretch;
