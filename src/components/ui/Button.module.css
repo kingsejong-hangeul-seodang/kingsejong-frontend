@@ -1,0 +1,51 @@
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 56px;
+  padding: 0 var(--space-block-pad);
+  border-radius: var(--radius-m);
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 24px;
+  letter-spacing: -0.32px;
+}
+.button[data-variant='primary'] {
+  background: var(--color-brand);
+  color: var(--color-on-brand);
+}
+.button[data-variant='secondary'] {
+  background: var(--color-surface);
+  color: var(--color-text-1);
+}
+.button[data-variant='small'] {
+  min-height: 44px;
+  padding: 0 var(--space-stack-m);
+  background: var(--color-brand-tint);
+  color: var(--color-brand);
+  font-size: 14px;
+  line-height: 21px;
+}
+.button[data-variant='tool'] {
+  min-height: 48px;
+  padding: 0 var(--space-stack-m);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface);
+  color: var(--color-text-1);
+  font-size: 14px;
+  line-height: 21px;
+}
+.button[data-variant='text'] {
+  min-height: 44px;
+  padding: 0;
+  background: transparent;
+  color: var(--color-brand);
+}
+.button[data-variant] > p {
+  color: inherit;
+}
+.button[data-variant]:disabled {
+  background: var(--color-line);
+  color: var(--color-text-disabled);
+}
