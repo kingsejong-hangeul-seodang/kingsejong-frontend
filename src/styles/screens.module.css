@@ -500,6 +500,71 @@
   height: 100%;
 }
 
+.page67 {
+  align-content: stretch;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-block-gap);
+  align-items: center;
+  padding-bottom: 120px;
+  padding-top: var(--space-stack-s);
+  position: relative;
+  flex-shrink: 0;
+  width: 100%;
+}
+
+.progress68 {
+  align-content: stretch;
+  display: flex;
+  gap: 4px;
+  height: 4px;
+  align-items: flex-start;
+  position: relative;
+  flex-shrink: 0;
+  width: 100%;
+}
+
+.isOn69 {
+  background: var(--color-text-1);
+  flex: 1 0 0;
+  height: 100%;
+  min-width: 1px;
+  position: relative;
+  border-radius: var(--radius-pill);
+}
+
+.span70 {
+  background: var(--color-line-strong);
+  flex: 1 0 0;
+  height: 100%;
+  min-width: 1px;
+  position: relative;
+  border-radius: var(--radius-pill);
+}
+
+.element71 {
+  word-break: break-word;
+  font-family: var(--font-family-base);
+  font-weight: 700;
+  line-height: 38px;
+  position: relative;
+  flex-shrink: 0;
+  font-size: 28px;
+  color: var(--color-text-1);
+  letter-spacing: -0.56px;
+  white-space: nowrap;
+}
+
+.say72 {
+  align-content: stretch;
+  display: flex;
+  gap: var(--space-stack-m);
+  align-items: flex-end;
+  position: relative;
+  flex-shrink: 0;
+  width: 740px;
+}
+
 .element76 {
   word-break: break-word;
   font-family: var(--font-family-base);
@@ -524,6 +589,151 @@
   color: var(--color-text-2);
   letter-spacing: -0.28px;
   white-space: nowrap;
+}
+
+.block88 {
+  background: var(--color-surface);
+  align-content: stretch;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-stack-m);
+  align-items: flex-start;
+  padding: var(--space-block-pad);
+  position: relative;
+  border-radius: var(--radius-l);
+  flex-shrink: 0;
+  width: 740px;
+}
+
+.step89 {
+  align-content: stretch;
+  display: flex;
+  gap: var(--space-stack-m);
+  align-items: center;
+  position: relative;
+  flex-shrink: 0;
+  width: 100%;
+}
+
+.stepNum90 {
+  background: var(--color-text-1);
+  align-content: stretch;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  border-radius: var(--radius-pill);
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+}
+
+.element91 {
+  word-break: break-word;
+  font-family: var(--font-family-base);
+  font-weight: 700;
+  line-height: 21px;
+  position: relative;
+  flex-shrink: 0;
+  font-size: 14px;
+  color: var(--color-surface);
+  letter-spacing: -0.28px;
+  white-space: nowrap;
+}
+
+.element92 {
+  word-break: break-word;
+  font-family: var(--font-family-base);
+  font-weight: 400;
+  line-height: 25px;
+  position: relative;
+  flex-shrink: 0;
+  font-size: 16px;
+  color: var(--color-text-1);
+  letter-spacing: -0.32px;
+  white-space: nowrap;
+}
+
+.element93 {
+  background: var(--color-success-tint);
+  align-content: stretch;
+  display: flex;
+  height: 24px;
+  align-items: center;
+  justify-content: center;
+  padding-left: var(--space-stack-s);
+  padding-right: var(--space-stack-s);
+  position: relative;
+  border-radius: var(--radius-s);
+  flex-shrink: 0;
+}
+
+.element103 {
+  background: var(--color-warning-tint);
+  align-content: stretch;
+  display: flex;
+  height: 24px;
+  align-items: center;
+  justify-content: center;
+  padding-left: var(--space-stack-s);
+  padding-right: var(--space-stack-s);
+  position: relative;
+  border-radius: var(--radius-s);
+  flex-shrink: 0;
+}
+
+.actions105 {
+  align-content: stretch;
+  display: flex;
+  gap: var(--space-stack-s);
+  height: 56px;
+  align-items: flex-start;
+  position: relative;
+  flex-shrink: 0;
+  width: 100%;
+}
+
+.element106 {
+  background: var(--color-surface);
+  align-content: stretch;
+  display: flex;
+  flex: 1 0 0;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+  min-width: 1px;
+  padding-left: var(--space-block-pad);
+  padding-right: var(--space-block-pad);
+  position: relative;
+  border-radius: var(--radius-m);
+}
+
+.element107 {
+  word-break: break-word;
+  font-family: var(--font-family-base);
+  font-weight: 500;
+  line-height: 24px;
+  position: relative;
+  flex-shrink: 0;
+  font-size: 16px;
+  color: var(--color-text-1);
+  letter-spacing: -0.32px;
+  white-space: nowrap;
+}
+
+.element108 {
+  background: var(--color-brand);
+  align-content: stretch;
+  display: flex;
+  flex: 1 0 0;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+  min-width: 1px;
+  padding-left: var(--space-block-pad);
+  padding-right: var(--space-block-pad);
+  position: relative;
+  border-radius: var(--radius-m);
 }
 
 .page109 {
