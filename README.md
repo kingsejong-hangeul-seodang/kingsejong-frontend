@@ -1,7 +1,10 @@
 # 한글 프론트엔드
 
-React + TypeScript + Vite 기반 초기 환경입니다. CSS Modules로 컴포넌트 스타일을
+React + TypeScript + Vite 기반 한글서당 화면입니다. CSS Modules로 컴포넌트 스타일을
 분리하고, 공통 디자인 값은 CSS 변수로 관리합니다.
+
+Figma Screens v2의 33개 화면과 화면 이동·선택·필기 UI를 구현했습니다.
+화면 경로와 구현 범위는 [퍼블리싱 안내](docs/publishing.md)를 참고하세요.
 
 ESLint의 flat config에서 JavaScript·TypeScript 권장 규칙, React Hooks와
 Fast Refresh 규칙을 적용합니다. 포맷은 Prettier가 담당하며,
@@ -85,7 +88,7 @@ src/
 ## 자동 검사
 
 GitHub 저장소에 올리면 `.github/workflows/ci.yml`이 push와 PR에서
-`npm ci`와 `npm run check`를 실행합니다. 현재 폴더는 Git 저장소로 초기화하지 않았습니다.
+`npm ci`와 `npm run check`를 실행합니다.
 
 ## 참고
 

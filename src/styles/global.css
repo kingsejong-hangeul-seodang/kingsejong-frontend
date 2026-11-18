@@ -1,5 +1,16 @@
 * {
   box-sizing: border-box;
+  border-width: 0;
+  border-style: solid;
+}
+p {
+  margin: 0;
+}
+button {
+  padding: 0;
+  background: transparent;
+  color: inherit;
+  text-align: inherit;
 }
 body {
   margin: 0;
@@ -38,4 +49,372 @@ a {
 :focus-visible {
   outline: 3px solid var(--color-primary);
   outline-offset: 4px;
+}
+
+/* Shared behavior of the Figma screen components. */
+#root [data-name='cta'],
+#root [data-name='tabbar'] {
+  position: fixed;
+  top: auto;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(100%, 820px);
+  z-index: 20;
+  height: auto;
+  padding-bottom: max(16px, env(safe-area-inset-bottom));
+  background: var(--color-bg);
+}
+#root [data-name='tabbar'] {
+  background: var(--color-surface);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+#root [data-name='tabbar'] > button {
+  flex: 1;
+  width: auto;
+}
+#root [data-name='input'] input {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  text-align: center;
+  color: var(--color-text-1);
+  font-size: 28px;
+  line-height: 38px;
+  font-weight: 700;
+}
+#root [data-selected='true'][data-action^='선택 카드/'],
+#root [data-selected='true'][data-action='choice'] {
+  border: 2px solid var(--color-brand);
+  background: var(--color-brand-tint);
+}
+#root [data-selected='false'][data-action^='선택 카드/'],
+#root [data-selected='false'][data-action='choice'] {
+  border: 1px solid var(--color-line);
+  background: var(--color-surface);
+}
+#root [data-action='stage-item'],
+[data-action='seg-item'],
+[data-action='mode'] {
+  transition:
+    background 0.15s,
+    box-shadow 0.15s;
+}
+#root [data-action='stage-item'][data-selected='false'],
+#root [data-action='seg-item'][data-selected='false'],
+#root [data-action='mode'][data-selected='false'] {
+  background: transparent;
+  filter: none;
+}
+#root [data-action='stage-item'][data-selected='true'],
+#root [data-action='seg-item'][data-selected='true'],
+#root [data-action='mode'][data-selected='true'] {
+  background: var(--color-surface);
+  box-shadow: 0 2px 4px #28221b14;
+}
+#root [data-action='check'][data-selected='false'] [data-name='icon'] {
+  visibility: hidden;
+}
+#root [data-action='check'][data-selected='false'] [data-name='span'] {
+  background: var(--color-surface);
+  border: 1px solid var(--color-line-strong);
+}
+#root button:active {
+  opacity: 0.85;
+}
+
+@media (max-width: 819px) {
+  :root {
+    --space-page-x: 24px;
+  }
+  #root main > div > [data-name='page'],
+  #root main > div > [data-name='hero'],
+  #root main > div > [data-name='home-head'] {
+    max-width: 100%;
+  }
+  #root [data-name='page'] > [data-name] {
+    max-width: calc(100% - 2 * var(--space-page-x));
+  }
+  #root [data-name='page'] > [data-name='hero'],
+  #root [data-name='page'] > [data-name='task'] {
+    max-width: 100%;
+  }
+  #root [data-name='page'] > [data-name='say'] {
+    max-width: calc(100% - 2 * var(--space-page-x));
+  }
+  #root [data-name='my-hero'] {
+    width: calc(100% - 2 * var(--space-page-x));
+  }
+  #root [data-name='my-hero'] > [data-name='xp'] {
+    width: 100%;
+  }
+  #root [data-name='appbar'] > p,
+  [data-name='앱바'] > p {
+    flex: 1;
+    width: auto;
+  }
+  #root [data-name='stats'] {
+    width: calc(100% - 2 * var(--space-page-x));
+  }
+  #root [data-name='stats'] > * {
+    flex: 1;
+    width: 0;
+    min-width: 0;
+  }
+  #root [data-name='cards'] {
+    width: calc(100% - 2 * var(--space-page-x));
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  #root [data-name='c-card'] {
+    width: 100%;
+    overflow: hidden;
+  }
+  #root [data-name='c-card'] [data-name='c-body'] {
+    max-width: 100%;
+  }
+  #root [data-name='choices']:has([data-name='choice']) {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  }
+  #root [data-name='choices'] > [data-name='choice'] {
+    width: 100%;
+  }
+  #root [data-name='evo'] {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(105px, 1fr));
+  }
+  #root [data-name='evo-item'] {
+    width: auto;
+  }
+  #root [data-name='jamo-grid'] {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+  }
+  #root [data-name='jamo'] {
+    width: 100%;
+  }
+  #root [data-name='bubble'] {
+    min-width: 0;
+    max-width: 100%;
+  }
+  #root [data-name='bubble'] p {
+    white-space: normal;
+    word-break: keep-all;
+    overflow-wrap: anywhere;
+  }
+  #root [data-name='block'] {
+    min-width: 0;
+  }
+  #root [data-name='block-head'],
+  [data-name='stroke-row'] {
+    width: 100%;
+  }
+  #root [data-name='row-main'] {
+    min-width: 0;
+    flex: 1;
+  }
+  #root [data-name='row-main'] p {
+    white-space: normal;
+  }
+  #root [data-name='row-trail'] {
+    flex-shrink: 0;
+  }
+  #root [data-name='row'] {
+    width: 100%;
+  }
+  #root [data-name='compare-2'] {
+    flex-wrap: wrap;
+  }
+  #root [data-name='wongoji'],
+  [data-name='vs'] {
+    overflow-x: auto;
+  }
+  #root [data-name='wg-row'] {
+    flex-shrink: 0;
+  }
+}
+@media (max-width: 580px) {
+  :root {
+    --space-page-x: 16px;
+    --space-block-pad: 16px;
+  }
+  #root main > div {
+    min-height: 100svh !important;
+  }
+  #root [data-screen] > div > [data-name='page'][class] {
+    height: auto;
+    min-height: calc(100svh - 56px);
+  }
+  #root [data-screen='lang'] > div > [data-name='page'][class] {
+    min-height: 100svh;
+  }
+  #root [data-name='home-head'] {
+    flex-wrap: wrap;
+  }
+  #root [data-name='head-right'] {
+    width: 100%;
+    justify-content: space-between;
+  }
+  #root [data-name='say']:has(> [data-name='bubble']) > [data-name^='킹세종'] {
+    max-width: 84px;
+    height: 136px;
+  }
+  #root [data-screen='lang'] [data-name='say'] > [data-name^='킹세종'],
+  #root [data-screen='login'] [data-name='say'] > [data-name^='킹세종'],
+  #root [data-screen='experience'] [data-name='say'] > [data-name^='킹세종'],
+  #root [data-screen='stage-select'] [data-name='say'] > [data-name^='킹세종'],
+  #root [data-screen='mode-select'] [data-name='say'] > [data-name^='킹세종'],
+  #root [data-screen='taste'] [data-name='say'] > [data-name^='킹세종'] {
+    max-width: 140px;
+    width: 140px;
+    height: 224px;
+  }
+  #root [data-name='stats'] {
+    flex-wrap: wrap;
+  }
+  #root [data-name='stats'] > * {
+    min-width: 90px;
+  }
+  #root [data-name='stats'] p {
+    white-space: normal;
+  }
+  #root [data-name='cards'] {
+    grid-template-columns: 1fr;
+  }
+  #root [data-name='c-card'] [data-name='poster'] {
+    height: 180px;
+  }
+  #root [data-name='c-card'] [data-name='poster'] > [data-name='킹세종 얼굴'] {
+    left: calc(50% - 90px);
+  }
+  #root [data-name='choices']:has([data-name='choice']) {
+    grid-template-columns: 1fr;
+  }
+  #root [data-name='choices'] > [data-name='choice'] {
+    height: auto;
+  }
+  #root [data-name='choice'] [data-name='poster'] {
+    height: 170px;
+  }
+  #root [data-name='jamo-grid'] {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  #root [data-name='stroke-row'] {
+    flex-wrap: wrap;
+  }
+  #root [data-name='stroke-row'] > [data-name='steps'] {
+    flex-basis: 100%;
+  }
+  #root [data-name='step'] p {
+    white-space: normal;
+  }
+  #root [data-name='tools'] {
+    gap: 4px;
+  }
+  #root [data-name='tool'] {
+    padding: 8px;
+    gap: 4px;
+  }
+  #root [data-name='tool'] p {
+    font-size: 12px;
+  }
+  #root [data-name='modes'] {
+    width: calc(100% - 2 * var(--space-page-x));
+  }
+  #root [data-name='mode'] {
+    flex: 1;
+    width: auto;
+    gap: 6px;
+    padding: 8px;
+  }
+  #root [data-name='mode'] p {
+    font-size: 14px;
+  }
+  #root [data-name='legend'] {
+    flex-wrap: wrap;
+    height: auto;
+  }
+  #root [data-name='jamo-head'] {
+    width: calc(100% - 2 * var(--space-page-x));
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@media (max-width: 580px) {
+  #root [data-name='explain-item'] > p {
+    flex: 1;
+    min-width: 0;
+    flex-shrink: 1;
+  }
+}
+
+@media (max-width: 580px) {
+  #root [data-name='task'] p,
+  #root [data-name='page'] > p,
+  #root [data-name='block'] > p,
+  #root [data-name='explain'] p,
+  #root [data-name='my-hero'] > p,
+  #root [data-action='글자 링크'] p {
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: keep-all;
+  }
+  #root [data-action='글자 링크'] {
+    height: auto;
+    min-height: 44px;
+  }
+  #root [data-name='page'] > p {
+    max-width: calc(100% - 2 * var(--space-page-x));
+  }
+  #root [data-name='stats'] {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  #root [data-name='stats'] > * {
+    width: auto;
+    min-width: 0;
+  }
+  #root [data-name='stats'] > :last-child {
+    grid-column: 1 / -1;
+  }
+  #root [data-name='wongoji'],
+  #root [data-name='vs-line'] {
+    align-items: safe center;
+  }
+  #root [data-name='clip']:has(> [data-name='div']) {
+    flex-wrap: wrap;
+  }
+  #root [data-name='clip'] > [data-name='div'] {
+    max-width: 100%;
+  }
+  #root [data-name='clip'] [data-name='subtitle'] {
+    max-width: 100%;
+    flex-wrap: wrap;
+  }
+  #root [data-screen='clip'] [data-name='poster-play'] {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  #root [data-screen='clip'] [data-name='poster-time'] {
+    left: auto;
+    right: 8px;
+  }
+  #root [data-screen='clip'] [data-name='poster'] > [data-name='킹세종 얼굴'] {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  #root [data-screen='clip'] [data-name='subtitle'] {
+    width: 100%;
+  }
+  #root [data-screen='clip'] [data-name='subtitle'] [data-name^='동국체:'] {
+    max-width: 100%;
+  }
 }
