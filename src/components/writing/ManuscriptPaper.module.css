@@ -1,0 +1,115 @@
+.paper {
+  container-type: inline-size;
+  width: 100%;
+  padding: var(--space-block-pad);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-l);
+  background: var(--color-paper);
+  box-shadow: 0 2px 4px rgb(40 34 27 / 8%);
+}
+.paper.compact {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+.grid {
+  --fitted-cell: min(
+    var(--paper-cell-size),
+    calc(
+      (
+          100cqw - (var(--paper-columns) + var(--paper-group-count)) * 1px -
+            var(--paper-gap-count) * var(--paper-group-gap)
+        ) /
+        var(--paper-columns)
+    )
+  );
+  display: grid;
+  grid-template-columns: repeat(var(--group-columns), var(--fitted-cell));
+  gap: 0;
+  width: max-content;
+  max-width: 100%;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+}
+.groups {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--paper-group-gap);
+}
+.cell[data-state='error'] {
+  background-color: var(--color-danger-tint);
+  box-shadow: inset 0 0 0 3px var(--color-danger);
+}
+.cell[data-state='stroke-order'] {
+  background-color: var(--color-warning-tint);
+  box-shadow: inset 0 0 0 3px var(--color-warning);
+}
+.cell[data-state='shape'] {
+  border: 2px dashed var(--color-info);
+  background-color: var(--color-info-tint);
+}
+.cellAction {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+.cellAction > img,
+.cellAction > svg {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+}
+.cell {
+  position: relative;
+  border: 1px solid var(--color-wongoji-line);
+  width: var(--fitted-cell);
+  aspect-ratio: 1;
+  background-color: var(--color-paper);
+  background-image:
+    linear-gradient(
+      to right,
+      transparent calc(50% - 0.5px),
+      #2f5d8c24 calc(50% - 0.5px),
+      #2f5d8c24 calc(50% + 0.5px),
+      transparent calc(50% + 0.5px)
+    ),
+    linear-gradient(
+      to bottom,
+      transparent calc(50% - 0.5px),
+      #2f5d8c24 calc(50% - 0.5px),
+      #2f5d8c24 calc(50% + 0.5px),
+      transparent calc(50% + 0.5px)
+    );
+}
+.cell > img,
+.cell > svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.cell > div {
+  width: 100%;
+  height: 100%;
+}
+.caption {
+  margin-top: var(--space-stack-m);
+  text-align: center;
+  font-size: 14px;
+  line-height: 21px;
+  color: var(--color-text-2);
+}
+.practice {
+  width: 740px;
+  max-width: calc(100% - 2 * var(--space-page-x));
+}

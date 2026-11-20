@@ -1,0 +1,80 @@
+.detailHeader {
+  background: var(--color-surface);
+  align-content: stretch;
+  display: flex;
+  gap: var(--space-block-pad);
+  align-items: center;
+  padding: var(--space-block-pad);
+  position: relative;
+  border-radius: var(--radius-l);
+  flex-shrink: 0;
+  width: min(740px, calc(100% - 2 * var(--space-page-x)));
+}
+
+.largeGlyph {
+  font-size: 3rem;
+  background: var(--color-paper);
+  border-width: 1.5px;
+  border-color: var(--color-wongoji-line);
+  border-style: solid;
+  align-content: stretch;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  border-radius: var(--radius-m);
+  flex-shrink: 0;
+  width: 120px;
+  height: 120px;
+}
+
+.glyphInfo {
+  align-content: stretch;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: flex-start;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.strokeDiagram {
+  background: var(--color-paper);
+  border-width: 1.5px;
+  border-color: var(--color-wongoji-line);
+  border-style: solid;
+  align-content: stretch;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  border-radius: var(--radius-l);
+  flex-shrink: 0;
+  width: 240px;
+  height: 240px;
+}
+
+.strokeSteps {
+  align-content: stretch;
+  display: flex;
+  flex: 1 0 0;
+  flex-direction: column;
+  gap: var(--space-stack-s);
+  align-items: flex-start;
+  min-width: 1px;
+  position: relative;
+}
+
+.exampleGlyphButton {
+  background: var(--color-bg);
+  align-content: stretch;
+  display: flex;
+  height: 56px;
+  align-items: center;
+  justify-content: center;
+  padding-left: var(--space-stack-m);
+  padding-right: var(--space-stack-m);
+  position: relative;
+  border-radius: var(--radius-m);
+  flex-shrink: 0;
+}

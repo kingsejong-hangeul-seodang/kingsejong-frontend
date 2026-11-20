@@ -1,0 +1,21 @@
+.contentWidth {
+  width: 740px;
+  max-width: calc(100% - 2 * var(--space-page-x));
+}
+.rowHeading {
+  display: flex;
+  gap: var(--space-stack-s);
+  align-items: center;
+  width: 100%;
+}
+.steps {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-stack-s);
+}
+.wordmark {
+  height: 33.6px;
+  position: relative;
+  flex-shrink: 0;
+  width: 100%;
+}

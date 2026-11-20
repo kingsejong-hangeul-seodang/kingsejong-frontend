@@ -1,0 +1,234 @@
+.stageRow,
+.task,
+.audioPanel {
+  width: min(740px, calc(100% - 2 * var(--space-page-x)));
+}
+
+.stageRow {
+  align-content: stretch;
+  display: flex;
+  gap: var(--space-stack-m);
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.task {
+  word-break: break-word;
+  align-content: stretch;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: flex-start;
+  padding-top: var(--space-stack-m);
+}
+
+.taskChips {
+  display: flex;
+  gap: var(--space-stack-s);
+  flex-wrap: wrap;
+}
+
+.task h2,
+.audioText h2 {
+  margin: 0;
+}
+
+.taskChips:empty {
+  display: none;
+}
+
+.meaning,
+.soundChip[data-variant='small'] {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-stack-s);
+  border-radius: var(--radius-pill);
+  min-height: 32px;
+  padding: 6px var(--space-stack-m);
+  font-size: var(--font-size-sub);
+}
+
+.meaning {
+  background: var(--color-surface);
+}
+
+.soundIcon {
+  width: 16px;
+  height: 16px;
+  background: currentColor;
+  mask: url('/assets/figma/c1012.svg') center / contain no-repeat;
+}
+
+.audioPanel {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-stack-m);
+  border-radius: var(--radius-l);
+  padding: var(--space-block-pad);
+  background: var(--color-surface);
+}
+
+.audioIcon {
+  display: grid;
+  place-items: center;
+  width: 72px;
+  height: 72px;
+  padding: 0;
+  border-radius: var(--radius-pill);
+}
+
+.audioText {
+  flex: 1 1 170px;
+}
+
+.resultStatus,
+.resultPaper {
+  width: min(740px, calc(100% - 2 * var(--space-page-x)));
+}
+
+.resultStatus {
+  display: flex;
+  align-items: center;
+  gap: var(--space-stack-m);
+  padding: var(--space-block-pad);
+  border-radius: var(--radius-l);
+  background: var(--color-surface);
+}
+
+.resultStatus > span {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  aspect-ratio: 1;
+  border-radius: var(--radius-pill);
+  color: var(--color-success);
+  background: var(--color-success-tint);
+  flex: 0 0 56px;
+}
+
+.resultStatus[data-correct='false'] > span {
+  background: var(--color-danger-tint);
+}
+
+.resultLegend {
+  justify-content: space-between;
+  flex-wrap: wrap;
+  margin-block-start: var(--space-stack-m);
+}
+
+.rewardBadges {
+  display: grid;
+  justify-items: start;
+  gap: 2px;
+  margin: 4px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rewardBadges li {
+  padding: 4px var(--space-stack-m);
+  border-radius: var(--radius-pill);
+  background: var(--color-text-1);
+  color: var(--color-surface);
+  font-size: var(--font-size-sub);
+  font-weight: 700;
+}
+
+.shapeLegend {
+  color: var(--color-text-2);
+  font-size: var(--font-size-sub);
+}
+
+.shapeLegend::before {
+  content: '';
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  margin-inline-end: 6px;
+  border-radius: 50%;
+  background: var(--color-info);
+}
+
+.shapeExamples {
+  display: grid;
+  width: 100%;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-stack-l);
+  text-align: center;
+}
+
+.shapeExamples figure {
+  margin: 0;
+}
+
+.shapeFrame {
+  display: grid;
+  place-items: center;
+  padding: 10%;
+  aspect-ratio: 1;
+  border: 1.5px solid var(--color-wongoji-line);
+  border-radius: var(--radius-l);
+  background: var(--color-paper);
+}
+
+.shapeFrame > * {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.shapeExamples figcaption {
+  margin-top: var(--space-stack-s);
+}
+
+.shapeNotes {
+  padding-inline-start: var(--space-block-pad);
+}
+
+.comparison {
+  width: 740px;
+  max-width: calc(100% - 2 * var(--space-page-x));
+  background: var(--color-paper);
+  border-width: 1px;
+  border-color: var(--color-line);
+  border-style: solid;
+  align-content: stretch;
+  filter: drop-shadow(0px 2px 4px rgba(40, 34, 27, 0.08));
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-stack-l);
+  align-items: center;
+  padding: var(--space-block-pad);
+  position: relative;
+  border-radius: var(--radius-l);
+  flex-shrink: 0;
+}
+
+.comparison > [data-name='vs-line'],
+.comparison > [data-name='player'] {
+  width: 100%;
+}
+
+.submittedRow {
+  align-content: stretch;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-stack-s);
+  align-items: flex-start;
+  padding-bottom: 20px;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.referenceRow {
+  align-content: stretch;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-stack-s);
+  align-items: flex-start;
+  position: relative;
+  flex-shrink: 0;
+}

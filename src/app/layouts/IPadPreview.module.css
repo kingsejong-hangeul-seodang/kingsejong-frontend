@@ -1,0 +1,30 @@
+.workspace {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background: #e8e8e6;
+}
+
+.device {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 844px;
+  height: 1204px;
+  padding: 12px;
+  overflow: hidden;
+  border-radius: 32px;
+  background: #282828;
+  box-shadow: 0 12px 48px #00000024;
+  transform: translate(-50%, -50%) scale(var(--ipad-scale));
+  transform-origin: center;
+}
+
+.viewport {
+  display: block;
+  width: 820px;
+  height: 1180px;
+  border: 0;
+  border-radius: 20px;
+  background: var(--color-bg);
+}

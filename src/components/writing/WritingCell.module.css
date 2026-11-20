@@ -1,0 +1,14 @@
+.cell {
+  position: relative;
+}
+.cell[data-active='true'] {
+  box-shadow: inset 0 0 0 2px var(--color-brand);
+}
+.canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+  cursor: crosshair;
+}

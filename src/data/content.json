@@ -1,0 +1,114 @@
+[
+  {
+    "id": "miss-you",
+    "title": "보고 싶었어",
+    "source": "하늘별 · 봄밤 편지",
+    "meaning": "I missed you",
+    "mode": "pop",
+    "targets": { "beginner": "보고", "mid": "보고 싶었어", "pro": "보고 싶었어" }
+  },
+  {
+    "id": "today",
+    "title": "오늘도 너를",
+    "source": "루나틱 · 달빛 약속",
+    "meaning": "You, again today",
+    "mode": "pop",
+    "targets": { "beginner": "오늘", "mid": "오늘도 너를", "pro": "오늘도 너를" }
+  },
+  {
+    "id": "walk",
+    "title": "함께 걸어요",
+    "source": "하늘별 · 봄밤 편지",
+    "meaning": "Let's walk together",
+    "mode": "pop",
+    "targets": { "beginner": "함께", "mid": "함께 걸어요", "pro": "함께 걸어요" }
+  },
+  {
+    "id": "drama-you",
+    "title": "나 너",
+    "source": "서당의 봄 · 3화",
+    "meaning": "Do I like you?",
+    "mode": "drama",
+    "targets": { "beginner": "나너", "mid": "나 너", "pro": "나 너 좋아하냐?" }
+  },
+  {
+    "id": "meal",
+    "title": "밥은 먹고",
+    "source": "한강 로맨스 · 1화",
+    "meaning": "Have a meal first",
+    "mode": "drama",
+    "targets": { "beginner": "밥은", "mid": "밥은 먹고", "pro": "밥은 먹고" }
+  },
+  {
+    "id": "sea",
+    "title": "바다",
+    "dictationTitle": "바다 여행",
+    "source": "기본 연습",
+    "meaning": "sea",
+    "mode": "basic",
+    "targets": { "beginner": "바다", "mid": "바다 보러", "pro": "바다 보러 가요." }
+  },
+  {
+    "id": "basic-giyeok",
+    "title": "ㄱ · 기역",
+    "source": "자음",
+    "meaning": "",
+    "mode": "basic",
+    "stages": ["beginner"],
+    "targets": { "beginner": "ㄱ", "mid": "가방을 들어요", "pro": "가방을 들어요." }
+  },
+  {
+    "id": "basic-digeut",
+    "title": "ㄷ · 디귿",
+    "source": "자음",
+    "meaning": "",
+    "mode": "basic",
+    "stages": ["beginner"],
+    "targets": { "beginner": "ㄷ", "mid": "다람쥐를 봐요", "pro": "다람쥐를 봐요." }
+  },
+  {
+    "id": "basic-a",
+    "title": "ㅏ · 아",
+    "source": "모음",
+    "meaning": "",
+    "mode": "basic",
+    "stages": ["beginner"],
+    "targets": { "beginner": "ㅏ", "mid": "아침에 만나요", "pro": "아침에 만나요." }
+  },
+  {
+    "id": "basic-tree",
+    "title": "나무",
+    "source": "단어",
+    "meaning": "tree",
+    "mode": "basic",
+    "stages": ["beginner"],
+    "targets": { "beginner": "나무", "mid": "나무를 심어요", "pro": "나무를 심어요." }
+  },
+  {
+    "id": "basic-restaurant",
+    "title": "식당에서 쓰는 표현",
+    "source": "기본 연습",
+    "meaning": "",
+    "mode": "basic",
+    "stages": ["mid", "pro"],
+    "targets": { "beginner": "메뉴", "mid": "메뉴 좀 주세요", "pro": "메뉴 좀 보여 주세요." }
+  },
+  {
+    "id": "basic-travel-1",
+    "title": "여행 표현 1",
+    "source": "기본 연습",
+    "meaning": "",
+    "mode": "basic",
+    "stages": ["mid", "pro"],
+    "targets": { "beginner": "화장실", "mid": "화장실은 어디예요", "pro": "화장실은 어디예요?" }
+  },
+  {
+    "id": "basic-travel-2",
+    "title": "여행 표현 2",
+    "source": "기본 연습",
+    "meaning": "",
+    "mode": "basic",
+    "stages": ["pro"],
+    "targets": { "beginner": "버스", "mid": "버스는 어디서 타요", "pro": "버스는 어디서 타요?" }
+  }
+]

@@ -1,0 +1,10 @@
+.notes {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-stack-m);
+}
+.notes p {
+  font-size: 16px;
+  line-height: 25px;
+  color: var(--color-text-2);
+}
