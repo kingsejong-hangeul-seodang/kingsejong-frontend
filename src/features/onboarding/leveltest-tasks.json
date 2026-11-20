@@ -1,0 +1,5 @@
+[
+  { "stage": "beginner", "target": "가나다", "title": "가나다 쓰기" },
+  { "stage": "mid", "target": "바다", "title": "단어 쓰기" },
+  { "stage": "pro", "target": "바다 보러 가요", "title": "짧은 문장 쓰기" }
+]

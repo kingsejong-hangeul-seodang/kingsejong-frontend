@@ -1,6 +1,15 @@
-import type { ComponentProps } from 'react'
-import { Action } from './Action'
+import type { ButtonHTMLAttributes } from 'react'
 import styles from './patterns.module.css'
-export function ListRow({ className = '', ...props }: Omit<ComponentProps<typeof Action>, 'kind'>) {
-  return <Action {...props} kind="row" data-name="row" className={`${className} ${styles.row}`} />
+type Props = ButtonHTMLAttributes<HTMLButtonElement> & { label: string; onClick: () => void }
+export function ListRow({ className = '', label, ...props }: Props) {
+  return (
+    <button
+      {...props}
+      type="button"
+      aria-label={label}
+      data-action="row"
+      data-name="row"
+      className={`${className} ${styles.row}`}
+    />
+  )
 }

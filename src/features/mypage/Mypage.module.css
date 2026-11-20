@@ -1,0 +1,49 @@
+.profileCard {
+  background: var(--color-surface);
+  align-content: stretch;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-stack-s);
+  align-items: center;
+  padding-left: var(--space-block-pad);
+  padding-right: var(--space-block-pad);
+  padding-top: var(--space-stack-l);
+  padding-bottom: var(--space-stack-l);
+  position: relative;
+  border-radius: var(--radius-l);
+  flex-shrink: 0;
+}
+
+.profileCharacter {
+  height: 325.1px;
+  position: relative;
+  flex-shrink: 0;
+  width: 200px;
+}
+
+.profileCaption {
+  word-break: break-word;
+  font-family: var(--font-family-base);
+  font-weight: 400;
+  line-height: 21px;
+  position: relative;
+  flex-shrink: 0;
+  font-size: 14px;
+  color: var(--color-text-2);
+  text-align: center;
+  letter-spacing: -0.28px;
+  white-space: nowrap;
+}
+
+.experienceTrack {
+  background: var(--color-line);
+  align-content: stretch;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  overflow: clip;
+  position: relative;
+  border-radius: var(--radius-pill);
+  flex-shrink: 0;
+  width: 692px;
+}

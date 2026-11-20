@@ -1,5 +1,4 @@
 import type { ReactNode } from 'react'
-import { Action } from './Action'
 import styles from './patterns.module.css'
 export function ContentCard({
   label,
@@ -7,17 +6,21 @@ export function ContentCard({
   title,
   description,
   className = '',
+  onClick,
 }: {
   label: string
   poster: ReactNode
   title: ReactNode
   description: ReactNode
   className?: string | undefined
+  onClick: () => void
 }) {
   return (
-    <Action
-      kind="c-card"
-      label={label}
+    <button
+      type="button"
+      data-action="c-card"
+      aria-label={label}
+      onClick={onClick}
       data-name="c-card"
       className={`${className} ${styles.contentCard}`}
     >
@@ -26,6 +29,6 @@ export function ContentCard({
         {title}
         <p className={styles.description}>{description}</p>
       </div>
-    </Action>
+    </button>
   )
 }

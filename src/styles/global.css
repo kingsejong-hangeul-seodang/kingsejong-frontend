@@ -52,7 +52,6 @@ a {
 }
 
 /* Shared behavior of the Figma screen components. */
-#root [data-name='cta'],
 #root [data-name='tabbar'] {
   position: fixed;
   top: auto;
@@ -62,10 +61,6 @@ a {
   width: min(100%, 820px);
   z-index: 20;
   height: auto;
-  padding-bottom: max(16px, env(safe-area-inset-bottom));
-  background: var(--color-bg);
-}
-#root [data-name='tabbar'] {
   background: var(--color-surface);
   padding-bottom: env(safe-area-inset-bottom);
 }
@@ -388,33 +383,5 @@ a {
   #root [data-name='wongoji'],
   #root [data-name='vs-line'] {
     align-items: safe center;
-  }
-  #root [data-name='clip']:has(> [data-name='div']) {
-    flex-wrap: wrap;
-  }
-  #root [data-name='clip'] > [data-name='div'] {
-    max-width: 100%;
-  }
-  #root [data-name='clip'] [data-name='subtitle'] {
-    max-width: 100%;
-    flex-wrap: wrap;
-  }
-  #root [data-screen='clip'] [data-name='poster-play'] {
-    left: 50%;
-    transform: translateX(-50%);
-  }
-  #root [data-screen='clip'] [data-name='poster-time'] {
-    left: auto;
-    right: 8px;
-  }
-  #root [data-screen='clip'] [data-name='poster'] > [data-name='킹세종 얼굴'] {
-    left: 50%;
-    transform: translateX(-50%);
-  }
-  #root [data-screen='clip'] [data-name='subtitle'] {
-    width: 100%;
-  }
-  #root [data-screen='clip'] [data-name='subtitle'] [data-name^='동국체:'] {
-    max-width: 100%;
   }
 }
