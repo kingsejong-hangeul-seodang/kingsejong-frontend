@@ -1,5 +1,5 @@
 import { useSyncExternalStore } from 'react'
-import { screens, type ScreenName } from './screens'
+import { screens, type ScreenName } from './routes/screens'
 
 export function isScreen(value: string): value is ScreenName {
   return Object.hasOwn(screens, value)
@@ -17,4 +17,7 @@ export function useScreen() {
 }
 export function navigate(screen: ScreenName) {
   window.location.hash = `/${screen}`
+}
+export function replaceScreen(screen: ScreenName) {
+  window.location.replace(`#/${screen}`)
 }

@@ -1,12 +1,15 @@
-import { Action } from './Action'
 import styles from './controls.module.css'
-export function SegmentedControl({
+export function SegmentedControl<T extends string>({
   options,
   kind = 'stage-item',
   label,
   fullWidth = false,
+  value,
+  onChange,
 }: {
-  options: readonly string[]
+  options: readonly T[]
+  value: T
+  onChange: (value: T) => void
   kind?: 'stage-item' | 'seg-item'
   label: string
   fullWidth?: boolean
@@ -19,9 +22,19 @@ export function SegmentedControl({
       aria-label={label}
     >
       {options.map((option) => (
-        <Action key={option} kind={kind} label={option} data-name={kind} className={styles.stage}>
+        <button
+          key={option}
+          type="button"
+          data-action={kind}
+          aria-label={option}
+          data-selected={value === option}
+          aria-pressed={value === option}
+          data-name={kind}
+          className={styles.stage}
+          onClick={() => onChange(option)}
+        >
           {option}
-        </Action>
+        </button>
       ))}
     </div>
   )

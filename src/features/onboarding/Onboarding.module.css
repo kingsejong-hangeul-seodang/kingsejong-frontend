@@ -1,0 +1,448 @@
+.wordmarkKing {
+  transform: translateX(-50%);
+  position: absolute;
+  height: 26.859px;
+  left: calc(50% - 86.73px);
+  top: 3.56px;
+  width: 20.994px;
+}
+
+.wordmarkSe {
+  transform: translateX(-50%);
+  position: absolute;
+  height: 26.415px;
+  left: calc(50% - 59.65px);
+  top: 3.56px;
+  width: 23.344px;
+}
+
+.wordmarkJong {
+  transform: translateX(-50%);
+  position: absolute;
+  height: 25.639px;
+  left: calc(50% - 31.46px);
+  top: 4.98px;
+  width: 25.727px;
+}
+
+.wordmarkHan {
+  transform: translateX(-50%);
+  position: absolute;
+  height: 26.379px;
+  left: calc(50% + 4.5px);
+  top: 3.2px;
+  width: 26.696px;
+}
+
+.wordmarkGeul {
+  transform: translateX(-50%);
+  position: absolute;
+  height: 25.369px;
+  left: calc(50% + 31.48px);
+  top: 4.61px;
+  width: 25.727px;
+}
+
+.wordmarkSeo {
+  transform: translateX(-50%);
+  position: absolute;
+  height: 26.404px;
+  left: calc(50% + 57.43px);
+  top: 3.56px;
+  width: 22.189px;
+}
+
+.wordmarkDang {
+  transform: translateX(-50%);
+  position: absolute;
+  height: 26.859px;
+  left: calc(50% + 86.94px);
+  top: 3.56px;
+  width: 25.44px;
+}
+
+.stackedChoices {
+  word-break: break-word;
+  align-content: stretch;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-block-gap);
+  align-items: flex-start;
+  position: relative;
+  flex-shrink: 0;
+  width: 480px;
+  white-space: nowrap;
+}
+
+.emphasizedChoice {
+  background: var(--color-brand-tint);
+  border-width: 2px;
+  border-color: var(--color-brand);
+  border-style: solid;
+  align-content: stretch;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: flex-start;
+  padding: var(--space-block-pad);
+  position: relative;
+  border-radius: var(--radius-l);
+  flex-shrink: 0;
+  width: 100%;
+}
+
+.plainChoice {
+  background: var(--color-surface);
+  border-width: 1px;
+  border-color: var(--color-line);
+  border-style: solid;
+  align-content: stretch;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: flex-start;
+  padding: var(--space-block-pad);
+  position: relative;
+  border-radius: var(--radius-l);
+  flex-shrink: 0;
+  width: 100%;
+}
+
+.choiceTitle {
+  font-family: var(--font-family-base);
+  font-weight: 700;
+  line-height: 28px;
+  position: relative;
+  flex-shrink: 0;
+  font-size: 20px;
+  color: var(--color-text-1);
+  letter-spacing: -0.4px;
+}
+
+.codeField {
+  align-content: stretch;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-stack-s);
+  align-items: flex-start;
+  position: relative;
+  flex-shrink: 0;
+  width: 100%;
+}
+
+.codeInput {
+  background: var(--color-bg);
+  align-content: stretch;
+  display: flex;
+  height: 72px;
+  align-items: center;
+  justify-content: center;
+  padding-left: var(--space-stack-m);
+  padding-right: var(--space-stack-m);
+  position: relative;
+  border-radius: var(--radius-m);
+  flex-shrink: 0;
+  width: 100%;
+}
+
+.consentButton {
+  align-content: stretch;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+}
+
+.consentMark {
+  background: var(--color-brand);
+  border-width: 2px;
+  border-color: var(--color-brand);
+  border-style: solid;
+  align-content: stretch;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
+  position: relative;
+  border-radius: var(--radius-pill);
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+}
+
+.consentIcon {
+  position: relative;
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+}
+
+.stageChoices {
+  align-content: stretch;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-block-gap);
+  align-items: flex-start;
+  position: relative;
+  flex-shrink: 0;
+  width: 480px;
+}
+
+.plainStageChoice {
+  word-break: break-word;
+  background: var(--color-surface);
+  border-width: 1px;
+  border-color: var(--color-line);
+  border-style: solid;
+  align-content: stretch;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: flex-start;
+  padding: var(--space-block-pad);
+  position: relative;
+  border-radius: var(--radius-l);
+  flex-shrink: 0;
+  width: 100%;
+  white-space: nowrap;
+}
+
+.emphasizedStageChoice {
+  word-break: break-word;
+  background: var(--color-brand-tint);
+  border-width: 2px;
+  border-color: var(--color-brand);
+  border-style: solid;
+  align-content: stretch;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: flex-start;
+  padding: var(--space-block-pad);
+  position: relative;
+  border-radius: var(--radius-l);
+  flex-shrink: 0;
+  width: 100%;
+  white-space: nowrap;
+}
+
+.testLinkRow {
+  align-content: stretch;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  flex-shrink: 0;
+  width: 480px;
+}
+
+.testLink {
+  align-content: stretch;
+  display: flex;
+  height: 44px;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.testLinkText {
+  word-break: break-word;
+  font-family: var(--font-family-base);
+  font-weight: 500;
+  line-height: 24px;
+  position: relative;
+  flex-shrink: 0;
+  font-size: 16px;
+  color: var(--color-brand);
+  letter-spacing: -0.32px;
+  white-space: nowrap;
+}
+
+.testProgress {
+  align-content: stretch;
+  display: flex;
+  gap: 4px;
+  height: 4px;
+  align-items: flex-start;
+  position: relative;
+  flex-shrink: 0;
+  width: 100%;
+}
+
+.testProgressSegment {
+  background: var(--color-line-strong);
+  flex: 1 0 0;
+  height: 100%;
+  min-width: 1px;
+  position: relative;
+  border-radius: var(--radius-pill);
+}
+
+.mediaChoicePage {
+  align-content: stretch;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-block-gap);
+  height: 1124px;
+  align-items: center;
+  justify-content: center;
+  padding-bottom: 120px;
+  padding-top: var(--space-stack-s);
+  position: relative;
+  flex-shrink: 0;
+  width: 100%;
+}
+
+.mediaChoiceGuide {
+  align-content: stretch;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-stack-m);
+  align-items: center;
+  position: relative;
+  flex-shrink: 0;
+  width: 740px;
+}
+
+.mediaChoices {
+  align-content: flex-start;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-block-gap);
+  align-items: flex-start;
+  position: relative;
+  flex-shrink: 0;
+  width: 740px;
+}
+
+.emphasizedModeChoice {
+  background: var(--color-brand-tint);
+  border-width: 2px;
+  border-color: var(--color-brand);
+  border-style: solid;
+  align-content: stretch;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  height: 304.4px;
+  align-items: flex-start;
+  padding: var(--space-block-pad);
+  position: relative;
+  border-radius: var(--radius-l);
+  flex-shrink: 0;
+  width: 238.4px;
+}
+
+.plainModeChoice {
+  background: var(--color-surface);
+  border-width: 1px;
+  border-color: var(--color-line);
+  border-style: solid;
+  align-content: stretch;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  height: 304.4px;
+  align-items: flex-start;
+  padding: var(--space-block-pad);
+  position: relative;
+  border-radius: var(--radius-l);
+  flex-shrink: 0;
+  width: 238.4px;
+}
+
+.popPoster {
+  background: var(--color-thumb-1);
+  align-content: stretch;
+  display: flex;
+  height: 190.7px;
+  align-items: center;
+  justify-content: center;
+  overflow: clip;
+  position: relative;
+  border-radius: var(--radius-m);
+  flex-shrink: 0;
+  width: 100%;
+}
+
+.popCharacter {
+  position: absolute;
+  height: 148.7px;
+  left: 20px;
+  top: 41.9px;
+  width: 150.6px;
+}
+
+.modeSelectionIcon {
+  position: absolute;
+  left: 158.7px;
+  width: 24px;
+  height: 24px;
+  top: 8px;
+}
+
+.dramaPoster {
+  background: var(--color-thumb-3);
+  align-content: stretch;
+  display: flex;
+  height: 190.7px;
+  align-items: center;
+  justify-content: center;
+  overflow: clip;
+  position: relative;
+  border-radius: var(--radius-m);
+  flex-shrink: 0;
+  width: 100%;
+}
+
+.dramaCharacter {
+  position: absolute;
+  height: 148.7px;
+  left: 27.5px;
+  top: 41.9px;
+  width: 135.8px;
+}
+
+.basicPoster {
+  background: var(--color-text-1);
+  align-content: stretch;
+  display: flex;
+  height: 190.7px;
+  align-items: center;
+  justify-content: center;
+  overflow: clip;
+  position: relative;
+  border-radius: var(--radius-m);
+  flex-shrink: 0;
+  width: 100%;
+}
+
+.basicGlyph {
+  height: 48px;
+  position: relative;
+  flex-shrink: 0;
+  width: 38.6px;
+}
+
+.basicGlyphInset {
+  position: absolute;
+  inset: 0 -0.98% 0 0;
+}
+
+.tasteChoice {
+  display: grid;
+  gap: var(--space-stack-s);
+  width: min(100%, 22rem);
+  padding: var(--space-stack-m);
+  border-radius: var(--radius-l);
+  border: 2px solid var(--color-line);
+  background: var(--color-surface);
+}
+
+.tasteChoice[data-selected='true'] {
+  border-color: var(--color-brand);
+}

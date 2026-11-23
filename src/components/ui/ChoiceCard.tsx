@@ -1,6 +1,21 @@
-import type { ComponentProps } from 'react'
-import { Action } from './Action'
+import type { ButtonHTMLAttributes } from 'react'
 import styles from './patterns.module.css'
-export function ChoiceCard({ className = '', ...props }: ComponentProps<typeof Action>) {
-  return <Action {...props} className={`${className} ${styles.choice}`} />
+type Props = ButtonHTMLAttributes<HTMLButtonElement> & {
+  label: string
+  kind: string
+  selected: boolean
+  onClick: () => void
+}
+export function ChoiceCard({ className = '', label, kind, selected, ...props }: Props) {
+  return (
+    <button
+      {...props}
+      type="button"
+      aria-label={label}
+      data-action={kind}
+      data-selected={selected}
+      aria-pressed={selected}
+      className={`${className} ${styles.choice}`}
+    />
+  )
 }

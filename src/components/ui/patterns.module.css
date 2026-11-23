@@ -129,10 +129,9 @@
   border-radius: var(--radius-m);
   background: var(--color-bg);
 }
-.jamo img {
-  width: 34.8px;
-  height: 36px;
-  object-fit: contain;
+.jamoGlyph {
+  font-size: 2rem;
+  line-height: 1.1;
 }
 .jamo span {
   font-size: 12px;

@@ -1,0 +1,15 @@
+.writingTools {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: var(--space-stack-s);
+  width: min(740px, calc(100% - 2 * var(--space-page-x)));
+}
+.clearConfirmation {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: var(--space-stack-s);
+  font-size: 14px;
+}

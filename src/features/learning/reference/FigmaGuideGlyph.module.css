@@ -1,0 +1,15 @@
+.guide {
+  position: absolute;
+  left: calc(20.7 / 144 * 100%);
+  top: calc(19.2 / 144 * 100%);
+  width: calc(101.031 / 144 * 100%);
+  height: calc(103.7 / 144 * 100%);
+  pointer-events: none;
+  user-select: none;
+}
+.guide > svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}

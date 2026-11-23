@@ -9,6 +9,9 @@
     "npm": ">=11.13.0 <12"
   },
   "scripts": {
+    "test": "node --experimental-strip-types --test tests/*.test.ts",
+    "data:generate": "node scripts/generate-reference.mjs",
+    "data:guide": "node scripts/generate-reference.mjs --guide-only",
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint . --max-warnings 0",
@@ -21,8 +24,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "es-hangul": "2.4.0",
     "react": "19.3.1",
-    "react-dom": "19.3.1"
+    "react-dom": "19.3.1",
+    "simplify-js": "1.2.4"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",

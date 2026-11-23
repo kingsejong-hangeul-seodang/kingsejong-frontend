@@ -1,18 +1,17 @@
 import type { ReactNode } from 'react'
 import styles from './patterns.module.css'
-import { Action } from './Action'
 export function StatCard({
   label,
   value,
   className = '',
   children,
-  action = false,
+  onClick,
 }: {
   label: ReactNode
   value: ReactNode
   className?: string | undefined
   children?: ReactNode
-  action?: boolean
+  onClick?: () => void
 }) {
   const content = (
     <>
@@ -21,15 +20,17 @@ export function StatCard({
       {children}
     </>
   )
-  return action ? (
-    <Action
-      kind="stat"
-      label="내 킹세종 보기"
+  return onClick ? (
+    <button
+      type="button"
+      data-action="stat"
+      aria-label="내 킹세종 보기"
+      onClick={onClick}
       className={`${className} ${styles.stat}`}
       data-name="통계 칸"
     >
       {content}
-    </Action>
+    </button>
   ) : (
     <div className={`${className} ${styles.stat}`} data-name="통계 칸">
       {content}
