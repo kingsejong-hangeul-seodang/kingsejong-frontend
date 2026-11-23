@@ -3,6 +3,14 @@ import { validateGradeResponse, type EngineStage, type GradeRequest } from './gr
 
 export const apiModes = { pop: 'kpop', drama: 'kdrama', basic: 'basic' } as const
 export type ApiMode = (typeof apiModes)[Mode]
+export const writeModes = {
+  beginner: 'trace',
+  intermediate: 'copy',
+  advanced: 'dictation',
+} as const satisfies Record<EngineStage, string>
+type WriteMode = (typeof writeModes)[EngineStage]
+const contentKinds = ['clip', 'jamo', 'word', 'sentence'] as const
+type ContentKind = (typeof contentKinds)[number]
 type Locale = 'ko' | 'en'
 
 export type Profile = {
@@ -32,21 +40,25 @@ export type ContentItem = {
   id: number
   title: string
   mode: ApiMode
-  source: string
+  kind: ContentKind
+  writeMode: WriteMode
+  source: string | null
   thumbnailUrl: string | null
   durationSec: number | null
-  target: string
-  cellCount: number
-  wordCount: number
+  target: string | null
+  cellCount: number | null
+  wordCount: number | null
   meaning?: string | null
   tasteMatched: boolean
   completed: boolean
+  perfect: boolean
 }
 export type ContentDetail = {
   id: number
   mode: ApiMode
+  kind: ContentKind
   title: string
-  source: string
+  source: string | null
   thumbnailUrl?: string | null
   clip: ContentVideo | null
   lines: SubtitleLine[]
@@ -54,9 +66,11 @@ export type ContentDetail = {
   task: {
     target: string
     stage: EngineStage
+    writeMode: WriteMode
     meaning: string | null
     cellCount: number
     wordGroups: number[] | null
+    speech: { text: string; lang: string } | null
   }
   nextContentId: number | null
 }
@@ -105,37 +119,50 @@ function positiveInteger(value: unknown): value is number {
   return typeof value === 'number' && Number.isSafeInteger(value) && value > 0
 }
 
-function isContentItem(value: unknown): value is ContentItem {
+function isContentItem(value: unknown, stage: EngineStage): value is ContentItem {
   const item = object(value)
   return (
     positiveInteger(item.id) &&
+    contentKinds.some((kind) => kind === item.kind) &&
+    item.writeMode === writeModes[stage] &&
     typeof item.title === 'string' &&
-    typeof item.source === 'string' &&
-    typeof item.target === 'string' &&
+    (item.source === null || typeof item.source === 'string') &&
+    (stage === 'advanced'
+      ? item.target === null && item.cellCount === null && item.wordCount === null
+      : typeof item.target === 'string' &&
+        positiveInteger(item.cellCount) &&
+        positiveInteger(item.wordCount)) &&
     (item.meaning == null || typeof item.meaning === 'string') &&
-    positiveInteger(item.cellCount) &&
-    positiveInteger(item.wordCount) &&
     (item.thumbnailUrl === null || typeof item.thumbnailUrl === 'string') &&
     (item.durationSec === null ||
       (typeof item.durationSec === 'number' && item.durationSec >= 0)) &&
     typeof item.tasteMatched === 'boolean' &&
-    typeof item.completed === 'boolean'
+    typeof item.completed === 'boolean' &&
+    typeof item.perfect === 'boolean'
   )
 }
 
 function contentDetail(value: unknown, id: number, stage: EngineStage): ContentDetail {
   const detail = object(value)
   const task = object(detail.task)
+  const speech = object(task.speech)
   const clip = object(detail.clip)
   const target = typeof task.target === 'string' ? task.target.normalize('NFC') : ''
   const letters = [...(stage === 'advanced' ? target : target.replaceAll(' ', ''))].length
   if (
     detail.id !== id ||
     !['kpop', 'kdrama', 'basic'].some((mode) => mode === detail.mode) ||
+    !contentKinds.some((kind) => kind === detail.kind) ||
     typeof detail.title !== 'string' ||
-    typeof detail.source !== 'string' ||
+    (detail.source !== null && typeof detail.source !== 'string') ||
     (detail.thumbnailUrl != null && typeof detail.thumbnailUrl !== 'string') ||
     task.stage !== stage ||
+    task.writeMode !== writeModes[stage] ||
+    (task.speech !== null &&
+      (typeof speech.text !== 'string' ||
+        !speech.text.trim() ||
+        typeof speech.lang !== 'string' ||
+        !speech.lang.trim())) ||
     !target ||
     !positiveInteger(task.cellCount) ||
     task.cellCount > 30 ||
@@ -299,7 +326,7 @@ export function createBackend(baseUrl: string) {
       const value = object(await requestBackend(baseUrl, `/contents?${search}`, { token }))
       if (
         !Array.isArray(value.items) ||
-        !value.items.every((item) => isContentItem(item) && item.mode === mode)
+        !value.items.every((item) => isContentItem(item, stage) && item.mode === mode)
       )
         throw new Error('콘텐츠 목록 형식을 확인해 주세요.')
       return value.items

@@ -39,6 +39,20 @@ test('study routes encode jamo and cursors, and save tastes with an empty respon
   assert.deepEqual(JSON.parse(String(options?.body)), { mode: 'kdrama', tasteIds: [3] })
 })
 
+test('reference strokes use the authenticated backend route and preserve stroke coordinates', async (t) => {
+  const payload = {
+    font: 'NotoSansKR-Light',
+    items: [{ char: 'ㄱ', strokes: [{ order: 1, jamo: 'ㄱ', role: 'cho', points: [[0.2, 0.3]] }] }],
+  }
+  const fetch = t.mock.method(globalThis, 'fetch', async () => Response.json(payload))
+  const api = createStudyApi('https://backend.example')
+  assert.deepEqual(await api.strokes('token', '가ㄱ'), payload)
+  const [url, options] = fetch.mock.calls[0]!.arguments
+  assert.equal(new URL(url).pathname, '/api/v1/reference/strokes')
+  assert.equal(new URL(url).searchParams.get('chars'), '가ㄱ')
+  assert.equal(new Headers(options?.headers).get('Authorization'), 'Bearer token')
+})
+
 test('backend login, profile patch and writing use the documented paths and request bodies', async (t) => {
   const { accessToken, me } = demoLogin(DEMO_CODE)
   const grade = fixture('grade_response_beginner')
@@ -123,6 +137,8 @@ test('catalog gets a stage-specific list and detail by server ID, including the 
   const item = {
     id: 11,
     mode: 'kpop',
+    kind: 'clip',
+    writeMode: 'copy',
     title: '별빛 아래',
     source: '하늘빛',
     thumbnailUrl: null,
@@ -132,10 +148,12 @@ test('catalog gets a stage-specific list and detail by server ID, including the 
     wordCount: 2,
     tasteMatched: true,
     completed: false,
+    perfect: false,
   }
   const detail = {
     id: 11,
     mode: 'kpop',
+    kind: 'clip',
     title: '별빛 아래',
     source: '하늘빛',
     clip: { startSec: 4, endSec: 28, embeddable: false },
@@ -143,6 +161,8 @@ test('catalog gets a stage-specific list and detail by server ID, including the 
     situation: null,
     task: {
       stage: 'intermediate',
+      writeMode: 'copy',
+      speech: null,
       target: '바다 보러',
       meaning: null,
       cellCount: 4,
@@ -164,4 +184,60 @@ test('catalog gets a stage-specific list and detail by server ID, including the 
     'https://backend.example/api/v1/contents/11?stage=intermediate',
   )
   await assert.rejects(backend.getContent('token', 11, 'beginner'), /콘텐츠 상세 형식/)
+})
+
+test('advanced catalog accepts hidden answers while detail keeps the writing task', async (t) => {
+  const item = {
+    id: 11,
+    mode: 'basic',
+    kind: 'sentence',
+    title: '여행 표현 1',
+    source: null,
+    thumbnailUrl: null,
+    durationSec: null,
+    writeMode: 'dictation',
+    target: null,
+    cellCount: null,
+    wordCount: null,
+    tasteMatched: false,
+    completed: false,
+    perfect: false,
+  }
+  const fetch = t.mock.method(globalThis, 'fetch', async () => Response.json({ items: [item] }))
+  const backend = createBackend('https://backend.example')
+  assert.deepEqual(await backend.listContents('token', 'basic', 'advanced'), [item])
+  for (const stage of ['beginner', 'intermediate'] as const) {
+    await assert.rejects(backend.listContents('token', 'basic', stage), /콘텐츠 목록 형식/)
+  }
+  fetch.mock.mockImplementation(async () =>
+    Response.json({
+      id: 11,
+      mode: 'basic',
+      kind: 'sentence',
+      title: item.title,
+      source: item.source,
+      clip: null,
+      lines: [],
+      situation: null,
+      task: {
+        stage: 'advanced',
+        writeMode: 'dictation',
+        target: '바다 보러',
+        meaning: null,
+        cellCount: 7,
+        wordGroups: [2, 2],
+        speech: { text: '바다 보러', lang: 'ko-KR' },
+      },
+      nextContentId: null,
+    }),
+  )
+  const detail = await backend.getContent('token', 11, 'advanced')
+  assert.equal(detail.task.target, '바다 보러')
+  assert.equal(detail.task.cellCount, 7)
+  assert.deepEqual(detail.task.speech, { text: '바다 보러', lang: 'ko-KR' })
+  assert.equal(detail.task.writeMode, 'dictation')
+  fetch.mock.mockImplementation(async () =>
+    Response.json({ ...detail, task: { ...detail.task, writeMode: 'trace' } }),
+  )
+  await assert.rejects(backend.getContent('token', 11, 'advanced'), /콘텐츠 상세 형식/)
 })

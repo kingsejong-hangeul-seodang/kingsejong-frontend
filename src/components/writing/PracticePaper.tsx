@@ -30,11 +30,7 @@ export function PracticePaper({
             {count}칸 중 {Math.min(written, count)}칸을 썼어요
           </p>
         }
-        renderCell={(index) => (
-          <WritingCell index={index}>
-            {renderGuide?.(index)}
-          </WritingCell>
-        )}
+        renderCell={(index) => <WritingCell index={index}>{renderGuide?.(index)}</WritingCell>}
       />
     </div>
   )
