@@ -33,9 +33,9 @@ export function demoContents(mode: Mode, stage: Stage, favorite: string): Conten
         thumbnailUrl: artwork[item.id]?.thumbnailUrl ?? null,
         durationSec: artwork[item.id]?.durationSec ?? null,
         meaning: item.meaning,
-        target,
-        cellCount: cellCount(target, stage),
-        wordCount: target.split(' ').length,
+        target: stage === 'pro' ? null : target,
+        cellCount: stage === 'pro' ? null : cellCount(target, stage),
+        wordCount: stage === 'pro' ? null : target.split(' ').length,
         tasteMatched: mode !== 'basic' && favorite !== '' && item.source.startsWith(favorite),
         completed: false,
       }

@@ -188,7 +188,11 @@ export function HomeScreen({ mode }: { mode: Mode }) {
                 {choices.map((content, index) => {
                   const isListening = preferences.stage === 'pro'
                   const title = isListening
-                    ? listeningTitle(content.title, content.target, `기본 듣기 연습 ${index + 1}`)
+                    ? listeningTitle(
+                        content.title,
+                        content.target ?? '',
+                        `기본 듣기 연습 ${index + 1}`,
+                      )
                     : content.title
                   const description =
                     preferences.stage === 'beginner'
@@ -250,7 +254,7 @@ export function HomeScreen({ mode }: { mode: Mode }) {
                   />
                 }
                 title={<p className={styles.sectionTitle}>{content.title}</p>}
-                description={`${content.source} · ${content.cellCount}칸`}
+                description={`${content.source} · ${content.cellCount === null ? '듣고 쓰기' : `${content.cellCount}칸`}`}
               />
             ))}
           </div>

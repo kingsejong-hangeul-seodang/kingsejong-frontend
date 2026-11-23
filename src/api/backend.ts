@@ -35,9 +35,9 @@ export type ContentItem = {
   source: string
   thumbnailUrl: string | null
   durationSec: number | null
-  target: string
-  cellCount: number
-  wordCount: number
+  target: string | null
+  cellCount: number | null
+  wordCount: number | null
   meaning?: string | null
   tasteMatched: boolean
   completed: boolean
@@ -105,16 +105,18 @@ function positiveInteger(value: unknown): value is number {
   return typeof value === 'number' && Number.isSafeInteger(value) && value > 0
 }
 
-function isContentItem(value: unknown): value is ContentItem {
+function isContentItem(value: unknown, stage: EngineStage): value is ContentItem {
   const item = object(value)
   return (
     positiveInteger(item.id) &&
     typeof item.title === 'string' &&
     typeof item.source === 'string' &&
-    typeof item.target === 'string' &&
+    (stage === 'advanced'
+      ? item.target === null && item.cellCount === null && item.wordCount === null
+      : typeof item.target === 'string' &&
+        positiveInteger(item.cellCount) &&
+        positiveInteger(item.wordCount)) &&
     (item.meaning == null || typeof item.meaning === 'string') &&
-    positiveInteger(item.cellCount) &&
-    positiveInteger(item.wordCount) &&
     (item.thumbnailUrl === null || typeof item.thumbnailUrl === 'string') &&
     (item.durationSec === null ||
       (typeof item.durationSec === 'number' && item.durationSec >= 0)) &&
@@ -299,7 +301,7 @@ export function createBackend(baseUrl: string) {
       const value = object(await requestBackend(baseUrl, `/contents?${search}`, { token }))
       if (
         !Array.isArray(value.items) ||
-        !value.items.every((item) => isContentItem(item) && item.mode === mode)
+        !value.items.every((item) => isContentItem(item, stage) && item.mode === mode)
       )
         throw new Error('콘텐츠 목록 형식을 확인해 주세요.')
       return value.items

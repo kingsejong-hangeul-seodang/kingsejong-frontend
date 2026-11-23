@@ -165,3 +165,53 @@ test('catalog gets a stage-specific list and detail by server ID, including the 
   )
   await assert.rejects(backend.getContent('token', 11, 'beginner'), /콘텐츠 상세 형식/)
 })
+
+test('advanced catalog accepts hidden answers while detail keeps the writing task', async (t) => {
+  const item = {
+    id: 11,
+    mode: 'basic',
+    kind: 'sentence',
+    title: '여행 표현 1',
+    source: '기본 연습',
+    thumbnailUrl: null,
+    durationSec: null,
+    writeMode: 'dictation',
+    target: null,
+    cellCount: null,
+    wordCount: null,
+    tasteMatched: false,
+    completed: false,
+    perfect: false,
+  }
+  const fetch = t.mock.method(globalThis, 'fetch', async () => Response.json({ items: [item] }))
+  const backend = createBackend('https://backend.example')
+  assert.deepEqual(await backend.listContents('token', 'basic', 'advanced'), [item])
+  for (const stage of ['beginner', 'intermediate'] as const) {
+    await assert.rejects(backend.listContents('token', 'basic', stage), /콘텐츠 목록 형식/)
+  }
+  fetch.mock.mockImplementation(async () =>
+    Response.json({
+      id: 11,
+      mode: 'basic',
+      kind: 'sentence',
+      title: item.title,
+      source: item.source,
+      clip: null,
+      lines: [],
+      situation: null,
+      task: {
+        stage: 'advanced',
+        writeMode: 'dictation',
+        target: '바다 보러',
+        meaning: null,
+        cellCount: 7,
+        wordGroups: [2, 2],
+        speech: { text: '바다 보러', lang: 'ko-KR' },
+      },
+      nextContentId: null,
+    }),
+  )
+  const detail = await backend.getContent('token', 11, 'advanced')
+  assert.equal(detail.task.target, '바다 보러')
+  assert.equal(detail.task.cellCount, 7)
+})
