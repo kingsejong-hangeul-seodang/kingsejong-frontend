@@ -16,6 +16,8 @@ import { Button } from '@/components/ui/Button'
 import { useLearningOverview } from '@/hooks/useLearningOverview'
 import { navigate } from '@/app/router'
 import { homeScreen } from '@/app/learningFlow'
+import { writeModes } from '@/api/backend'
+import { engineStages } from '@/api/grading'
 import type { ScreenName } from '@/app/routes/screens'
 import styles from '@/styles/screens.module.css'
 
@@ -60,6 +62,7 @@ export function HomeScreen({ mode }: { mode: Mode }) {
         ...item,
         id: catalogKey(item.id),
         mode: screenModes[item.mode],
+        source: item.source ?? (item.mode === 'basic' ? '기본 연습' : ''),
         selected: item.tasteMatched,
         completed: item.completed,
       }))
@@ -71,6 +74,7 @@ export function HomeScreen({ mode }: { mode: Mode }) {
         )
         .map((content) => ({
           ...content,
+          writeMode: writeModes[engineStages[preferences.stage]],
           title:
             preferences.stage === 'pro' ? (content.dictationTitle ?? content.title) : content.title,
           target: content.targets[preferences.stage],
@@ -186,7 +190,7 @@ export function HomeScreen({ mode }: { mode: Mode }) {
                   <p className={styles.sectionTitle}>{basic.title}</p>
                 </div>
                 {choices.map((content, index) => {
-                  const isListening = preferences.stage === 'pro'
+                  const isListening = content.writeMode === 'dictation'
                   const title = isListening
                     ? listeningTitle(
                         content.title,
@@ -240,7 +244,7 @@ export function HomeScreen({ mode }: { mode: Mode }) {
               <ContentCard
                 key={content.id}
                 className={mode === 'drama' ? homeStyles.dramaCard : homeStyles.popCard}
-                label={`${content.title} ${content.source}`}
+                label={[content.title, content.source].filter(Boolean).join(' ')}
                 onClick={() => handleOpenContent(content.id, content.thumbnailUrl)}
                 poster={
                   <ContentPoster
@@ -254,7 +258,12 @@ export function HomeScreen({ mode }: { mode: Mode }) {
                   />
                 }
                 title={<p className={styles.sectionTitle}>{content.title}</p>}
-                description={`${content.source} · ${content.cellCount === null ? '듣고 쓰기' : `${content.cellCount}칸`}`}
+                description={[
+                  content.source,
+                  content.writeMode === 'dictation' ? '듣고 쓰기' : `${content.cellCount}칸`,
+                ]
+                  .filter(Boolean)
+                  .join(' · ')}
               />
             ))}
           </div>

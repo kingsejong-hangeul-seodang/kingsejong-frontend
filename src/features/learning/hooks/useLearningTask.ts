@@ -1,12 +1,13 @@
 import { useSession, type Stage } from '@/app/useSession'
 import { learningContent, targetCells, targetGroups } from '@/data/content'
 import { catalogId, screenModes, useCatalogDetail } from '@/hooks/useCatalog'
+import { writeModes } from '@/api/backend'
+import { engineStages } from '@/api/grading'
 
 export function useLearningTask(stage: Stage) {
-  const { contentId, practiceTarget } = useSession()
+  const { contentId, practiceTarget, selectedThumbnail } = useSession()
   const id = practiceTarget ? null : catalogId(contentId)
   const detail = useCatalogDetail(id, stage)
-  const { selectedThumbnail } = useSession()
   if (id !== null) {
     const data = detail.data
     return {
@@ -16,7 +17,7 @@ export function useLearningTask(stage: Stage) {
           id: contentId,
           mode: screenModes[data.mode],
           title: data.title,
-          source: data.source,
+          source: data.source ?? (data.mode === 'basic' ? '기본 연습' : ''),
           thumbnailUrl: data.thumbnailUrl ?? selectedThumbnail,
           meaning: data.task.meaning ?? '',
           lines: data.lines,
@@ -24,6 +25,8 @@ export function useLearningTask(stage: Stage) {
           clip: data.clip,
         },
         target: data.task.target,
+        writeMode: data.task.writeMode,
+        speech: data.task.speech,
         cellCount: data.task.cellCount,
         groups:
           stage === 'mid'
@@ -41,6 +44,8 @@ export function useLearningTask(stage: Stage) {
     task: {
       content,
       target,
+      writeMode: writeModes[engineStages[stage]],
+      speech: null,
       cellCount: targetCells(target, stage).length + (stage === 'pro' ? 2 : 0),
       groups: targetGroups(target, stage),
       nextContentId: undefined,

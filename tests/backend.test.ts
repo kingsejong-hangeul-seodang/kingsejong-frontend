@@ -123,6 +123,8 @@ test('catalog gets a stage-specific list and detail by server ID, including the 
   const item = {
     id: 11,
     mode: 'kpop',
+    kind: 'clip',
+    writeMode: 'copy',
     title: '별빛 아래',
     source: '하늘빛',
     thumbnailUrl: null,
@@ -132,10 +134,12 @@ test('catalog gets a stage-specific list and detail by server ID, including the 
     wordCount: 2,
     tasteMatched: true,
     completed: false,
+    perfect: false,
   }
   const detail = {
     id: 11,
     mode: 'kpop',
+    kind: 'clip',
     title: '별빛 아래',
     source: '하늘빛',
     clip: { startSec: 4, endSec: 28, embeddable: false },
@@ -143,6 +147,8 @@ test('catalog gets a stage-specific list and detail by server ID, including the 
     situation: null,
     task: {
       stage: 'intermediate',
+      writeMode: 'copy',
+      speech: null,
       target: '바다 보러',
       meaning: null,
       cellCount: 4,
@@ -172,7 +178,7 @@ test('advanced catalog accepts hidden answers while detail keeps the writing tas
     mode: 'basic',
     kind: 'sentence',
     title: '여행 표현 1',
-    source: '기본 연습',
+    source: null,
     thumbnailUrl: null,
     durationSec: null,
     writeMode: 'dictation',
@@ -214,4 +220,10 @@ test('advanced catalog accepts hidden answers while detail keeps the writing tas
   const detail = await backend.getContent('token', 11, 'advanced')
   assert.equal(detail.task.target, '바다 보러')
   assert.equal(detail.task.cellCount, 7)
+  assert.deepEqual(detail.task.speech, { text: '바다 보러', lang: 'ko-KR' })
+  assert.equal(detail.task.writeMode, 'dictation')
+  fetch.mock.mockImplementation(async () =>
+    Response.json({ ...detail, task: { ...detail.task, writeMode: 'trace' } }),
+  )
+  await assert.rejects(backend.getContent('token', 11, 'advanced'), /콘텐츠 상세 형식/)
 })
