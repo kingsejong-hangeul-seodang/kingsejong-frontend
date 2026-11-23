@@ -21,9 +21,16 @@ export default function Stroke() {
   }
   const { strokes, error, retry } = useAnswerStrokes(jamo)
   const chars = draft ? targetCells(draft.target, draft.stage) : []
-  const index =
+  const targetIndex =
     comparisonCell !== null && chars[comparisonCell] === jamo ? comparisonCell : chars.indexOf(jamo)
-  const cell = index >= 0 ? draft?.cells[index] : undefined
+  const grade = draft?.grade?.engineVersion.endsWith('stub') ? null : draft?.grade
+  const aligned =
+    draft?.stage === 'pro'
+      ? grade?.alignment.find((item) => item.targetIndex === targetIndex)
+      : undefined
+  const index = aligned ? aligned.cellIndex : targetIndex
+  const cell = index != null && index >= 0 ? draft?.cells[index] : undefined
+  const gradedCell = cell ? grade?.cells.find((item) => item.index === index) : undefined
   const reference = strokes[jamo] ?? []
   const count = reference.length
   const duration =
@@ -45,7 +52,7 @@ export default function Stroke() {
                 {cell ? (
                   <GradedInk
                     cell={cell}
-                    errors={[]}
+                    errors={gradedCell?.errors ?? []}
                     until={replay.position === 1 ? Infinity : replay.position * replayDuration}
                   />
                 ) : (

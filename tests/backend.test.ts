@@ -39,6 +39,20 @@ test('study routes encode jamo and cursors, and save tastes with an empty respon
   assert.deepEqual(JSON.parse(String(options?.body)), { mode: 'kdrama', tasteIds: [3] })
 })
 
+test('reference strokes use the authenticated backend route and preserve stroke coordinates', async (t) => {
+  const payload = {
+    font: 'NotoSansKR-Light',
+    items: [{ char: 'ㄱ', strokes: [{ order: 1, jamo: 'ㄱ', role: 'cho', points: [[0.2, 0.3]] }] }],
+  }
+  const fetch = t.mock.method(globalThis, 'fetch', async () => Response.json(payload))
+  const api = createStudyApi('https://backend.example')
+  assert.deepEqual(await api.strokes('token', '가ㄱ'), payload)
+  const [url, options] = fetch.mock.calls[0]!.arguments
+  assert.equal(new URL(url).pathname, '/api/v1/reference/strokes')
+  assert.equal(new URL(url).searchParams.get('chars'), '가ㄱ')
+  assert.equal(new Headers(options?.headers).get('Authorization'), 'Bearer token')
+})
+
 test('backend login, profile patch and writing use the documented paths and request bodies', async (t) => {
   const { accessToken, me } = demoLogin(DEMO_CODE)
   const grade = fixture('grade_response_beginner')

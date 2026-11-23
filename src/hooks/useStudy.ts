@@ -56,7 +56,9 @@ export function useStrokeReference(target: string) {
     async () => studyApi!.strokes(requireToken(token), chars),
     [chars, token],
   )
-  return useCatalogRequest(studyApi && chars ? chars : null, strokes, load)
+  const key = studyApi && token && chars ? chars : null
+  const result = useCatalogRequest(key, strokes, load)
+  return { ...result, loading: Boolean(key && !result.data && !result.error) }
 }
 
 export function useTastes(mode: TasteItem['mode']) {
