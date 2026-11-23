@@ -35,13 +35,13 @@ export function WritingScreen({ stage }: { stage: Stage }) {
 
 function WritingTask({ stage, task }: { stage: Stage; task: LearningTask }) {
   const { practiceTarget, update, notify } = useSession()
-  const { content, target, cellCount, groups } = task
+  const { content, target, cellCount, groups, writeMode } = task
   const { handleSubmit, submitting } = useWritingSubmission(stage, task)
   const cells = targetCells(target, stage)
-  const isBeginner = stage === 'beginner'
-  const dictation = stage === 'pro'
+  const isBeginner = writeMode === 'trace'
+  const dictation = writeMode === 'dictation'
   const clipKind = content.mode === 'basic' ? null : content.mode
-  const speech = usePracticeSpeech(target)
+  const speech = usePracticeSpeech(task.speech?.text ?? target, task.speech?.lang)
   const guideFont = useGuideFont()
   const cellSize = isBeginner ? 144 : stage === 'mid' ? 96 : 72
   const instruction = dictation
@@ -51,11 +51,13 @@ function WritingTask({ stage, task }: { stage: Stage; task: LearningTask }) {
       : '원고지 한 칸에 한 글자씩 써요. 묶음 사이는 띄어 쓰는 자리예요.'
   const title = practiceTarget
     ? '자모 연습'
-    : isBeginner || clipKind
-      ? '따라 쓰기'
-      : dictation
-        ? '듣고 받아쓰기'
-        : content.title
+    : dictation
+      ? '듣고 받아쓰기'
+      : isBeginner
+        ? '따라 쓰기'
+        : clipKind
+          ? '보고 쓰기'
+          : content.title
   const nodeId = clipKind
     ? { beginner: '132:894', mid: '67:2144', pro: '67:2406' }[stage]
     : { beginner: '67:1928', mid: '132:1018', pro: '132:1125' }[stage]
