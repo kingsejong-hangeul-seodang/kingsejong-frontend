@@ -1,3 +1,4 @@
+import { useUiText } from '@/app/useUiText'
 import styles from './patterns.module.css'
 export function JamoTile({
   glyph,
@@ -12,6 +13,7 @@ export function JamoTile({
   status?: 'default' | 'familiar' | 'practice'
   onClick: () => void
 }) {
+  const t = useUiText()
   return (
     <button
       type="button"
@@ -28,7 +30,7 @@ export function JamoTile({
       >
         {glyph}
       </b>
-      {status !== 'default' && <span>{status === 'familiar' ? '익숙' : '연습'}</span>}
+      {status !== 'default' && <span>{status === 'familiar' ? t('익숙') : t('연습')}</span>}
     </button>
   )
 }

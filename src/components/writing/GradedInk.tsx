@@ -1,3 +1,4 @@
+import { useUiText } from '@/app/useUiText'
 import { useMemo } from 'react'
 import simplify from 'simplify-js'
 import type { SubmittedCell } from '@/data/writingTypes'
@@ -19,12 +20,13 @@ function polylinePoints(points: InkStroke['points'], simplifyDisplay: boolean) {
 export function GradedInk({
   cell,
   errors,
-  until = Infinity,
+  progressByStroke,
 }: {
   cell: SubmittedCell
   errors: GradeError[]
-  until?: number
+  progressByStroke?: readonly number[] | undefined
 }) {
+  const t = useUiText()
   const finishedStrokes = useMemo(
     () => cell.strokes.map((stroke) => polylinePoints(stroke.points, true)),
     [cell.strokes],
@@ -33,22 +35,34 @@ export function GradedInk({
     errors.flatMap((error) => (error.strokeIndex == null ? [] : [error.strokeIndex])),
   )
   return (
-    <svg viewBox="0 0 288 288" role="img" aria-label="제출한 글씨. 오류가 있는 획은 빨간색입니다.">
+    <svg
+      viewBox="0 0 288 288"
+      role="img"
+      aria-label={t('제출한 글씨. 오류가 있는 획은 빨간색입니다.')}
+    >
       {cell.strokes.map((stroke, index) => {
-        const lastPoint = stroke.points.at(-1)
+        const progress = progressByStroke?.[index] ?? 1
+        const firstTime = stroke.points[0]?.[2] ?? 0
+        const duration = (stroke.points.at(-1)?.[2] ?? firstTime) - firstTime
         const points =
-          lastPoint && lastPoint[2] > until
-            ? polylinePoints(
-                stroke.points.filter((point) => point[2] <= until),
-                false,
-              )
-            : finishedStrokes[index]
+          progress <= 0
+            ? ''
+            : progress >= 1
+              ? finishedStrokes[index]
+              : polylinePoints(
+                  duration > 0
+                    ? stroke.points.filter((point) => point[2] <= firstTime + progress * duration)
+                    : stroke.points.slice(0, Math.ceil(progress * stroke.points.length)),
+                  false,
+                )
         return (
           <polyline
             key={index}
             points={points}
             fill="none"
-            stroke={wrong.has(index) ? '#bd302a' : '#28221b'}
+            stroke={
+              progress > 0 && progress < 1 ? '#bd4b2d' : wrong.has(index) ? '#bd302a' : '#28221b'
+            }
             strokeWidth={6}
             strokeLinecap="round"
             strokeLinejoin="round"

@@ -11,6 +11,7 @@ export type ReferencePack = {
 type State = { data: ReferencePack | null; error: string; loading: boolean }
 // This reference was extracted locally from the supplied Noto font for the meeting demo.
 export const notoDemoSha256 = '566af812d5704c8dfa17d56f00d86203ef63236a8b6802963b5ebe869c57c15b'
+export const donggukFontName = 'DONGGUK UNIVERSITY'
 export function isNotoDemo(pack: ReferencePack) {
   return pack.font === 'Noto Sans KR Light' && pack.fontSha256 === notoDemoSha256
 }

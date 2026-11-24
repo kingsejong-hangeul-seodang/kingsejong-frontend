@@ -78,7 +78,7 @@ export function useCatalogRequest<T>(
   }
 }
 
-export function useCatalogList(mode: Mode, stage: Stage) {
+export function useCatalogList(mode: Mode, stage: Stage, enabled = true) {
   const { catalog, preferences } = useSession()
   const favorite = demoMode ? (mode === 'drama' ? preferences.drama : preferences.singer) : ''
   const { lists, token } = catalog
@@ -88,7 +88,7 @@ export function useCatalogList(mode: Mode, stage: Stage) {
     return backend.listContents(token, apiModes[mode], engineStages[stage])
   }, [mode, favorite, stage, token])
   return useCatalogRequest(
-    catalogEnabled ? JSON.stringify([mode, stage, favorite]) : null,
+    enabled && catalogEnabled ? JSON.stringify([mode, stage, favorite]) : null,
     lists,
     load,
   )

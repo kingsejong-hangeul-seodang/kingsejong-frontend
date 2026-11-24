@@ -1,3 +1,4 @@
+import { useUiText } from '@/app/useUiText'
 import homeStyles from '@/features/home/HomeScreen.module.css'
 import { StageSelector } from '@/components/ui/StageSelector'
 import { ModeTabs } from '@/components/ui/ModeTabs'
@@ -14,8 +15,11 @@ import { ContentPoster } from '@/components/content/ContentPoster'
 import { catalogEnabled, catalogKey, screenModes, useCatalogList } from '@/hooks/useCatalog'
 import { Button } from '@/components/ui/Button'
 import { useLearningOverview } from '@/hooks/useLearningOverview'
+import { useSavePreferences } from '@/hooks/useSavePreferences'
 import { navigate } from '@/app/router'
 import { homeScreen } from '@/app/learningFlow'
+import { writeModes } from '@/api/backend'
+import { engineStages } from '@/api/grading'
 import type { ScreenName } from '@/app/routes/screens'
 import styles from '@/styles/screens.module.css'
 
@@ -34,17 +38,20 @@ const basicPractice = {
 }
 
 export function HomeScreen({ mode }: { mode: Mode }) {
-  const { preferences, update, screen, notify, selectContent } = useSession()
+  const t = useUiText()
+  const { preferences, screen, notify, selectContent } = useSession()
+  const savePreferences = useSavePreferences()
   function handleNavigate(destination: ScreenName) {
     notify('')
     navigate(destination)
   }
-  function handleModeChange(nextMode: Mode) {
-    update({ mode: nextMode })
-    handleNavigate(homeScreen(nextMode))
+  async function handleModeChange(nextMode: Mode) {
+    if (mode !== nextMode && (await savePreferences({ mode: nextMode }))) {
+      handleNavigate(homeScreen(nextMode))
+    }
   }
-  function handleOpenContent(id: string, thumbnailUrl: string | null = null) {
-    if (mode !== preferences.mode) update({ mode })
+  async function handleOpenContent(id: string, thumbnailUrl: string | null = null) {
+    if (mode !== preferences.mode && !(await savePreferences({ mode }))) return
     selectContent(id, thumbnailUrl)
     handleNavigate(`write-${preferences.stage}`)
   }
@@ -60,6 +67,7 @@ export function HomeScreen({ mode }: { mode: Mode }) {
         ...item,
         id: catalogKey(item.id),
         mode: screenModes[item.mode],
+        source: item.source ?? (item.mode === 'basic' ? '기본 연습' : ''),
         selected: item.tasteMatched,
         completed: item.completed,
       }))
@@ -71,6 +79,7 @@ export function HomeScreen({ mode }: { mode: Mode }) {
         )
         .map((content) => ({
           ...content,
+          writeMode: writeModes[engineStages[preferences.stage]],
           title:
             preferences.stage === 'pro' ? (content.dictationTitle ?? content.title) : content.title,
           target: content.targets[preferences.stage],
@@ -96,15 +105,18 @@ export function HomeScreen({ mode }: { mode: Mode }) {
         <div className={homeStyles.logo}>
           <div className={homeStyles.logoInset}>
             <img
-              alt="킹세종 한글서당"
+              alt={t('킹세종 한글서당')}
               className={styles.fullSizeImage}
               src="/assets/figma/ffde0.svg"
             />
           </div>
         </div>
         <div className={homeStyles.stageControl}>
-          <p className={styles.controlLabel}>난이도</p>
-          <StageSelector value={preferences.stage} onChange={(stage) => update({ stage })} />
+          <p className={styles.controlLabel}>{t('난이도')}</p>
+          <StageSelector
+            value={preferences.stage}
+            onChange={(stage) => void savePreferences({ stage })}
+          />
         </div>
       </div>
       <div className={styles.pageWithNavigation} data-name="page">
@@ -112,13 +124,18 @@ export function HomeScreen({ mode }: { mode: Mode }) {
           className={styles.guideMessage}
           title={
             overview.name
-              ? `${overview.name}님, 오늘도 한 줄 써 볼까요?`
-              : '오늘도 한 줄 써 볼까요?'
+              ? t('{0}님, 오늘도 한 줄 써 볼까요?', overview.name)
+              : t('오늘도 한 줄 써 볼까요?')
           }
           description={
             today
-              ? `오늘 ${today.done}개를 썼어요. ${today.done >= today.goal ? '오늘 목표를 달성했어요!' : `${today.goal - today.done}개만 더 쓰면 오늘 목표 달성이에요.`}`
-              : '오늘도 한 글자씩 차근차근 써 봐요.'
+              ? [
+                  t('오늘 {0}개를 썼어요.', today.done),
+                  today.done >= today.goal
+                    ? t('오늘 목표를 달성했어요!')
+                    : t('{0}개만 더 쓰면 오늘 목표 달성이에요.', today.goal - today.done),
+                ].join(' ')
+              : t('오늘도 한 글자씩 차근차근 써 봐요.')
           }
           src={overview.image}
           vertical={false}
@@ -128,12 +145,12 @@ export function HomeScreen({ mode }: { mode: Mode }) {
         <div className={homeStyles.stats} data-name="stats">
           <StatCard
             className={homeStyles.statCard}
-            label="연속 학습"
-            value={streak === undefined ? '—' : `${streak}일째`}
+            label={t('연속 학습')}
+            value={streak === undefined ? '—' : t('{0}일째', streak)}
           />
           <StatCard
             className={homeStyles.statCard}
-            label="레벨 · 내 킹세종 보기"
+            label={t('레벨 · 내 킹세종 보기')}
             value={userLevel?.name ?? '—'}
             onClick={handleMypage}
           />
@@ -142,8 +159,8 @@ export function HomeScreen({ mode }: { mode: Mode }) {
               className={homeStyles.progressCard}
               label={
                 userLevel.nextLevelExp != null
-                  ? `다음 레벨까지 ${Math.max(0, userLevel.nextLevelExp - userLevel.exp)} EXP`
-                  : '누적 경험치'
+                  ? t('다음 레벨까지 {0} EXP', Math.max(0, userLevel.nextLevelExp - userLevel.exp))
+                  : t('누적 경험치')
               }
               value={
                 userLevel.nextLevelExp != null
@@ -156,7 +173,7 @@ export function HomeScreen({ mode }: { mode: Mode }) {
                   className={homeStyles.progressTrack}
                   value={userLevel.exp}
                   max={userLevel.nextLevelExp}
-                  label="다음 레벨 진행률"
+                  label={t('다음 레벨 진행률')}
                 />
               )}
             </StatCard>
@@ -164,8 +181,8 @@ export function HomeScreen({ mode }: { mode: Mode }) {
         </div>
         {overview.error && (
           <Panel className={styles.panel}>
-            <p role="status">학습 현황을 불러오지 못했어요.</p>
-            <Button onClick={overview.retry}>다시 불러오기</Button>
+            <p role="status">{t('학습 현황을 불러오지 못했어요.')}</p>
+            <Button onClick={overview.retry}>{t('다시 불러오기')}</Button>
           </Panel>
         )}
         <ModeTabs value={mode} onChange={handleModeChange} />
@@ -173,9 +190,9 @@ export function HomeScreen({ mode }: { mode: Mode }) {
           <Panel className={styles.panel}>
             <p role="status">
               {list.error ??
-                (list.data ? '이 단계의 콘텐츠가 아직 없어요.' : '콘텐츠를 불러오고 있어요.')}
+                (list.data ? t('이 단계의 콘텐츠가 아직 없어요.') : t('콘텐츠를 불러오고 있어요.'))}
             </p>
-            {list.error && <Button onClick={list.retry}>다시 불러오기</Button>}
+            {list.error && <Button onClick={list.retry}>{t('다시 불러오기')}</Button>}
           </Panel>
         )}
         {mode === 'basic' ? (
@@ -183,28 +200,32 @@ export function HomeScreen({ mode }: { mode: Mode }) {
             <>
               <Panel className={styles.listPanel}>
                 <div className={styles.panelHeader}>
-                  <p className={styles.sectionTitle}>{basic.title}</p>
+                  <p className={styles.sectionTitle}>{t(basic.title)}</p>
                 </div>
                 {choices.map((content, index) => {
-                  const isListening = preferences.stage === 'pro'
+                  const isListening = content.writeMode === 'dictation'
                   const title = isListening
-                    ? listeningTitle(content.title, content.target, `기본 듣기 연습 ${index + 1}`)
+                    ? listeningTitle(
+                        content.title,
+                        content.target ?? '',
+                        t('기본 듣기 연습 {0}', index + 1),
+                      )
                     : content.title
                   const description =
                     preferences.stage === 'beginner'
                       ? [
-                          content.source === '기본 연습' ? '단어' : content.source,
-                          `${content.cellCount}칸`,
-                          content.completed ? '완료' : content.meaning,
+                          content.source === '기본 연습' ? t('단어') : content.source,
+                          t('{0}칸', content.cellCount),
+                          content.completed ? t('완료') : content.meaning,
                         ]
                           .filter(Boolean)
                           .join(' · ')
-                      : `${content.wordCount}어절 · ${content.cellCount}칸`
+                      : t('{0}어절 · {1}칸', content.wordCount, content.cellCount)
                   return (
                     <ListRow
                       key={content.id}
                       className={styles.listRow}
-                      label={`${title} 연습`}
+                      label={t('{0} 연습', title)}
                       onClick={() => handleOpenContent(content.id)}
                     >
                       <div className={styles.rowLeading}>
@@ -215,7 +236,7 @@ export function HomeScreen({ mode }: { mode: Mode }) {
                       <div className={styles.rowContent}>
                         <p className={styles.rowTitle}>{title}</p>
                         <p className={styles.rowDescription}>
-                          {isListening ? '문장 1개 · 듣고 쓰기' : description}
+                          {isListening ? t('문장 1개 · 듣고 쓰기') : description}
                         </p>
                       </div>
                       <div className={styles.rowTrailing}>
@@ -227,7 +248,7 @@ export function HomeScreen({ mode }: { mode: Mode }) {
                   )
                 })}
               </Panel>
-              <p className={styles.secondaryText}>{basic.note}</p>
+              <p className={styles.secondaryText}>{t(basic.note)}</p>
             </>
           )
         ) : (
@@ -236,7 +257,7 @@ export function HomeScreen({ mode }: { mode: Mode }) {
               <ContentCard
                 key={content.id}
                 className={mode === 'drama' ? homeStyles.dramaCard : homeStyles.popCard}
-                label={`${content.title} ${content.source}`}
+                label={[content.title, content.source].filter(Boolean).join(' ')}
                 onClick={() => handleOpenContent(content.id, content.thumbnailUrl)}
                 poster={
                   <ContentPoster
@@ -244,13 +265,24 @@ export function HomeScreen({ mode }: { mode: Mode }) {
                     thumbnailUrl={content.thumbnailUrl}
                     durationSec={content.durationSec}
                     tasteLabel={
-                      content.selected ? (mode === 'drama' ? '고른 작품' : '고른 가수') : undefined
+                      content.selected
+                        ? mode === 'drama'
+                          ? t('고른 작품')
+                          : t('고른 가수')
+                        : undefined
                     }
                     completed={content.completed}
                   />
                 }
                 title={<p className={styles.sectionTitle}>{content.title}</p>}
-                description={`${content.source} · ${content.cellCount}칸`}
+                description={[
+                  content.source,
+                  content.writeMode === 'dictation'
+                    ? t('듣고 쓰기')
+                    : t('{0}칸', content.cellCount),
+                ]
+                  .filter(Boolean)
+                  .join(' · ')}
               />
             ))}
           </div>

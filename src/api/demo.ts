@@ -1,7 +1,7 @@
 import { ApiError, type Profile } from './backend.ts'
-import type { GradeRequest, GradeResponse } from './grading.ts'
+import { DEMO_ENGINE_VERSION, type GradeRequest, type GradeResponse } from './grading.ts'
 
-export const DEMO_CODE = 'DEMO-2026'
+export const DEMO_CODE = 'DGU-001'
 
 export function demoLogin(code: string) {
   if (code !== DEMO_CODE)
@@ -22,7 +22,7 @@ export function demoLogin(code: string) {
 
 export function demoGrade(request: GradeRequest): GradeResponse {
   return {
-    engineVersion: 'local-demo-stub',
+    engineVersion: DEMO_ENGINE_VERSION,
     stage: request.stage,
     correct: false,
     perfect: false,

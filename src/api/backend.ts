@@ -3,6 +3,14 @@ import { validateGradeResponse, type EngineStage, type GradeRequest } from './gr
 
 export const apiModes = { pop: 'kpop', drama: 'kdrama', basic: 'basic' } as const
 export type ApiMode = (typeof apiModes)[Mode]
+export const writeModes = {
+  beginner: 'trace',
+  intermediate: 'copy',
+  advanced: 'dictation',
+} as const satisfies Record<EngineStage, string>
+type WriteMode = (typeof writeModes)[EngineStage]
+const contentKinds = ['clip', 'jamo', 'word', 'sentence'] as const
+type ContentKind = (typeof contentKinds)[number]
 type Locale = 'ko' | 'en'
 
 export type Profile = {
@@ -32,21 +40,25 @@ export type ContentItem = {
   id: number
   title: string
   mode: ApiMode
-  source: string
+  kind: ContentKind
+  writeMode: WriteMode
+  source: string | null
   thumbnailUrl: string | null
   durationSec: number | null
-  target: string
-  cellCount: number
-  wordCount: number
+  target: string | null
+  cellCount: number | null
+  wordCount: number | null
   meaning?: string | null
   tasteMatched: boolean
   completed: boolean
+  perfect: boolean
 }
 export type ContentDetail = {
   id: number
   mode: ApiMode
+  kind: ContentKind
   title: string
-  source: string
+  source: string | null
   thumbnailUrl?: string | null
   clip: ContentVideo | null
   lines: SubtitleLine[]
@@ -54,9 +66,11 @@ export type ContentDetail = {
   task: {
     target: string
     stage: EngineStage
+    writeMode: WriteMode
     meaning: string | null
     cellCount: number
     wordGroups: number[] | null
+    speech: { text: string; lang: string } | null
   }
   nextContentId: number | null
 }
@@ -84,8 +98,18 @@ export type WritingReward = {
   }
   leveledUp: boolean
   previousLevelNo: number | null
+  streakDays: number
+  today: { done: number; goal: number }
   stageUpSuggested: boolean
 }
+
+export type EngineHealth = { status: 'ok' | 'down'; engineVersion: string | null }
+
+const engineErrors = {
+  ENGINE_ERROR: '교정 중 오류가 발생했어요.',
+  ENGINE_UNAVAILABLE: '교정 엔진에 연결할 수 없어요.',
+  ENGINE_TIMEOUT: '교정 엔진의 응답이 늦어지고 있어요.',
+} as const
 
 export class ApiError extends Error {
   readonly status: number
@@ -105,37 +129,54 @@ function positiveInteger(value: unknown): value is number {
   return typeof value === 'number' && Number.isSafeInteger(value) && value > 0
 }
 
-function isContentItem(value: unknown): value is ContentItem {
+function nonnegativeInteger(value: unknown): value is number {
+  return value === 0 || positiveInteger(value)
+}
+
+function isContentItem(value: unknown, stage: EngineStage): value is ContentItem {
   const item = object(value)
   return (
     positiveInteger(item.id) &&
+    contentKinds.some((kind) => kind === item.kind) &&
+    item.writeMode === writeModes[stage] &&
     typeof item.title === 'string' &&
-    typeof item.source === 'string' &&
-    typeof item.target === 'string' &&
+    (item.source === null || typeof item.source === 'string') &&
+    (stage === 'advanced'
+      ? item.target === null && item.cellCount === null && item.wordCount === null
+      : typeof item.target === 'string' &&
+        positiveInteger(item.cellCount) &&
+        positiveInteger(item.wordCount)) &&
     (item.meaning == null || typeof item.meaning === 'string') &&
-    positiveInteger(item.cellCount) &&
-    positiveInteger(item.wordCount) &&
     (item.thumbnailUrl === null || typeof item.thumbnailUrl === 'string') &&
     (item.durationSec === null ||
       (typeof item.durationSec === 'number' && item.durationSec >= 0)) &&
     typeof item.tasteMatched === 'boolean' &&
-    typeof item.completed === 'boolean'
+    typeof item.completed === 'boolean' &&
+    typeof item.perfect === 'boolean'
   )
 }
 
 function contentDetail(value: unknown, id: number, stage: EngineStage): ContentDetail {
   const detail = object(value)
   const task = object(detail.task)
+  const speech = object(task.speech)
   const clip = object(detail.clip)
   const target = typeof task.target === 'string' ? task.target.normalize('NFC') : ''
   const letters = [...(stage === 'advanced' ? target : target.replaceAll(' ', ''))].length
   if (
     detail.id !== id ||
     !['kpop', 'kdrama', 'basic'].some((mode) => mode === detail.mode) ||
+    !contentKinds.some((kind) => kind === detail.kind) ||
     typeof detail.title !== 'string' ||
-    typeof detail.source !== 'string' ||
+    (detail.source !== null && typeof detail.source !== 'string') ||
     (detail.thumbnailUrl != null && typeof detail.thumbnailUrl !== 'string') ||
     task.stage !== stage ||
+    task.writeMode !== writeModes[stage] ||
+    (task.speech !== null &&
+      (typeof speech.text !== 'string' ||
+        !speech.text.trim() ||
+        typeof speech.lang !== 'string' ||
+        !speech.lang.trim())) ||
     !target ||
     !positiveInteger(task.cellCount) ||
     task.cellCount > 30 ||
@@ -182,9 +223,14 @@ function contentDetail(value: unknown, id: number, stage: EngineStage): ContentD
 export async function requestBackend(
   baseUrl: string,
   path: string,
-  options: { method?: 'GET' | 'POST' | 'PATCH' | 'PUT'; token?: string; body?: unknown } = {},
+  options: {
+    method?: 'GET' | 'POST' | 'PATCH' | 'PUT'
+    token?: string
+    body?: unknown
+    cache?: RequestCache
+  } = {},
 ): Promise<unknown> {
-  const { method = 'GET', token, body } = options
+  const { method = 'GET', token, body, cache } = options
   const response = await fetch(`${baseUrl.replace(/\/+$/, '')}/api/v1${path}`, {
     method,
     headers: {
@@ -193,13 +239,18 @@ export async function requestBackend(
       ...(body === undefined ? {} : { 'Content-Type': 'application/json' }),
     },
     ...(body === undefined ? {} : { body: JSON.stringify(body) }),
+    ...(cache ? { cache } : {}),
     signal: AbortSignal.timeout(30000),
   })
   if (response.status === 204) return undefined
+  const value: unknown = await response.json().catch(() => undefined)
   if (response.status >= 500) {
+    const code = object(value).code
+    for (const [engineCode, message] of Object.entries(engineErrors)) {
+      if (code === engineCode) throw new ApiError(response.status, engineCode, message)
+    }
     throw new ApiError(response.status, 'SERVER_ERROR', '잠시 뒤 다시 시도해 주세요.')
   }
-  const value: unknown = await response.json().catch(() => undefined)
   if (!response.ok) {
     const error = object(value)
     const details = Array.isArray(error.details)
@@ -252,8 +303,9 @@ export function writingBody(contentId: number, request: GradeRequest) {
 function writingReward(value: unknown): WritingReward | undefined {
   const reward = object(value)
   const level = object(reward.level)
+  const today = object(reward.today)
   if (
-    !Number.isSafeInteger(reward.expGained) ||
+    !nonnegativeInteger(reward.expGained) ||
     !Array.isArray(reward.items) ||
     !reward.items.every((entry: unknown) => {
       const item = object(entry)
@@ -268,6 +320,9 @@ function writingReward(value: unknown): WritingReward | undefined {
     (level.nextLevelExp !== null && !positiveInteger(level.nextLevelExp)) ||
     typeof reward.leveledUp !== 'boolean' ||
     (reward.previousLevelNo != null && !positiveInteger(reward.previousLevelNo)) ||
+    !nonnegativeInteger(reward.streakDays) ||
+    !nonnegativeInteger(today.done) ||
+    !positiveInteger(today.goal) ||
     typeof reward.stageUpSuggested !== 'boolean'
   ) {
     return undefined
@@ -277,11 +332,23 @@ function writingReward(value: unknown): WritingReward | undefined {
 
 export function createBackend(baseUrl: string) {
   return {
+    async getEngineHealth(): Promise<EngineHealth> {
+      const value = object(await requestBackend(baseUrl, '/health'))
+      const { status, engineVersion } = object(value.engine)
+      if (
+        value.status !== 'ok' ||
+        (status !== 'ok' && status !== 'down') ||
+        (engineVersion !== null && typeof engineVersion !== 'string')
+      ) {
+        throw new Error('교정 엔진 상태 응답을 확인해 주세요.')
+      }
+      return { status, engineVersion }
+    },
     async login(code: string): Promise<LoginResponse> {
       const value = object(
         await requestBackend(baseUrl, '/auth/login', {
           method: 'POST',
-          body: { code },
+          body: { code: code === 'DGU-001' ? 'DGU-0001' : code },
         }),
       )
       if (typeof value.accessToken !== 'string' || !value.accessToken)
@@ -299,7 +366,7 @@ export function createBackend(baseUrl: string) {
       const value = object(await requestBackend(baseUrl, `/contents?${search}`, { token }))
       if (
         !Array.isArray(value.items) ||
-        !value.items.every((item) => isContentItem(item) && item.mode === mode)
+        !value.items.every((item) => isContentItem(item, stage) && item.mode === mode)
       )
         throw new Error('콘텐츠 목록 형식을 확인해 주세요.')
       return value.items
@@ -321,6 +388,8 @@ export function createBackend(baseUrl: string) {
       if (
         value.contentId !== id ||
         value.stage !== request.stage ||
+        typeof value.target !== 'string' ||
+        value.target.normalize('NFC') !== request.target ||
         (value.nextContentId !== null && !positiveInteger(value.nextContentId))
       )
         throw new Error('쓰기 제출 응답 형식을 확인해 주세요.')

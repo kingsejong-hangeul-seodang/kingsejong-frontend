@@ -1,11 +1,11 @@
 import { disassembleCompleteCharacter, getJungseong } from 'es-hangul'
 
 export function containsJamo(text: string, jamo: string) {
-  return [...text.normalize('NFC')].some((char) => {
-    if (char === jamo) return true
-    const parts = disassembleCompleteCharacter(char)
-    if (!parts) return false
+  return [...text.normalize('NFC')].some((char) => jamoParts(char).includes(jamo))
+}
 
-    return parts.choseong === jamo || getJungseong(char) === jamo || parts.jongseong.includes(jamo)
-  })
+export function jamoParts(char: string): string[] {
+  if (/^[ㄱ-ㅣ]$/.test(char)) return [char]
+  const parts = disassembleCompleteCharacter(char)
+  return parts ? [parts.choseong, getJungseong(char) ?? '', ...parts.jongseong].filter(Boolean) : []
 }

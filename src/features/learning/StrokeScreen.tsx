@@ -1,3 +1,4 @@
+import { useUiText } from '@/app/useUiText'
 import learningStyles from '@/features/learning/LearningScreens.module.css'
 import { AppBar } from '@/components/ui/AppBar'
 import { Button } from '@/components/ui/Button'
@@ -7,6 +8,8 @@ import { GradedInk } from '@/components/writing/GradedInk'
 import { useSession } from '@/app/useSession'
 import { navigate } from '@/app/router'
 import { targetCells } from '@/data/content'
+import { visibleGrade } from '@/data/writingFeedback'
+import { createStrokeReplay, strokeProgress, strokeReplayStepMs } from '@/data/strokeReplay'
 import { ReferenceGlyph } from '@/features/learning/reference/ReferenceGlyph'
 import { useAnswerStrokes } from './reference/useAnswerStrokes'
 import { useReplay } from '@/features/learning/reference/useReplay'
@@ -14,6 +17,7 @@ import { ReplayControls } from '@/features/learning/reference/ReplayControls'
 import styles from '@/styles/screens.module.css'
 import layout from '@/features/learning/FigmaLearning.module.css'
 export default function Stroke() {
+  const t = useUiText()
   const { draft, jamo, comparisonCell, beginAttempt, preferences, notify } = useSession()
   function handleBack() {
     notify('')
@@ -21,38 +25,46 @@ export default function Stroke() {
   }
   const { strokes, error, retry } = useAnswerStrokes(jamo)
   const chars = draft ? targetCells(draft.target, draft.stage) : []
-  const index =
+  const targetIndex =
     comparisonCell !== null && chars[comparisonCell] === jamo ? comparisonCell : chars.indexOf(jamo)
-  const cell = index >= 0 ? draft?.cells[index] : undefined
+  const grade = visibleGrade(draft?.grade)
+  const aligned =
+    draft?.stage === 'pro'
+      ? grade?.alignment.find((item) => item.targetIndex === targetIndex)
+      : undefined
+  const index = aligned ? aligned.cellIndex : targetIndex
+  const cell = index != null && index >= 0 ? draft?.cells[index] : undefined
+  const gradedCell = cell ? grade?.cells.find((item) => item.index === index) : undefined
   const reference = strokes[jamo] ?? []
   const count = reference.length
-  const duration =
-    cell?.strokes.reduce(
-      (max, stroke) => stroke.points.reduce((max, point) => Math.max(max, point[2]), max),
-      0,
-    ) ?? 0
-  const replayDuration = Math.max(count * 700, duration)
-  const replay = useReplay(replayDuration)
+  const timeline = createStrokeReplay(
+    cell ? [cell] : [],
+    [reference],
+    gradedCell && { cells: [{ index: 0, strokeMap: gradedCell.strokeMap }] },
+  )
+  const replay = useReplay(timeline.length * strokeReplayStepMs)
+  const step = replay.position * timeline.length
+  const answerProgress = strokeProgress(timeline.answer[0] ?? [], step)
   return (
     <div className={styles.screen} data-name="stroke — 획순 크게 보기">
-      <AppBar title={`${jamo} ${count ? '쓰는 순서' : '글씨 비교'}`} onBack={handleBack} />
+      <AppBar title={`${jamo} ${count ? t('쓰는 순서') : t('글씨 비교')}`} onBack={handleBack} />
       <div className={styles.pageContent}>
         <Panel className={styles.panel}>
-          {error && retry && <Button onClick={retry}>획순 다시 불러오기</Button>}
+          {error && retry && <Button onClick={retry}>{t('획순 다시 불러오기')}</Button>}
           <div className={layout.diagramRow} style={{ justifyContent: 'space-between' }}>
             <div className={learningStyles.referenceRow}>
               <StrokeDiagram className={styles.strokeBox287}>
                 {cell ? (
                   <GradedInk
                     cell={cell}
-                    errors={[]}
-                    until={replay.position === 1 ? Infinity : replay.position * replayDuration}
+                    errors={gradedCell?.errors ?? []}
+                    progressByStroke={strokeProgress(timeline.user[0] ?? [], step)}
                   />
                 ) : (
-                  <p className={styles.secondaryText}>아직 쓴 글씨가 없어요.</p>
+                  <p className={styles.secondaryText}>{t('아직 쓴 글씨가 없어요.')}</p>
                 )}
               </StrokeDiagram>
-              <p className={styles.secondaryText}>내가 쓴 순서</p>
+              <p className={styles.secondaryText}>{t('내가 쓴 순서')}</p>
             </div>
             <div className={learningStyles.referenceRow}>
               <StrokeDiagram className={styles.strokeBox287}>
@@ -60,24 +72,43 @@ export default function Stroke() {
                   char={jamo}
                   referenceStrokes={reference}
                   numbers
-                  progress={replay.position === 1 ? Infinity : replay.position * count}
+                  progressByStroke={answerProgress}
                 />
               </StrokeDiagram>
-              <p className={styles.secondaryText}>{count ? '바른 순서' : '동국체 글씨'}</p>
+              <p className={styles.secondaryText}>
+                {count
+                  ? cell?.strokes.length
+                    ? t('대응하는 정답 획')
+                    : t('바른 순서')
+                  : t('동국체 글씨')}
+              </p>
             </div>
           </div>
           <ReplayControls
             replay={replay}
-            disabled={replayDuration <= 0}
+            disabled={!timeline.length}
             count={
-              count ? `${Math.floor(replay.position * count)} / ${count}획` : '내 필기 다시 보기'
+              count
+                ? t(
+                    '{0} / {1}획',
+                    answerProgress.filter((progress) => progress === 1).length,
+                    count,
+                  )
+                : t('내 필기 다시 보기')
             }
           />
           <p className={styles.panelBody}>
             {count
-              ? '획의 시작점과 번호를 따라 한 획씩 확인해 보세요.'
-              : '동국체 글씨와 모양을 비교해 보세요. 정답 획순은 준비 중이에요.'}
+              ? t('주황색은 지금 그리는 획이고, 번호는 바른 획순이에요.')
+              : t('동국체 글씨와 모양을 비교해 보세요. 정답 획순은 준비 중이에요.')}
           </p>
+          {gradedCell?.errors.map(({ type, expected, actual }, index) =>
+            type === 'ORDER' && expected != null && actual != null ? (
+              <p className={styles.panelBody} key={index}>
+                {t('{0}번째로 쓴 획은 {1}번째에 써야 해요.', actual, expected)}
+              </p>
+            ) : null,
+          )}
         </Panel>
       </div>
       <div className={styles.footer}>
@@ -89,7 +120,7 @@ export default function Stroke() {
             navigate(`write-${stage}`)
           }}
         >
-          다시 쓰기
+          {t('다시 쓰기')}
         </Button>
       </div>
     </div>

@@ -1,3 +1,4 @@
+import { useUiText } from '@/app/useUiText'
 import { useWriting } from './useWriting'
 import { ManuscriptPaper } from './ManuscriptPaper'
 import { WritingCell } from './WritingCell'
@@ -16,6 +17,7 @@ export function PracticePaper({
   groups?: readonly number[] | undefined
   renderGuide?: ((index: number) => ReactNode) | undefined
 }) {
+  const t = useUiText()
   const { count: written, submitting } = useWriting()
   return (
     <div className={styles.practice} inert={submitting}>
@@ -27,14 +29,10 @@ export function PracticePaper({
         groupGap={groups && groups.length > 1 ? cellSize : undefined}
         caption={
           <p role="status" aria-live="polite">
-            {count}칸 중 {Math.min(written, count)}칸을 썼어요
+            {t('{0}칸 중 {1}칸을 썼어요', count, Math.min(written, count))}
           </p>
         }
-        renderCell={(index) => (
-          <WritingCell index={index}>
-            {renderGuide?.(index)}
-          </WritingCell>
-        )}
+        renderCell={(index) => <WritingCell index={index}>{renderGuide?.(index)}</WritingCell>}
       />
     </div>
   )

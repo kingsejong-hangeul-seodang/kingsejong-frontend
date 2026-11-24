@@ -1,3 +1,4 @@
+import { useUiText } from '@/app/useUiText'
 import type { useReplay } from './useReplay'
 import styles from '@/features/learning/FigmaLearning.module.css'
 export function ReplayControls({
@@ -9,11 +10,12 @@ export function ReplayControls({
   count: string
   disabled?: boolean
 }) {
+  const t = useUiText()
   const label = replay.playing
-    ? '일시 정지'
+    ? t('일시 정지')
     : replay.position > 0 && replay.position < 1
-      ? '이어서 보기'
-      : '처음부터 다시 보기'
+      ? t('이어서 보기')
+      : t('처음부터 다시 보기')
   return (
     <div className={styles.replay} data-name="player">
       <button
@@ -34,7 +36,7 @@ export function ReplayControls({
         max={1}
         step={0.001}
         value={replay.position}
-        aria-label="정답 보기 진행률"
+        aria-label={t('정답 보기 진행률')}
         onChange={(event) => replay.seek(Number(event.target.value))}
       />
       <span className={styles.replayCount}>{count}</span>

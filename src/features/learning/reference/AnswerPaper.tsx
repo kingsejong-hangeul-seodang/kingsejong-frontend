@@ -1,3 +1,4 @@
+import { useUiText } from '@/app/useUiText'
 import { ManuscriptPaper } from '@/components/writing/ManuscriptPaper'
 import type { Stage } from '@/app/session'
 import { useSession } from '@/app/useSession'
@@ -9,19 +10,18 @@ export function AnswerPaper({
   stage,
   target,
   strokes,
-  position = 1,
+  progressByCell,
   onSelect,
 }: {
   stage: Stage
   target: string
   strokes: Record<string, ReferenceStroke[]>
-  position?: number
+  progressByCell?: readonly number[][] | undefined
   onSelect?: (char: string, index: number) => void
 }) {
+  const t = useUiText()
   const { draft } = useSession()
   const cells = targetCells(target, stage)
-  const counts = cells.map((char) => strokes[char]?.length ?? 0)
-  const total = counts.reduce((sum, count) => sum + count, 0)
   return (
     <ManuscriptPaper
       name="answer-writing"
@@ -39,19 +39,15 @@ export function AnswerPaper({
           <ReferenceGlyph
             char={char}
             referenceStrokes={strokes[char] ?? []}
-            color="var(--color-brand)"
-            progress={
-              position === 1
-                ? Infinity
-                : position * total - counts.slice(0, index).reduce((sum, count) => sum + count, 0)
-            }
+            numbers
+            progressByStroke={progressByCell?.[index]}
           />
         )
         return onSelect && char !== ' ' ? (
           <button
             type="button"
             className={layout.glyphButton}
-            aria-label={`${char} 글씨 크게 보기`}
+            aria-label={t('{0} 글씨 크게 보기', char)}
             onClick={() => onSelect(char, index)}
           >
             {glyph}

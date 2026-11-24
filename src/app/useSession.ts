@@ -14,7 +14,8 @@ export const SessionContext = createContext<{
   notice: string
   notify: (value: string) => void
   accessToken: string | null
-  setAccessToken: (token: string | null) => void
+  accountId: number | null
+  setAccessToken: (token: string | null, accountId?: number) => void
   catalog: CatalogCache & { token: string | null }
   reset: () => void
   draft: WritingDraft | null

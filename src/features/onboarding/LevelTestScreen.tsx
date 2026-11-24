@@ -1,3 +1,4 @@
+import { useUiText } from '@/app/useUiText'
 import onboardingStyles from '@/features/onboarding/Onboarding.module.css'
 import { AppBar } from '@/components/ui/AppBar'
 import { Button } from '@/components/ui/Button'
@@ -26,6 +27,7 @@ const demoTasks = (taskData as { stage: Stage; target: string; title: string }[]
 )
 const stages = { beginner: 'beginner', intermediate: 'mid', advanced: 'pro' } as const
 export function LevelTestScreen({ step }: { step: number }) {
+  const t = useUiText()
   const {
     preferences,
     saveTest,
@@ -50,7 +52,8 @@ export function LevelTestScreen({ step }: { step: number }) {
     await writing.submit(async () => {
       try {
         const cells = writing.snapshot()
-        if (!cells.some((cell) => cell.strokes.length)) throw new Error('한 글자 이상 써 주세요.')
+        if (!cells.some((cell) => cell.strokes.length))
+          throw new Error(t('한 글자 이상 써 주세요.'))
         const request = makeGradeRequest(
           task.stage,
           task.target,
@@ -58,7 +61,7 @@ export function LevelTestScreen({ step }: { step: number }) {
           preferences.language === 'English' ? 'en' : 'ko',
         )
         if (studyApi) {
-          if (!accessToken) throw new ApiError(401, 'UNAUTHORIZED', '로그인이 필요해요.')
+          if (!accessToken) throw new ApiError(401, 'UNAUTHORIZED', t('로그인이 필요해요.'))
           const assessment = await studyApi.submitLevelStep(accessToken, step + 1, request)
           setTestAssessment(assessment)
           notify('')
@@ -82,29 +85,29 @@ export function LevelTestScreen({ step }: { step: number }) {
           setAccessToken(null)
           navigate('login')
         }
-        notify(error instanceof Error ? error.message : '채점 요청 실패')
+        notify(error instanceof Error ? error.message : t('채점 요청 실패'))
       }
     })
   }
   if (!tasks || !task)
     return (
       <div className={styles.screen}>
-        <AppBar title="레벨 테스트" onBack={handleBack} />
+        <AppBar title={t('레벨 테스트')} onBack={handleBack} />
         <div className={styles.pageContent}>
-          <p role="status">{server.error ?? '문항을 불러오고 있어요.'}</p>
-          {server.error && <Button onClick={server.retry}>다시 불러오기</Button>}
+          <p role="status">{server.error ?? t('문항을 불러오고 있어요.')}</p>
+          {server.error && <Button onClick={server.retry}>{t('다시 불러오기')}</Button>}
         </div>
       </div>
     )
   return (
     <div className={styles.screen} data-name={`leveltest-${step + 1}`}>
-      <AppBar title="레벨 테스트" onBack={handleBack} />
+      <AppBar title={t('레벨 테스트')} onBack={handleBack} />
       <div className={styles.pageContent} data-name="page">
         <div className={styles.sectionHeader}>
           <div
             className={onboardingStyles.testProgress}
             role="progressbar"
-            aria-label="테스트 진행률"
+            aria-label={t('테스트 진행률')}
             aria-valuemin={0}
             aria-valuemax={3}
             aria-valuenow={step + 1}
@@ -117,16 +120,16 @@ export function LevelTestScreen({ step }: { step: number }) {
               />
             ))}
           </div>
-          <p className={styles.controlLabel}>3단계 중 {step + 1}단계</p>
+          <p className={styles.controlLabel}>{t('3단계 중 {0}단계', step + 1)}</p>
           <p className={styles.singleLineHeading}>{task.title}</p>
         </div>
         <SejongMessage
           className={styles.guideMessage}
-          title={`‘${task.target}’를 써 볼까요?`}
+          title={t('‘{0}’를 써 볼까요?', task.target)}
           description={
             step === 2
-              ? '띄어 쓸 자리는 한 칸 비워요.'
-              : '따라 쓸 글자 없이, 한 칸에 한 글자씩 써요.'
+              ? t('띄어 쓸 자리는 한 칸 비워요.')
+              : t('따라 쓸 글자 없이, 한 칸에 한 글자씩 써요.')
           }
           src="/assets/figma/fc462.png"
           vertical={false}
@@ -149,9 +152,9 @@ export function LevelTestScreen({ step }: { step: number }) {
                 </div>
                 <p className={styles.stepText}>
                   {task.title}
-                  {index === step ? ' · 지금' : ''}
+                  {index === step ? t('· 지금') : ''}
                 </p>
-                {testDrafts[index] && index !== step && <Badge tone="success">완료</Badge>}
+                {testDrafts[index] && index !== step && <Badge tone="success">{t('완료')}</Badge>}
               </div>
             ))}
           </div>
@@ -166,7 +169,7 @@ export function LevelTestScreen({ step }: { step: number }) {
             void submit()
           }}
         >
-          {writing.submitting ? '처리 중' : '다 썼어요'}
+          {writing.submitting ? t('처리 중') : t('다 썼어요')}
         </Button>
       </div>
     </div>

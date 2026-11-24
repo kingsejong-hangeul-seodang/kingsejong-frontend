@@ -1,3 +1,4 @@
+import { useUiText } from '@/app/useUiText'
 import sharedLayout from '@/styles/sharedLayout.module.css'
 import onboardingStyles from '@/features/onboarding/Onboarding.module.css'
 import { useSession } from '@/app/useSession'
@@ -7,6 +8,7 @@ import { SejongMessage } from '@/components/SejongMessage'
 
 import styles from '@/styles/screens.module.css'
 import { Button } from '@/components/ui/Button'
+import { skipCodeLogin } from '@/api/integration'
 
 const img1 = '/assets/figma/45b63.svg'
 const img2 = '/assets/figma/4d2e5.svg'
@@ -17,10 +19,11 @@ const img6 = '/assets/figma/3d94a.svg'
 const img7 = '/assets/figma/3159d.svg'
 
 export default function Lang() {
+  const t = useUiText()
   const { preferences, update, notify } = useSession()
   function handleContinue() {
     notify('')
-    navigate('login')
+    navigate(skipCodeLogin ? 'experience' : 'login')
   }
   return (
     <div className={styles.centeredScreen} data-node-id="67:792" data-name="lang — 언어 선택">
@@ -56,8 +59,8 @@ export default function Lang() {
         </div>
         <SejongMessage
           className={styles.verticalGuide}
-          title={'어서 오세요, 한글서당이에요'}
-          description={'어떤 말로 안내할까요?'}
+          title={t('어서 오세요, 한글서당이에요')}
+          description={t('어떤 말로 안내할까요?')}
           src={'/assets/figma/fc462.png'}
           vertical={true}
           characterWidth={200}
@@ -69,7 +72,7 @@ export default function Lang() {
             data-node-id="67:811"
             data-name="선택 카드/선택"
             kind="선택 카드/선택"
-            label="한국어 한국어로 안내해요"
+            label={t('한국어 한국어로 안내해요')}
             selected={preferences.language === '한국어'}
             onClick={() => update({ language: '한국어' })}
           >
@@ -77,7 +80,7 @@ export default function Lang() {
               한국어
             </p>
             <p className={styles.rowDescription} data-node-id="I67:811;19:254">
-              한국어로 안내해요
+              {t('한국어로 안내해요')}
             </p>
           </ChoiceCard>
           <ChoiceCard
@@ -85,7 +88,7 @@ export default function Lang() {
             data-node-id="67:814"
             data-name="선택 카드/기본"
             kind="선택 카드/기본"
-            label="English 영어로 안내해요"
+            label={t('English 영어로 안내해요')}
             selected={preferences.language === 'English'}
             onClick={() => update({ language: 'English' })}
           >
@@ -93,7 +96,7 @@ export default function Lang() {
               English
             </p>
             <p className={styles.rowDescription} data-node-id="I67:814;19:258">
-              영어로 안내해요
+              {t('영어로 안내해요')}
             </p>
           </ChoiceCard>
         </div>
@@ -105,11 +108,11 @@ export default function Lang() {
           data-name="버튼/주"
           variant="primary"
           data-action="버튼/주"
-          aria-label="시작하기"
+          aria-label={t('시작하기')}
           onClick={handleContinue}
         >
           <p className={styles.primaryButtonText} data-node-id="I67:818;19:41">
-            시작하기
+            {t('시작하기')}
           </p>
         </Button>
       </div>

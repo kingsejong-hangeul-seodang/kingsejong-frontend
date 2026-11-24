@@ -1,4 +1,4 @@
-import { useMemo, useState, type ReactNode } from 'react'
+import { useCallback, useMemo, useState, type ReactNode } from 'react'
 import type { ScreenName } from './routes/screens'
 import { SessionContext } from './useSession'
 import type { WritingDraft } from '@/data/writingTypes'
@@ -28,7 +28,7 @@ const defaults: Preferences = {
   singer: '하늘별',
   drama: '',
   code: '',
-  consent: true,
+  consent: false,
   exp: 120,
 }
 function restore(): Preferences {
@@ -61,7 +61,14 @@ function restore(): Preferences {
 export function SessionProvider({ screen, children }: { screen: ScreenName; children: ReactNode }) {
   const [preferences, setPreferences] = useState(restore)
   const [notice, notify] = useState('')
-  const [accessToken, setAccessToken] = useState<string | null>(null)
+  const [authentication, setAuthentication] = useState<{
+    token: string
+    accountId: number | null
+  } | null>(null)
+  const accessToken = authentication?.token ?? null
+  const setAccessToken = useCallback((token: string | null, accountId?: number) => {
+    setAuthentication(token ? { token, accountId: accountId ?? null } : null)
+  }, [])
   const catalog = useMemo(() => {
     // Each authenticated session owns its cache.
     return { ...createCatalogCache(), token: accessToken }
@@ -130,6 +137,9 @@ export function SessionProvider({ screen, children }: { screen: ScreenName; chil
     clearWritingMemory()
     setPracticeTarget(null)
     setContentId('miss-you')
+    setSelectedThumbnail(null)
+    selectJamo('ㄷ')
+    selectComparisonCell(null)
     setResultOrigin(null)
     setSettingsOrigin(false)
     setTestDrafts({})
@@ -150,6 +160,7 @@ export function SessionProvider({ screen, children }: { screen: ScreenName; chil
         notice,
         notify,
         accessToken,
+        accountId: authentication?.accountId ?? null,
         setAccessToken,
         catalog,
         reset,

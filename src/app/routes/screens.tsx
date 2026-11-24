@@ -1,4 +1,7 @@
 import { lazy } from 'react'
+import { skipCodeLogin } from '@/api/integration'
+
+const LanguageScreen = lazy(() => import('../../features/onboarding/LanguageScreen'))
 
 // Load the real screen directly. Route-specific choices stay here instead of separate files.
 const HomeScreen = lazy(() =>
@@ -40,11 +43,13 @@ const JamoDetailScreen = lazy(() =>
 export const screens = {
   lang: {
     title: '언어 선택',
-    component: lazy(() => import('../../features/onboarding/LanguageScreen')),
+    component: LanguageScreen,
   },
   login: {
-    title: '로그인 코드',
-    component: lazy(() => import('../../features/onboarding/LoginScreen')),
+    title: skipCodeLogin ? '언어 선택' : '로그인 코드',
+    component: skipCodeLogin
+      ? LanguageScreen
+      : lazy(() => import('../../features/onboarding/LoginScreen')),
   },
   experience: {
     title: '한글 경험',

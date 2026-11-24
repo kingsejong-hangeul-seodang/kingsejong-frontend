@@ -22,7 +22,7 @@ test('study routes encode jamo and cursors, and save tastes with an empty respon
       commonMistake: null,
       examples: ['다'],
       practiceContentId: 31,
-      recentWritings: [],
+      recentWritings: [{ writingId: 7, target: '다', message: null }],
     }),
   )
   const api = createStudyApi('https://backend.example')
@@ -39,6 +39,38 @@ test('study routes encode jamo and cursors, and save tastes with an empty respon
   assert.deepEqual(JSON.parse(String(options?.body)), { mode: 'kdrama', tasteIds: [3] })
 })
 
+test('writing history supports records with no stored ink', async (t) => {
+  const grade = fixture('grade_response_beginner')
+  const payload = {
+    writingId: 1,
+    contentId: 2,
+    stage: request.stage,
+    target: request.target,
+    createdAt: '2026-11-24T00:00:00Z',
+    canvas: null,
+    cells: null,
+    grade,
+  }
+  t.mock.method(globalThis, 'fetch', async () => Response.json(payload))
+  const record = await createStudyApi('https://backend.example').writing('token', 1)
+  assert.equal(record.cells, null)
+  assert.deepEqual(validateGradeResponse(record.grade, record), grade)
+})
+
+test('reference strokes use the authenticated backend route and preserve stroke coordinates', async (t) => {
+  const payload = {
+    font: 'NotoSansKR-Light',
+    items: [{ char: 'ㄱ', strokes: [{ order: 1, jamo: 'ㄱ', role: 'cho', points: [[0.2, 0.3]] }] }],
+  }
+  const fetch = t.mock.method(globalThis, 'fetch', async () => Response.json(payload))
+  const api = createStudyApi('https://backend.example')
+  assert.deepEqual(await api.strokes('token', '가ㄱ'), payload)
+  const [url, options] = fetch.mock.calls[0]!.arguments
+  assert.equal(new URL(url).pathname, '/api/v1/reference/strokes')
+  assert.equal(new URL(url).searchParams.get('chars'), '가ㄱ')
+  assert.equal(new Headers(options?.headers).get('Authorization'), 'Bearer token')
+})
+
 test('backend login, profile patch and writing use the documented paths and request bodies', async (t) => {
   const { accessToken, me } = demoLogin(DEMO_CODE)
   const grade = fixture('grade_response_beginner')
@@ -48,7 +80,7 @@ test('backend login, profile patch and writing use the documented paths and requ
   assert.deepEqual(fetch.mock.calls[0]?.arguments.slice(0, 1), [
     'https://backend.example/api/v1/auth/login',
   ])
-  assert.equal(JSON.parse(fetch.mock.calls[0]!.arguments[1]!.body as string).code, DEMO_CODE)
+  assert.equal(JSON.parse(fetch.mock.calls[0]!.arguments[1]!.body as string).code, 'DGU-0001')
   assert.equal(new Headers(fetch.mock.calls[0]!.arguments[1]!.headers).has('Authorization'), false)
 
   fetch.mock.mockImplementation(async () => Response.json({ ...me, locale: 'en' }))
@@ -64,11 +96,20 @@ test('backend login, profile patch and writing use the documented paths and requ
     level: { no: 2, name: '성균관 유생', exp: 310, levelStartExp: 300, nextLevelExp: 800 },
     leveledUp: true,
     previousLevelNo: 1,
-    stageUpSuggested: false,
+    streakDays: 3,
+    today: { done: 2, goal: 3 },
+    stageUpSuggested: true,
   }
   fetch.mock.mockImplementation(async () =>
     Response.json(
-      { contentId: 11, stage: 'beginner', grade, reward, nextContentId: 12 },
+      {
+        contentId: 11,
+        stage: 'beginner',
+        target: request.target,
+        grade,
+        reward,
+        nextContentId: 12,
+      },
       { status: 201 },
     ),
   )
@@ -107,6 +148,29 @@ test('empty success, authentication errors and validation details follow the API
   await assert.rejects(requestBackend('', '/test'), /cells\[0\]\.strokes: 획이 너무 많아요/)
   fetch.mock.mockImplementation(async () => new Response(null, { status: 503 }))
   await assert.rejects(requestBackend('', '/test'), { status: 503, code: 'SERVER_ERROR' })
+  for (const [status, code] of [
+    [502, 'ENGINE_ERROR'],
+    [503, 'ENGINE_UNAVAILABLE'],
+    [504, 'ENGINE_TIMEOUT'],
+  ] as const) {
+    fetch.mock.mockImplementation(async () => Response.json({ code }, { status }))
+    await assert.rejects(requestBackend('', '/writings'), { status, code })
+  }
+})
+
+test('engine health can report down in a successful response without authentication', async (t) => {
+  const engine = { status: 'down', engineVersion: null }
+  const fetch = t.mock.method(globalThis, 'fetch', async () =>
+    Response.json({ status: 'ok', engine }),
+  )
+  const backend = createBackend('https://backend.example')
+  assert.deepEqual(await backend.getEngineHealth(), engine)
+  const [url, options] = fetch.mock.calls[0]!.arguments
+  assert.equal(url, 'https://backend.example/api/v1/health')
+  assert.equal(new Headers(options?.headers).has('Authorization'), false)
+  const stub = { status: 'ok', engineVersion: '0.1.0-stub' }
+  fetch.mock.mockImplementation(async () => Response.json({ status: 'ok', engine: stub }))
+  assert.deepEqual(await backend.getEngineHealth(), stub)
 })
 
 test('demo rejects an incorrect code and returns a clearly marked stub result', () => {
@@ -123,6 +187,8 @@ test('catalog gets a stage-specific list and detail by server ID, including the 
   const item = {
     id: 11,
     mode: 'kpop',
+    kind: 'clip',
+    writeMode: 'copy',
     title: '별빛 아래',
     source: '하늘빛',
     thumbnailUrl: null,
@@ -132,10 +198,12 @@ test('catalog gets a stage-specific list and detail by server ID, including the 
     wordCount: 2,
     tasteMatched: true,
     completed: false,
+    perfect: false,
   }
   const detail = {
     id: 11,
     mode: 'kpop',
+    kind: 'clip',
     title: '별빛 아래',
     source: '하늘빛',
     clip: { startSec: 4, endSec: 28, embeddable: false },
@@ -143,6 +211,8 @@ test('catalog gets a stage-specific list and detail by server ID, including the 
     situation: null,
     task: {
       stage: 'intermediate',
+      writeMode: 'copy',
+      speech: null,
       target: '바다 보러',
       meaning: null,
       cellCount: 4,
@@ -164,4 +234,60 @@ test('catalog gets a stage-specific list and detail by server ID, including the 
     'https://backend.example/api/v1/contents/11?stage=intermediate',
   )
   await assert.rejects(backend.getContent('token', 11, 'beginner'), /콘텐츠 상세 형식/)
+})
+
+test('advanced catalog accepts hidden answers while detail keeps the writing task', async (t) => {
+  const item = {
+    id: 11,
+    mode: 'basic',
+    kind: 'sentence',
+    title: '여행 표현 1',
+    source: null,
+    thumbnailUrl: null,
+    durationSec: null,
+    writeMode: 'dictation',
+    target: null,
+    cellCount: null,
+    wordCount: null,
+    tasteMatched: false,
+    completed: false,
+    perfect: false,
+  }
+  const fetch = t.mock.method(globalThis, 'fetch', async () => Response.json({ items: [item] }))
+  const backend = createBackend('https://backend.example')
+  assert.deepEqual(await backend.listContents('token', 'basic', 'advanced'), [item])
+  for (const stage of ['beginner', 'intermediate'] as const) {
+    await assert.rejects(backend.listContents('token', 'basic', stage), /콘텐츠 목록 형식/)
+  }
+  fetch.mock.mockImplementation(async () =>
+    Response.json({
+      id: 11,
+      mode: 'basic',
+      kind: 'sentence',
+      title: item.title,
+      source: item.source,
+      clip: null,
+      lines: [],
+      situation: null,
+      task: {
+        stage: 'advanced',
+        writeMode: 'dictation',
+        target: '바다 보러',
+        meaning: null,
+        cellCount: 7,
+        wordGroups: [2, 2],
+        speech: { text: '바다 보러', lang: 'ko-KR' },
+      },
+      nextContentId: null,
+    }),
+  )
+  const detail = await backend.getContent('token', 11, 'advanced')
+  assert.equal(detail.task.target, '바다 보러')
+  assert.equal(detail.task.cellCount, 7)
+  assert.deepEqual(detail.task.speech, { text: '바다 보러', lang: 'ko-KR' })
+  assert.equal(detail.task.writeMode, 'dictation')
+  fetch.mock.mockImplementation(async () =>
+    Response.json({ ...detail, task: { ...detail.task, writeMode: 'trace' } }),
+  )
+  await assert.rejects(backend.getContent('token', 11, 'advanced'), /콘텐츠 상세 형식/)
 })

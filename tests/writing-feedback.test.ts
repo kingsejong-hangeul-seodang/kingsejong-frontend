@@ -4,6 +4,37 @@ import { readFileSync } from 'node:fs'
 import { assignStroke } from '../src/components/writing/inkGeometry.ts'
 import { feedbackMarks, retryCellIndexes } from '../src/data/writingFeedback.ts'
 import type { WritingDraft } from '../src/data/writingTypes.ts'
+import { createStrokeReplay, strokeProgress } from '../src/data/strokeReplay.ts'
+import type { ReferenceStroke } from '../src/api/grading.ts'
+
+test('replay pairs stored strokes with the engine matches even when the order differs', () => {
+  const references: ReferenceStroke[][] = [
+    [
+      { order: 1, role: 'cho', jamo: 'ㅂ', points: [[0, 0]] },
+      { order: 2, role: 'cho', jamo: 'ㅂ', points: [[0, 1]] },
+      { order: 3, role: 'jung', jamo: 'ㅗ', points: [[1, 1]] },
+    ],
+  ]
+  const ink = [
+    { image: '', written: true, strokes: Array.from({ length: 3 }, () => ({ points: [] })) },
+  ]
+  const timeline = createStrokeReplay(ink, references, {
+    cells: [
+      {
+        index: 0,
+        strokeMap: [
+          { userIndex: 0, role: 'cho', jamo: 'ㅂ', strokeNo: 2 },
+          { userIndex: 1, role: 'cho', jamo: 'ㅂ', strokeNo: 1 },
+          { userIndex: 2, jamo: null, role: null, strokeNo: null },
+        ],
+      },
+    ],
+  })
+  assert.deepEqual(timeline, { user: [[0, 1, 2]], answer: [[1, 0, 3]], length: 4 })
+  assert.deepEqual(strokeProgress(timeline.user[0]!, 0.5), [0.5, 0, 0])
+  assert.deepEqual(strokeProgress(timeline.answer[0]!, 0.5), [0, 0.5, 0])
+  assert.deepEqual(createStrokeReplay(ink, references).answer, [[0, 1, 2]])
+})
 
 test('crossing a cell boundary assigns the stroke to the majority cell and ignores outside points', () => {
   const cells = ['a', 'b'].map((id, index) => ({
@@ -51,10 +82,17 @@ test('intermediate corrections expand to an entire word and advanced summary hid
   }
   assert.deepEqual(retryCellIndexes(draft), [0, 1])
   assert.deepEqual(feedbackMarks(draft).slice(0, 3), ['char', 'char', 'none'])
+  grade.engineVersion = '0.1.0-stub'
+  assert.deepEqual(feedbackMarks(draft).slice(0, 3), ['char', 'char', 'none'])
+  assert.deepEqual(retryCellIndexes(draft), [0, 1])
+
   const advanced = { ...draft, stage: 'pro' as const }
   assert.equal(
     feedbackMarks(advanced).every((mark) => mark === 'none'),
     true,
   )
   assert.deepEqual(retryCellIndexes(advanced), [])
+
+  grade.engineVersion = 'local-demo-stub'
+  assert.deepEqual(retryCellIndexes(draft), [])
 })

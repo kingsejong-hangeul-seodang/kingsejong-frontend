@@ -1,6 +1,6 @@
 import { contents, practiceContents, targetCells, targetGroups } from '@/data/content'
 import type { Mode, Stage } from '@/app/session'
-import { ApiError, apiModes, type ContentDetail, type ContentItem } from './backend'
+import { ApiError, apiModes, writeModes, type ContentDetail, type ContentItem } from './backend'
 import { engineStages } from './grading'
 
 const artwork: Record<string, { thumbnailUrl: string; durationSec: number }> = {
@@ -21,6 +21,12 @@ function cellCount(target: string, stage: Stage) {
   return targetCells(target, stage).length + (stage === 'pro' ? 2 : 0)
 }
 
+function contentKind(mode: Mode, target: string): ContentItem['kind'] {
+  if (mode !== 'basic') return 'clip'
+  if (/^[ㄱ-ㅎㅏ-ㅣ]$/.test(target)) return 'jamo'
+  return target.includes(' ') ? 'sentence' : 'word'
+}
+
 export function demoContents(mode: Mode, stage: Stage, favorite: string): ContentItem[] {
   return practiceContents(mode, stage)
     .map((item) => {
@@ -28,16 +34,19 @@ export function demoContents(mode: Mode, stage: Stage, favorite: string): Conten
       return {
         id: ids.get(item.id)!,
         mode: apiModes[mode],
+        kind: contentKind(mode, target),
+        writeMode: writeModes[engineStages[stage]],
         title: stage === 'pro' ? (item.dictationTitle ?? item.title) : item.title,
         source: item.source,
         thumbnailUrl: artwork[item.id]?.thumbnailUrl ?? null,
         durationSec: artwork[item.id]?.durationSec ?? null,
         meaning: item.meaning,
-        target,
-        cellCount: cellCount(target, stage),
-        wordCount: target.split(' ').length,
+        target: stage === 'pro' ? null : target,
+        cellCount: stage === 'pro' ? null : cellCount(target, stage),
+        wordCount: stage === 'pro' ? null : target.split(' ').length,
         tasteMatched: mode !== 'basic' && favorite !== '' && item.source.startsWith(favorite),
         completed: false,
+        perfect: false,
       }
     })
     .sort((first, second) => Number(second.tasteMatched) - Number(first.tasteMatched))
@@ -52,6 +61,7 @@ export function demoContent(id: number, stage: Stage): ContentDetail {
   return {
     id,
     mode: apiModes[item.mode],
+    kind: contentKind(item.mode, target),
     title: stage === 'pro' ? (item.dictationTitle ?? item.title) : item.title,
     source: item.source,
     thumbnailUrl: artwork[item.localId]?.thumbnailUrl ?? null,
@@ -60,10 +70,12 @@ export function demoContent(id: number, stage: Stage): ContentDetail {
     situation: null,
     task: {
       stage: engineStages[stage],
+      writeMode: writeModes[engineStages[stage]],
       target,
       meaning: item.meaning,
       cellCount: cellCount(target, stage),
       wordGroups: targetGroups(target, stage) ?? null,
+      speech: item.mode === 'basic' ? { text: target, lang: 'ko-KR' } : null,
     },
     nextContentId: next ? ids.get(next.id)! : null,
   }
