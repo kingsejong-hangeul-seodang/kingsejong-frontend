@@ -1,9 +1,13 @@
-import type { Mark } from '@/api/grading'
+import { DEMO_ENGINE_VERSION, type GradeResponse, type Mark } from '../api/grading.ts'
 import type { WritingDraft } from './writingTypes'
 
+export function visibleGrade(grade: GradeResponse | null | undefined) {
+  return grade?.engineVersion === DEMO_ENGINE_VERSION ? undefined : grade
+}
+
 export function shapeFeedback(draft: WritingDraft | null) {
-  const grade = draft?.grade
-  if (!grade || grade.engineVersion.endsWith('stub') || draft?.stage !== 'beginner') return []
+  const grade = visibleGrade(draft?.grade)
+  if (!grade || draft?.stage !== 'beginner') return []
   return grade.cells.flatMap((cell) => {
     const notes = cell.errors.filter((error) => error.type === 'BALANCE')
     const char = cell.expected ?? [...draft.target.replaceAll(' ', '')][cell.index]
@@ -18,9 +22,10 @@ export function shapeFeedback(draft: WritingDraft | null) {
 }
 
 export function feedbackMarks(draft: WritingDraft, detailed = false): Mark[] {
-  const { grade, stage, cells } = draft
+  const { stage, cells } = draft
+  const grade = visibleGrade(draft.grade)
   const marks: Mark[] = cells.map(() => 'none')
-  if (!grade || grade.engineVersion.endsWith('stub') || (!detailed && stage === 'pro')) return marks
+  if (!grade || (!detailed && stage === 'pro')) return marks
   if (
     !detailed &&
     stage === 'mid' &&

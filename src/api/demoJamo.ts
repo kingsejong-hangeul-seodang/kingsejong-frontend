@@ -12,12 +12,12 @@ export const demoJamoList: JamoList = {
   consonants: [...consonants].map((jamo, index) => ({
     jamo,
     name: names[0]![index]!,
-    mastery: jamo === 'ㄷ' ? 'practice' : 'none',
+    mastery: 'none',
   })),
   vowels: [...vowels].map((jamo, index) => ({
     jamo,
     name: names[1]![index]!,
-    mastery: jamo === 'ㅏ' ? 'familiar' : 'none',
+    mastery: 'none',
   })),
 }
 

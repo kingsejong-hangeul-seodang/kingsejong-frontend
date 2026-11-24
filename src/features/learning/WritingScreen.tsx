@@ -1,4 +1,6 @@
+import { useUiText } from '@/app/useUiText'
 import { useWritingSubmission } from './hooks/useWritingSubmission'
+import { useEffect, useState } from 'react'
 import learningStyles from '@/features/learning/LearningScreens.module.css'
 import { AppBar } from '@/components/ui/AppBar'
 import { StageSelector } from '@/components/ui/StageSelector'
@@ -16,7 +18,9 @@ import { homeScreen } from '@/app/learningFlow'
 import { ListeningControls } from '@/components/content/ListeningControls'
 import { usePracticeSpeech } from '@/components/content/usePracticeSpeech'
 import { useGuideFont } from './reference/guideFont'
-import { demoMode } from '@/api/integration'
+import { useSavePreferences } from '@/hooks/useSavePreferences'
+import { backend, demoMode } from '@/api/integration'
+import type { EngineHealth } from '@/api/backend'
 import styles from '@/styles/screens.module.css'
 
 export function WritingScreen({ stage }: { stage: Stage }) {
@@ -33,8 +37,45 @@ export function WritingScreen({ stage }: { stage: Stage }) {
   return <WritingTask stage={stage} task={task} />
 }
 
+function EngineNotice() {
+  const t = useUiText()
+  const [health, setHealth] = useState<EngineHealth | 'unreachable'>()
+  useEffect(() => {
+    if (!backend) return
+    let active = true
+    void backend.getEngineHealth().then(
+      (result) => {
+        if (active) setHealth(result)
+      },
+      () => {
+        if (active) setHealth('unreachable')
+      },
+    )
+    return () => {
+      active = false
+    }
+  }, [])
+  const message =
+    health === 'unreachable'
+      ? t('교정 엔진 상태를 확인하지 못했어요.')
+      : health?.status === 'down'
+        ? t('교정 엔진에 연결할 수 없어요. 연결이 돌아오면 제출할 수 있어요.')
+        : health?.engineVersion?.endsWith('-stub')
+          ? t('교정 엔진의 일부 판정은 테스트 단계예요.')
+          : null
+  return (
+    message && (
+      <p className={styles.secondaryText} role="status">
+        {message}
+      </p>
+    )
+  )
+}
+
 function WritingTask({ stage, task }: { stage: Stage; task: LearningTask }) {
-  const { practiceTarget, update, notify } = useSession()
+  const t = useUiText()
+  const { practiceTarget, notify } = useSession()
+  const savePreferences = useSavePreferences()
   const { content, target, cellCount, groups, writeMode } = task
   const { handleSubmit, submitting } = useWritingSubmission(stage, task)
   const cells = targetCells(target, stage)
@@ -45,25 +86,25 @@ function WritingTask({ stage, task }: { stage: Stage; task: LearningTask }) {
   const guideFont = useGuideFont()
   const cellSize = isBeginner ? 144 : stage === 'mid' ? 96 : 72
   const instruction = dictation
-    ? '띄어 쓸 자리는 한 칸 비워요'
+    ? t('띄어 쓸 자리는 한 칸 비워요')
     : isBeginner
-      ? '회색 글자 위에 따라 써요'
-      : '원고지 한 칸에 한 글자씩 써요. 묶음 사이는 띄어 쓰는 자리예요.'
+      ? t('회색 글자 위에 따라 써요')
+      : t('원고지 한 칸에 한 글자씩 써요. 묶음 사이는 띄어 쓰는 자리예요.')
   const title = practiceTarget
-    ? '자모 연습'
+    ? t('자모 연습')
     : dictation
-      ? '듣고 받아쓰기'
+      ? t('듣고 받아쓰기')
       : isBeginner
-        ? '따라 쓰기'
+        ? t('따라 쓰기')
         : clipKind
-          ? '보고 쓰기'
+          ? t('보고 쓰기')
           : content.title
   const nodeId = clipKind
     ? { beginner: '132:894', mid: '67:2144', pro: '67:2406' }[stage]
     : { beginner: '67:1928', mid: '132:1018', pro: '132:1125' }[stage]
 
-  function handleStageChange(nextStage: Stage) {
-    update({ stage: nextStage })
+  async function handleStageChange(nextStage: Stage) {
+    if (submitting || nextStage === stage || !(await savePreferences({ stage: nextStage }))) return
     notify('')
     navigate(`write-${nextStage}`)
   }
@@ -88,10 +129,10 @@ function WritingTask({ stage, task }: { stage: Stage; task: LearningTask }) {
           />
         )}
         {!clipKind && dictation && (
-          <section className={learningStyles.audioPanel} aria-label="받아쓰기 음성">
+          <section className={learningStyles.audioPanel} aria-label={t('받아쓰기 음성')}>
             <Button
               className={learningStyles.audioIcon}
-              aria-label="문장 듣기"
+              aria-label={t('문장 듣기')}
               disabled={!speech.available}
               onClick={() => speech.play()}
             >
@@ -108,8 +149,8 @@ function WritingTask({ stage, task }: { stage: Stage; task: LearningTask }) {
               </h2>
               <p className={styles.secondaryText}>
                 {speech.available
-                  ? '버튼을 누르면 문장을 읽어 드려요'
-                  : '이 브라우저는 문장 읽기를 지원하지 않아요'}
+                  ? t('버튼을 누르면 문장을 읽어 드려요')
+                  : t('이 브라우저는 문장 읽기를 지원하지 않아요')}
               </p>
             </div>
             <ListeningControls play={speech.play} disabled={!speech.available} />
@@ -117,17 +158,17 @@ function WritingTask({ stage, task }: { stage: Stage; task: LearningTask }) {
         )}
         {!practiceTarget && (
           <div className={learningStyles.stageRow}>
-            <p className={styles.controlLabel}>난이도</p>
+            <p className={styles.controlLabel}>{t('난이도')}</p>
             <StageSelector value={stage} onChange={handleStageChange} />
           </div>
         )}
         <div className={learningStyles.task}>
-          <h2 className={styles.heading}>{dictation ? '들은 문장을 써 보세요' : target}</h2>
+          <h2 className={styles.heading}>{dictation ? t('들은 문장을 써 보세요') : target}</h2>
           {!dictation && (
             <div className={learningStyles.taskChips}>
               {isBeginner && content.meaning && (
                 <span className={learningStyles.meaning}>
-                  <span className={styles.secondaryText}>뜻</span> {content.meaning}
+                  <span className={styles.secondaryText}>{t('뜻')}</span> {content.meaning}
                 </span>
               )}
               {!clipKind && speech.available && (
@@ -137,7 +178,7 @@ function WritingTask({ stage, task }: { stage: Stage; task: LearningTask }) {
                   onClick={() => speech.play()}
                 >
                   <span className={learningStyles.soundIcon} aria-hidden="true" />
-                  소리 듣기
+                  {t('소리 듣기')}
                 </Button>
               )}
             </div>
@@ -156,17 +197,18 @@ function WritingTask({ stage, task }: { stage: Stage; task: LearningTask }) {
           }
         />
         <WritingTools />
+        {task.apiId !== null && backend && <EngineNotice />}
       </div>
       <div className={styles.footer} data-name="cta">
         <Button
           className={styles.primaryButton}
           data-action="버튼/주"
-          aria-label="다 썼어요"
+          aria-label={t('다 썼어요')}
           aria-busy={submitting}
           disabled={submitting}
           onClick={handleSubmit}
         >
-          {submitting ? '확인 중…' : '다 썼어요'}
+          {submitting ? t('확인 중…') : t('다 썼어요')}
         </Button>
       </div>
     </div>

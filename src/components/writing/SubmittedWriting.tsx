@@ -1,3 +1,4 @@
+import { useUiText } from '@/app/useUiText'
 import { GradedInk } from './GradedInk'
 import { useSession } from '@/app/useSession'
 import styles from './SubmittedWriting.module.css'
@@ -5,27 +6,31 @@ import paperStyles from './ManuscriptPaper.module.css'
 import type { Stage } from '@/app/session'
 import { ManuscriptPaper } from './ManuscriptPaper'
 import { targetGroups } from '@/data/content'
-import { feedbackMarks } from '@/data/writingFeedback'
+import { feedbackMarks, visibleGrade } from '@/data/writingFeedback'
 
 export function SubmittedWriting({
   stage,
   compact = false,
-  until = Infinity,
+  progressByCell,
   shapeCells,
   onShapeSelect,
   caption,
 }: {
   stage?: Stage | undefined
   compact?: boolean
-  until?: number
+  progressByCell?: readonly number[][] | undefined
   shapeCells?: ReadonlySet<number>
   onShapeSelect?: (index: number) => void
   caption?: string | null | undefined
 }) {
+  const t = useUiText()
   const { draft } = useSession()
   const current = draft && (!stage || draft.stage === stage) ? draft : null
   if (!current)
-    return <p className={styles.empty}>아직 제출한 글씨가 없어요. 먼저 글씨를 써 주세요.</p>
+    return <p className={styles.empty}>{t('아직 제출한 글씨가 없어요. 먼저 글씨를 써 주세요.')}</p>
+  if (!current.cells.length)
+    return <p className={styles.empty}>{t('이 기록에는 필기 원본이 저장되지 않았어요.')}</p>
+  const grade = visibleGrade(current.grade)
   return (
     <ManuscriptPaper
       name="submitted-writing"
@@ -46,7 +51,11 @@ export function SubmittedWriting({
       )}
       caption={
         caption === undefined
-          ? `${current.cells.length}칸 중 ${current.cells.filter((cell) => cell.written).length}칸을 썼어요`
+          ? t(
+              '{0}칸 중 {1}칸을 썼어요',
+              current.cells.length,
+              current.cells.filter((cell) => cell.written).length,
+            )
           : caption
       }
       renderCell={(index) => {
@@ -54,17 +63,14 @@ export function SubmittedWriting({
           <GradedInk
             cell={current.cells[index]}
             errors={
-              (compact || current.stage === 'beginner') &&
-              !current.grade?.engineVersion.endsWith('stub')
-                ? (current.grade?.cells[index]?.errors ?? [])
-                : []
+              compact || current.stage === 'beginner' ? (grade?.cells[index]?.errors ?? []) : []
             }
-            until={until}
+            progressByStroke={progressByCell?.[index]}
           />
         ) : current.cells[index]?.image ? (
           <img
             src={current.cells[index].image}
-            alt={`${index + 1}번째 칸에 쓴 글씨`}
+            alt={t('{0}번째 칸에 쓴 글씨', index + 1)}
             draggable={false}
           />
         ) : null
@@ -72,7 +78,7 @@ export function SubmittedWriting({
           <button
             type="button"
             className={paperStyles.cellAction}
-            aria-label={`${index + 1}번째 칸 모양 크게 보기`}
+            aria-label={t('{0}번째 칸 모양 크게 보기', index + 1)}
             onClick={() => onShapeSelect(index)}
           >
             {ink}

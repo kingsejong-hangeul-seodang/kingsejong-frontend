@@ -98,8 +98,18 @@ export type WritingReward = {
   }
   leveledUp: boolean
   previousLevelNo: number | null
+  streakDays: number
+  today: { done: number; goal: number }
   stageUpSuggested: boolean
 }
+
+export type EngineHealth = { status: 'ok' | 'down'; engineVersion: string | null }
+
+const engineErrors = {
+  ENGINE_ERROR: '교정 중 오류가 발생했어요.',
+  ENGINE_UNAVAILABLE: '교정 엔진에 연결할 수 없어요.',
+  ENGINE_TIMEOUT: '교정 엔진의 응답이 늦어지고 있어요.',
+} as const
 
 export class ApiError extends Error {
   readonly status: number
@@ -117,6 +127,10 @@ function object(value: unknown): Record<string, unknown> {
 
 function positiveInteger(value: unknown): value is number {
   return typeof value === 'number' && Number.isSafeInteger(value) && value > 0
+}
+
+function nonnegativeInteger(value: unknown): value is number {
+  return value === 0 || positiveInteger(value)
 }
 
 function isContentItem(value: unknown, stage: EngineStage): value is ContentItem {
@@ -209,9 +223,14 @@ function contentDetail(value: unknown, id: number, stage: EngineStage): ContentD
 export async function requestBackend(
   baseUrl: string,
   path: string,
-  options: { method?: 'GET' | 'POST' | 'PATCH' | 'PUT'; token?: string; body?: unknown } = {},
+  options: {
+    method?: 'GET' | 'POST' | 'PATCH' | 'PUT'
+    token?: string
+    body?: unknown
+    cache?: RequestCache
+  } = {},
 ): Promise<unknown> {
-  const { method = 'GET', token, body } = options
+  const { method = 'GET', token, body, cache } = options
   const response = await fetch(`${baseUrl.replace(/\/+$/, '')}/api/v1${path}`, {
     method,
     headers: {
@@ -220,13 +239,18 @@ export async function requestBackend(
       ...(body === undefined ? {} : { 'Content-Type': 'application/json' }),
     },
     ...(body === undefined ? {} : { body: JSON.stringify(body) }),
+    ...(cache ? { cache } : {}),
     signal: AbortSignal.timeout(30000),
   })
   if (response.status === 204) return undefined
+  const value: unknown = await response.json().catch(() => undefined)
   if (response.status >= 500) {
+    const code = object(value).code
+    for (const [engineCode, message] of Object.entries(engineErrors)) {
+      if (code === engineCode) throw new ApiError(response.status, engineCode, message)
+    }
     throw new ApiError(response.status, 'SERVER_ERROR', '잠시 뒤 다시 시도해 주세요.')
   }
-  const value: unknown = await response.json().catch(() => undefined)
   if (!response.ok) {
     const error = object(value)
     const details = Array.isArray(error.details)
@@ -279,8 +303,9 @@ export function writingBody(contentId: number, request: GradeRequest) {
 function writingReward(value: unknown): WritingReward | undefined {
   const reward = object(value)
   const level = object(reward.level)
+  const today = object(reward.today)
   if (
-    !Number.isSafeInteger(reward.expGained) ||
+    !nonnegativeInteger(reward.expGained) ||
     !Array.isArray(reward.items) ||
     !reward.items.every((entry: unknown) => {
       const item = object(entry)
@@ -295,6 +320,9 @@ function writingReward(value: unknown): WritingReward | undefined {
     (level.nextLevelExp !== null && !positiveInteger(level.nextLevelExp)) ||
     typeof reward.leveledUp !== 'boolean' ||
     (reward.previousLevelNo != null && !positiveInteger(reward.previousLevelNo)) ||
+    !nonnegativeInteger(reward.streakDays) ||
+    !nonnegativeInteger(today.done) ||
+    !positiveInteger(today.goal) ||
     typeof reward.stageUpSuggested !== 'boolean'
   ) {
     return undefined
@@ -304,11 +332,23 @@ function writingReward(value: unknown): WritingReward | undefined {
 
 export function createBackend(baseUrl: string) {
   return {
+    async getEngineHealth(): Promise<EngineHealth> {
+      const value = object(await requestBackend(baseUrl, '/health'))
+      const { status, engineVersion } = object(value.engine)
+      if (
+        value.status !== 'ok' ||
+        (status !== 'ok' && status !== 'down') ||
+        (engineVersion !== null && typeof engineVersion !== 'string')
+      ) {
+        throw new Error('교정 엔진 상태 응답을 확인해 주세요.')
+      }
+      return { status, engineVersion }
+    },
     async login(code: string): Promise<LoginResponse> {
       const value = object(
         await requestBackend(baseUrl, '/auth/login', {
           method: 'POST',
-          body: { code },
+          body: { code: code === 'DGU-001' ? 'DGU-0001' : code },
         }),
       )
       if (typeof value.accessToken !== 'string' || !value.accessToken)
@@ -348,6 +388,8 @@ export function createBackend(baseUrl: string) {
       if (
         value.contentId !== id ||
         value.stage !== request.stage ||
+        typeof value.target !== 'string' ||
+        value.target.normalize('NFC') !== request.target ||
         (value.nextContentId !== null && !positiveInteger(value.nextContentId))
       )
         throw new Error('쓰기 제출 응답 형식을 확인해 주세요.')

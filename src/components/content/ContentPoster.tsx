@@ -1,3 +1,4 @@
+import { useUiText } from '@/app/useUiText'
 import { useState } from 'react'
 import { Badge } from '@/components/ui/Badge'
 import styles from './ContentArtwork.module.css'
@@ -39,6 +40,7 @@ export function ContentPoster({
   tasteLabel?: string | undefined
   completed?: boolean | undefined
 }) {
+  const t = useUiText()
   const seconds =
     typeof durationSec === 'number' && Number.isFinite(durationSec)
       ? Math.max(0, Math.floor(durationSec))
@@ -52,7 +54,7 @@ export function ContentPoster({
       {(tasteLabel || completed) && (
         <div className={styles.badges}>
           {tasteLabel && <Badge tone="brand">{tasteLabel}</Badge>}
-          {completed && <Badge tone="success">완료</Badge>}
+          {completed && <Badge tone="success">{t('완료')}</Badge>}
         </div>
       )}
       {duration && <span className={styles.duration}>{duration}</span>}

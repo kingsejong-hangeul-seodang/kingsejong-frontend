@@ -1,3 +1,4 @@
+import { useUiText } from '@/app/useUiText'
 import { useReference } from './reference'
 import { useGuideFont } from './guideFont'
 import type { ReferenceStroke } from '@/api/grading'
@@ -8,6 +9,7 @@ export function ReferenceGlyph({
   numbers = false,
   color = '#28221b',
   referenceStrokes,
+  progressByStroke,
 }: {
   char: string
   progress?: number
@@ -15,7 +17,9 @@ export function ReferenceGlyph({
   numbers?: boolean
   color?: string
   referenceStrokes?: ReferenceStroke[] | undefined
+  progressByStroke?: readonly number[] | undefined
 }) {
+  const t = useUiText()
   const { data } = useReference()
   const font = useGuideFont()
   const selected = referenceStrokes ?? data?.characters[char]
@@ -26,7 +30,7 @@ export function ReferenceGlyph({
       <svg
         viewBox={font.data.frame.join(' ')}
         role="img"
-        aria-label={`${char} 정답 글씨`}
+        aria-label={t('{0} 정답 글씨', char)}
         style={{ width: '100%', height: '100%', pointerEvents: 'none' }}
       >
         <text
@@ -45,7 +49,7 @@ export function ReferenceGlyph({
       <svg
         viewBox="0 0 100 100"
         role="img"
-        aria-label={`${char} 정답 글씨`}
+        aria-label={t('{0} 정답 글씨', char)}
         style={{ width: '100%', height: '100%', pointerEvents: 'none' }}
       >
         <text
@@ -64,12 +68,16 @@ export function ReferenceGlyph({
     <svg
       viewBox="0 0 100 100"
       role="img"
-      aria-label={`${char} 정답 획순`}
+      aria-label={t('{0} 정답 획순', char)}
       style={{ width: '100%', height: '100%', pointerEvents: 'none', opacity: guide ? 0.24 : 1 }}
     >
       {strokes.map((stroke, index) => {
-        const fraction = Math.max(0, Math.min(1, progress - index))
+        const fraction = progressByStroke?.[index] ?? Math.max(0, Math.min(1, progress - index))
         const first = stroke.points[0]!
+        const active = fraction > 0 && fraction < 1
+        const labelX = Math.max(4, Math.min(96, first[0] * 100 - 4))
+        const labelY = Math.max(4, Math.min(96, first[1] * 100 - 5))
+        const width = numbers ? 3.5 : 2
         return (
           <g key={stroke.order}>
             {numbers && (
@@ -77,7 +85,7 @@ export function ReferenceGlyph({
                 points={stroke.points.map(([x, y]) => `${x * 100},${y * 100}`).join(' ')}
                 fill="none"
                 stroke="#ded8cc"
-                strokeWidth="2"
+                strokeWidth={width}
                 strokeLinecap="round"
                 strokeLinejoin="round"
               />
@@ -85,8 +93,8 @@ export function ReferenceGlyph({
             <polyline
               points={stroke.points.map(([x, y]) => `${x * 100},${y * 100}`).join(' ')}
               fill="none"
-              stroke={guide ? '#807768' : color}
-              strokeWidth="2"
+              stroke={guide ? '#807768' : active ? '#bd4b2d' : color}
+              strokeWidth={width}
               strokeLinecap="round"
               strokeLinejoin="round"
               pathLength="1"
@@ -95,9 +103,19 @@ export function ReferenceGlyph({
               opacity={fraction > 0 ? 1 : 0}
             />
             {numbers && fraction > 0 && (
-              <text x={first[0] * 100} y={first[1] * 100 - 3} fontSize="7" fill="#a33227">
-                {stroke.order}
-              </text>
+              <g>
+                <circle cx={labelX} cy={labelY} r="3.5" fill="#bd4b2d" />
+                <text
+                  x={labelX}
+                  y={labelY}
+                  textAnchor="middle"
+                  dominantBaseline="central"
+                  fontSize="5"
+                  fill="white"
+                >
+                  {stroke.order}
+                </text>
+              </g>
             )}
           </g>
         )

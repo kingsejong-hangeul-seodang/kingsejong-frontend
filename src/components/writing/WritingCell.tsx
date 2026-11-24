@@ -1,3 +1,4 @@
+import { useUiText } from '@/app/useUiText'
 import { useEffect, useId, useRef, type HTMLAttributes, type PointerEvent } from 'react'
 import { useWriting } from './useWriting'
 import styles from './WritingCell.module.css'
@@ -18,6 +19,7 @@ export function WritingCell({
   index = 0,
   ...props
 }: HTMLAttributes<HTMLDivElement> & { index?: number }) {
+  const t = useUiText()
   const { restoreCell, rememberCell } = useWriting()
   const canvas = useRef<HTMLCanvasElement>(null)
   const strokes = useRef<Stroke[]>(
@@ -116,7 +118,7 @@ export function WritingCell({
         className={styles.canvas}
         width={288}
         height={288}
-        aria-label="글씨 쓰기 칸"
+        aria-label={t('글씨 쓰기 칸')}
         tabIndex={0}
         onPointerDown={(event) => {
           if (

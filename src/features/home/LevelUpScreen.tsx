@@ -1,3 +1,4 @@
+import { useUiText } from '@/app/useUiText'
 import { useSession } from '@/app/useSession'
 import { navigate } from '@/app/router'
 import { useNextContent } from '@/features/learning/hooks/useNextContent'
@@ -8,6 +9,7 @@ import { Button } from '@/components/ui/Button'
 import styles from '@/styles/screens.module.css'
 
 export default function LevelUpScreen() {
+  const t = useUiText()
   const { draft, saveDraft, preferences } = useSession()
   const { goNext, label } = useNextContent()
   const reward = draft?.reward
@@ -28,8 +30,8 @@ export default function LevelUpScreen() {
       <div className={styles.fullHeightCenteredPage}>
         <SejongMessage
           className={styles.verticalGuide}
-          title={active ? `레벨 업! ‘${reward?.level.name}’이 됐어요` : '내 킹세종의 성장'}
-          description={`누적 ${reward?.level.exp ?? preferences.exp} EXP`}
+          title={active ? t('레벨 업! ‘{0}’이 됐어요', reward?.level.name) : t('내 킹세종의 성장')}
+          description={t('누적 {0} EXP', reward?.level.exp ?? preferences.exp)}
           src={character}
           vertical
           characterWidth={200}
@@ -38,9 +40,9 @@ export default function LevelUpScreen() {
         {previous && (
           <Panel className={styles.narrowPanel}>
             <div className={styles.wrappingGrid}>
-              <img src={previous} alt="이전 킹세종" width={80} height={100} />
+              <img src={previous} alt={t('이전 킹세종')} width={80} height={100} />
               <span aria-hidden="true">→</span>
-              <img src={character} alt="성장한 킹세종" width={80} height={100} />
+              <img src={character} alt={t('성장한 킹세종')} width={80} height={100} />
             </div>
           </Panel>
         )}
@@ -55,7 +57,7 @@ export default function LevelUpScreen() {
               navigate('mypage')
             }}
           >
-            내 킹세종 보기
+            {t('내 킹세종 보기')}
           </Button>
           <Button
             className={styles.primaryAction}

@@ -1,10 +1,12 @@
+import { useUiText } from '@/app/useUiText'
 import { Suspense, useEffect, useRef } from 'react'
 import { screens, type ScreenName } from '@/app/routes/screens'
 import { useSession } from '@/app/useSession'
 import styles from './ScreenLayout.module.css'
 import { isScreen, navigate } from '@/app/router'
 export function ScreenLayout({ screen }: { screen: ScreenName }) {
-  const { notice } = useSession()
+  const t = useUiText()
+  const { notice, preferences } = useSession()
   const entry = screens[screen]
   const Page = entry.component
   const main = useRef<HTMLElement>(null)
@@ -28,13 +30,20 @@ export function ScreenLayout({ screen }: { screen: ScreenName }) {
     return () => window.removeEventListener('message', onNavigate)
   }, [])
   useEffect(() => {
-    document.title = `${entry.title} | 킹세종 한글서당`
+    const locale = preferences.language === 'English' ? 'en' : 'ko'
+    document.documentElement.lang = locale
+    document.title = [t(entry.title), t('킹세종 한글서당')].join(' | ')
+    if (window.parent !== window) {
+      window.parent.postMessage({ type: 'hangeul-locale', locale }, window.location.origin)
+    }
+  }, [entry.title, preferences.language, t])
+  useEffect(() => {
     if (window.parent !== window) {
       window.parent.postMessage({ type: 'hangeul-screen', screen }, window.location.origin)
     }
     window.scrollTo({ top: 0 })
     main.current?.focus({ preventScroll: true })
-  }, [screen, entry.title])
+  }, [screen])
   return (
     <>
       <a
@@ -45,7 +54,7 @@ export function ScreenLayout({ screen }: { screen: ScreenName }) {
           main.current?.focus()
         }}
       >
-        본문으로 바로가기
+        {t('본문으로 바로가기')}
       </a>
       <main
         id="screen-content"
@@ -53,12 +62,12 @@ export function ScreenLayout({ screen }: { screen: ScreenName }) {
         tabIndex={-1}
         className={styles.screen}
         data-screen={screen}
-        aria-label={entry.title}
+        aria-label={t(entry.title)}
       >
         <Suspense
           fallback={
             <p className={styles.loading} role="status">
-              화면을 불러오고 있어요…
+              {t('화면을 불러오고 있어요…')}
             </p>
           }
         >

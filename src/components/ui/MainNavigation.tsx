@@ -1,3 +1,4 @@
+import { useUiText } from '@/app/useUiText'
 import type { ScreenName } from '@/app/routes/screens'
 import styles from './controls.module.css'
 const tabs = [
@@ -15,8 +16,9 @@ export function MainNavigation({
   home: ScreenName
   onNavigate: (screen: ScreenName) => void
 }) {
+  const t = useUiText()
   return (
-    <nav className={styles.navigation} data-name="tabbar" aria-label="주 메뉴">
+    <nav className={styles.navigation} data-name="tabbar" aria-label={t('주 메뉴')}>
       {tabs.map((tab) => {
         const active = tab.screen === 'home' ? screen.startsWith('home') : screen === tab.screen
         return (
@@ -24,14 +26,14 @@ export function MainNavigation({
             key={tab.label}
             type="button"
             data-action="tab"
-            aria-label={tab.label}
+            aria-label={t(tab.label)}
             onClick={() => onNavigate(tab.screen === 'home' ? home : tab.screen)}
             data-name="tab"
             className={styles.tab}
             aria-current={active ? 'page' : undefined}
           >
             <img src={`/assets/figma/${active ? tab.activeIcon : tab.icon}`} alt="" />
-            <span>{tab.label}</span>
+            <span>{t(tab.label)}</span>
           </button>
         )
       })}

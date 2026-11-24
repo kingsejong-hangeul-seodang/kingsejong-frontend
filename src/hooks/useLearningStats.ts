@@ -17,9 +17,10 @@ export function learningStats(records: WritingRecord[], now = new Date()) {
     streak,
   }
 }
-export function useLearningStats() {
+export function useLearningStats(enabled = true) {
   const [records, setRecords] = useState<WritingRecord[] | null>(null)
   useEffect(() => {
+    if (!enabled) return
     let active = true
     listRecords()
       .then((value) => {
@@ -29,6 +30,6 @@ export function useLearningStats() {
     return () => {
       active = false
     }
-  }, [])
+  }, [enabled])
   return { records, ...learningStats(records ?? []) }
 }

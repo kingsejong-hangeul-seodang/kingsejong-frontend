@@ -1,3 +1,4 @@
+import { useUiText } from '@/app/useUiText'
 import type { ReactNode } from 'react'
 import styles from './patterns.module.css'
 export function StatCard({
@@ -13,6 +14,7 @@ export function StatCard({
   children?: ReactNode
   onClick?: () => void
 }) {
+  const t = useUiText()
   const content = (
     <>
       <p className={styles.statLabel}>{label}</p>
@@ -24,7 +26,7 @@ export function StatCard({
     <button
       type="button"
       data-action="stat"
-      aria-label="내 킹세종 보기"
+      aria-label={t('내 킹세종 보기')}
       onClick={onClick}
       className={`${className} ${styles.stat}`}
       data-name="통계 칸"

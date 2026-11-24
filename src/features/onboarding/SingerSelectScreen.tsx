@@ -1,3 +1,4 @@
+import { useUiText } from '@/app/useUiText'
 import { useRef, useState } from 'react'
 import { ApiError } from '@/api/backend'
 import { studyApi } from '@/api/integration'
@@ -14,6 +15,7 @@ import onboarding from './Onboarding.module.css'
 import styles from '@/styles/screens.module.css'
 
 export default function Taste() {
+  const t = useUiText()
   const {
     preferences,
     update,
@@ -48,7 +50,7 @@ export default function Taste() {
     setSaving(true)
     try {
       if (studyApi) {
-        if (!accessToken) throw new ApiError(401, 'UNAUTHORIZED', '로그인이 필요해요.')
+        if (!accessToken) throw new ApiError(401, 'UNAUTHORIZED', t('로그인이 필요해요.'))
         await studyApi.saveTastes(accessToken, mode, selected == null ? [] : [selected])
         catalog.tastes.clear()
         catalog.lists.clear()
@@ -63,7 +65,7 @@ export default function Taste() {
         setAccessToken(null)
         navigate('login')
       }
-      notify(error instanceof Error ? error.message : '취향을 저장하지 못했어요.')
+      notify(error instanceof Error ? error.message : t('취향을 저장하지 못했어요.'))
     } finally {
       pending.current = false
       setSaving(false)
@@ -73,18 +75,18 @@ export default function Taste() {
   return (
     <div className={styles.screen} data-name="taste">
       <AppBar
-        title="취향 고르기"
+        title={t('취향 고르기')}
         onBack={() => {
           if (!saving) close(true)
         }}
       />
       <div className={onboarding.mediaChoicePage}>
         <h1 className={styles.heading}>
-          좋아하는 {mode === 'kpop' ? '가수' : '작품'}를 골라 주세요
+          {t(mode === 'kpop' ? '좋아하는 가수를 골라 주세요' : '좋아하는 작품을 골라 주세요')}
         </h1>
-        {!data && <p role="status">{error ?? '취향 목록을 불러오고 있어요.'}</p>}
-        {error && <Button onClick={retry}>다시 불러오기</Button>}
-        {data?.length === 0 && <p>고를 수 있는 취향이 아직 없어요.</p>}
+        {!data && <p role="status">{error ?? t('취향 목록을 불러오고 있어요.')}</p>}
+        {error && <Button onClick={retry}>{t('다시 불러오기')}</Button>}
+        {data?.length === 0 && <p>{t('고를 수 있는 취향이 아직 없어요.')}</p>}
         <div className={onboarding.mediaChoices}>
           {data?.map((item) => (
             <ChoiceCard
@@ -113,7 +115,7 @@ export default function Taste() {
           aria-busy={saving}
           onClick={() => void save()}
         >
-          {saving ? '저장 중…' : settingsOrigin ? '선택 완료' : '서당 들어가기'}
+          {saving ? t('저장 중…') : settingsOrigin ? t('선택 완료') : t('서당 들어가기')}
         </Button>
       </div>
     </div>

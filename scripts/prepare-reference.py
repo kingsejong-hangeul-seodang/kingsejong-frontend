@@ -18,6 +18,8 @@ def main():
     parser.add_argument("--workers", type=int, default=2)
     parser.add_argument("--export-only", action="store_true")
     parser.add_argument("--guide-only", action="store_true")
+    parser.add_argument("--preview-strokes", action="store_true",
+                        help="Extract strokes for the current practice catalog and jamo")
     args = parser.parse_args()
     source = args.font.resolve()
     if not source.is_file() or source.suffix.lower() not in (".ttf", ".otf"):
@@ -41,6 +43,12 @@ def main():
     spec.loader.exec_module(guide_font)
     guide_font.build(destination)
     if args.guide_only:
+        return
+    output_dir = ROOT / "repos.local/guide-font"
+    guide = json.loads((output_dir / "guide-font.json").read_text(encoding="utf-8"))
+    if args.preview_strokes or (guide["font"] == "DONGGUK UNIVERSITY" and not args.export_only):
+        from prepare_reference_preview import prepare_preview
+        prepare_preview(destination, output_dir, guide)
         return
     env = {**os.environ, "PYTHONUTF8": "1", "MPLBACKEND": "Agg"}
     if not args.export_only:

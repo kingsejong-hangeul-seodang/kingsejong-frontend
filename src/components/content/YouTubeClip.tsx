@@ -1,3 +1,4 @@
+import { useUiText } from '@/app/useUiText'
 import { useEffect, useImperativeHandle, useRef, useState, type Ref } from 'react'
 import styles from './ContentArtwork.module.css'
 
@@ -93,6 +94,7 @@ export function YouTubeClip({
   onUnavailable: () => void
   ref: Ref<ClipPlayback>
 }) {
+  const t = useUiText()
   const container = useRef<HTMLDivElement>(null)
   const playerRef = useRef<Player>(null)
   const segmentEnd = useRef(initial.end)
@@ -180,8 +182,8 @@ export function YouTubeClip({
   return (
     <div>
       <div ref={container} className={styles.player} hidden={status === 'error'} />
-      {status === 'loading' && <p role="status">영상을 불러오고 있어요.</p>}
-      {status === 'error' && <p role="status">영상을 재생할 수 없어요.</p>}
+      {status === 'loading' && <p role="status">{t('영상을 불러오고 있어요.')}</p>}
+      {status === 'error' && <p role="status">{t('영상을 재생할 수 없어요.')}</p>}
     </div>
   )
 }

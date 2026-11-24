@@ -45,16 +45,6 @@
 }
 
 .logoutButton {
-  background: var(--color-surface);
-  align-content: stretch;
-  display: flex;
-  height: 56px;
-  align-items: center;
-  justify-content: center;
-  padding-left: var(--space-block-pad);
-  padding-right: var(--space-block-pad);
-  position: relative;
-  border-radius: var(--radius-m);
   flex-shrink: 0;
-  width: 740px;
+  width: min(740px, calc(100% - 2 * var(--space-page-x)));
 }

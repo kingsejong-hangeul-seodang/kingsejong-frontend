@@ -1,6 +1,6 @@
 import { useCallback } from 'react'
 import { ApiError } from '@/api/backend'
-import { backend, studyApi } from '@/api/integration'
+import { backend, serverStudyApi, studyApi, writingHistoryApi } from '@/api/integration'
 import { demoJamoDetail, demoJamoList } from '@/api/demoJamo'
 import type { TasteItem } from '@/api/study'
 import { useSession } from '@/app/useSession'
@@ -42,10 +42,10 @@ export function useWritingPage(cursor: string) {
   const { catalog } = useSession()
   const { token, writings } = catalog
   const load = useCallback(
-    async () => studyApi!.writings(requireToken(token), cursor),
+    async () => writingHistoryApi!.writings(requireToken(token), cursor),
     [cursor, token],
   )
-  return useCatalogRequest(studyApi ? cursor : null, writings, load)
+  return useCatalogRequest(writingHistoryApi ? cursor : null, writings, load)
 }
 
 export function useStrokeReference(target: string) {
@@ -53,10 +53,12 @@ export function useStrokeReference(target: string) {
   const { token, strokes } = catalog
   const chars = [...new Set(target.match(/[가-힣ㄱ-ㅣ]/g) ?? [])].join('')
   const load = useCallback(
-    async () => studyApi!.strokes(requireToken(token), chars),
+    async () => serverStudyApi!.strokes(requireToken(token), chars),
     [chars, token],
   )
-  return useCatalogRequest(studyApi && chars ? chars : null, strokes, load)
+  const key = serverStudyApi && token && chars ? chars : null
+  const result = useCatalogRequest(key, strokes, load)
+  return { ...result, loading: Boolean(key && !result.data && !result.error) }
 }
 
 export function useTastes(mode: TasteItem['mode']) {

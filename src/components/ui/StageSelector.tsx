@@ -1,3 +1,4 @@
+import { useUiText } from '@/app/useUiText'
 import type { Stage } from '@/app/session'
 import styles from './controls.module.css'
 
@@ -14,8 +15,9 @@ export function StageSelector({
   value: Stage
   onChange: (stage: Stage) => void
 }) {
+  const t = useUiText()
   return (
-    <div className={styles.segment} data-name="stage" role="group" aria-label="난이도 선택">
+    <div className={styles.segment} data-name="stage" role="group" aria-label={t('난이도 선택')}>
       {options.map((option) => (
         <button
           key={option.value}
@@ -25,10 +27,10 @@ export function StageSelector({
           data-action="stage-item"
           data-selected={value === option.value}
           aria-pressed={value === option.value}
-          aria-label={option.label}
+          aria-label={t(option.label)}
           onClick={() => onChange(option.value)}
         >
-          {option.label}
+          {t(option.label)}
         </button>
       ))}
     </div>

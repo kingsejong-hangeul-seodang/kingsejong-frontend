@@ -1,3 +1,4 @@
+import { useUiText } from '@/app/useUiText'
 import { homeScreen } from '@/app/learningFlow'
 import { navigate } from '@/app/router'
 import { useSession } from '@/app/useSession'
@@ -5,17 +6,15 @@ import { contentById, practiceContents } from '@/data/content'
 import { catalogId, catalogKey } from '@/hooks/useCatalog'
 
 export function useNextContent() {
+  const t = useUiText()
   const { contentId, draft, preferences, practiceTarget, selectContent, notify } = useSession()
   const current = draft?.contentId === contentId ? draft.catalogContent : undefined
   const fromCatalog = catalogId(contentId) !== null
   const mode = fromCatalog ? (current?.mode ?? preferences.mode) : contentById(contentId).mode
   const nextId = current?.nextContentId
   const stage = draft?.stage ?? preferences.stage
-  const label = practiceTarget
-    ? '다른 자모 고르기'
-    : fromCatalog && nextId == null
-      ? '홈으로'
-      : '다음 글 쓰기'
+  const returnsHome = !practiceTarget && fromCatalog && nextId == null
+  const label = t(practiceTarget ? '다른 자모 고르기' : returnsHome ? '홈으로' : '다음 글 쓰기')
   function goNext() {
     notify('')
     if (practiceTarget) {
@@ -36,5 +35,5 @@ export function useNextContent() {
     }
     navigate(`write-${stage}`)
   }
-  return { goNext, label, mode }
+  return { goNext, label, mode, returnsHome }
 }

@@ -1,3 +1,4 @@
+import { useUiText } from '@/app/useUiText'
 import { useCallback, useRef, useState } from 'react'
 import type { ContentVideo, SubtitleLine } from '@/api/backend'
 import { ContentPoster } from './ContentPoster'
@@ -27,6 +28,7 @@ export function ContentClip({
   illustrated?: boolean
   captionFont?: string
 }) {
+  const t = useUiText()
   const [initial, setInitial] = useState<ClipSegment | null>(null)
   const [time, setTime] = useState<number | null>(null)
   const [support, setSupport] = useState<boolean | null>(null)
@@ -70,7 +72,7 @@ export function ContentClip({
   }
 
   return (
-    <section className={styles.clip} aria-label={dictation ? '받아쓰기 클립' : '클립과 자막'}>
+    <section className={styles.clip} aria-label={dictation ? t('받아쓰기 클립') : t('클립과 자막')}>
       {playable && initial && !videoFailed ? (
         <YouTubeClip
           ref={player}
@@ -92,7 +94,7 @@ export function ContentClip({
           {((playable && !videoFailed) || speech.available) && (
             <button
               className={styles.playButton}
-              aria-label="클립 듣기"
+              aria-label={t('클립 듣기')}
               onClick={() => play(1, true)}
             >
               <img src="/assets/figma/daefb.svg" width="24" height="24" alt="" />
@@ -102,7 +104,7 @@ export function ContentClip({
       )}
       <div className={styles.caption}>
         {dictation ? (
-          <p className={styles.hiddenCaption}>자막은 숨겼어요. 듣고 받아써 보세요</p>
+          <p className={styles.hiddenCaption}>{t('자막은 숨겼어요. 듣고 받아써 보세요')}</p>
         ) : (
           <p
             className={styles.subtitle}

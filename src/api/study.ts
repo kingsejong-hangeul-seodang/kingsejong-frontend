@@ -17,18 +17,19 @@ export type JamoDetail = JamoItem & {
   commonMistake: string | null
   examples: string[]
   practiceContentId: number | null
-  recentWritings: { writingId: number; target: string; message: string }[]
+  recentWritings: { writingId: number; target: string; message: string | null }[]
 }
 export type WritingSummary = {
   writingId: number
   contentId: number
   title: string
   source: string | null
-  mode: ApiMode
+  mode: ApiMode | null
   stage: EngineStage
   target: string
   correct: boolean
   perfect: boolean
+  engineVersion?: string | null
   createdAt: string
 }
 export type WritingPage = { items: WritingSummary[]; nextCursor: string | null }
@@ -36,10 +37,11 @@ export type WritingDetail = Pick<
   WritingSummary,
   'writingId' | 'contentId' | 'stage' | 'target' | 'createdAt'
 > & {
-  canvas: { w: number; h: number }
-  cells: { index: number; strokes: InkStroke[] }[]
   grade: GradeResponse
-}
+} & (
+    | { canvas: { w: number; h: number }; cells: { index: number; strokes: InkStroke[] }[] }
+    | { canvas: null; cells: null }
+  )
 export type StrokeReference = {
   font: string
   items: { char: string; strokes: ReferenceStroke[] }[]
@@ -93,11 +95,12 @@ function writingRow(value: unknown) {
     id(value.contentId) &&
     typeof value.title === 'string' &&
     (value.source === null || typeof value.source === 'string') &&
-    ['kpop', 'kdrama', 'basic'].some((mode) => mode === value.mode) &&
+    (value.mode === null || ['kpop', 'kdrama', 'basic'].some((mode) => mode === value.mode)) &&
     stage(value.stage) &&
     typeof value.target === 'string' &&
     typeof value.correct === 'boolean' &&
     typeof value.perfect === 'boolean' &&
+    (value.engineVersion == null || typeof value.engineVersion === 'string') &&
     typeof value.createdAt === 'string' &&
     Number.isFinite(Date.parse(value.createdAt))
   )
@@ -192,7 +195,10 @@ export function createStudyApi(baseUrl: string) {
     },
     async strokes(token: string, chars: string): Promise<StrokeReference> {
       const search = new URLSearchParams({ chars })
-      const value = await requestBackend(baseUrl, `/reference/strokes?${search}`, { token })
+      const value = await requestBackend(baseUrl, `/reference/strokes?${search}`, {
+        token,
+        cache: 'no-cache',
+      })
       if (
         !isObject(value) ||
         typeof value.font !== 'string' ||
@@ -248,7 +254,7 @@ export function createStudyApi(baseUrl: string) {
             isObject(record) &&
             id(record.writingId) &&
             typeof record.target === 'string' &&
-            typeof record.message === 'string',
+            (record.message === null || typeof record.message === 'string'),
         ) ||
         !('practiceContentId' in value) ||
         (value.practiceContentId !== null && !id(value.practiceContentId))
@@ -276,9 +282,10 @@ export function createStudyApi(baseUrl: string) {
         !id(value.contentId) ||
         !stage(value.stage) ||
         typeof value.target !== 'string' ||
-        !Array.isArray(value.cells) ||
-        !value.cells.every(inkCell) ||
-        !isObject(value.canvas)
+        !(
+          (value.cells === null && value.canvas === null) ||
+          (Array.isArray(value.cells) && value.cells.every(inkCell) && isObject(value.canvas))
+        )
       )
         throw new Error('쓰기 기록 상세 형식을 확인해 주세요.')
       return value as WritingDetail

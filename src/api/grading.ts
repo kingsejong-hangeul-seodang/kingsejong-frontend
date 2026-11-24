@@ -1,5 +1,7 @@
 import type { Stage } from '@/app/session'
 
+export const DEMO_ENGINE_VERSION = 'local-demo-stub'
+
 export type InkPoint = [number, number, number, number]
 export type InkStroke = { points: InkPoint[] }
 export type EngineStage = 'beginner' | 'intermediate' | 'advanced'
@@ -175,12 +177,16 @@ export async function gradeWriting(
   return validateGradeResponse(value, request)
 }
 
-export function validateGradeResponse(value: unknown, request: GradeRequest): GradeResponse {
+export function validateGradeResponse(
+  value: unknown,
+  request: Pick<GradeRequest, 'stage' | 'target'> & { cells: GradeRequest['cells'] | null },
+): GradeResponse {
   if (!value || typeof value !== 'object') throw new Error('채점 응답 형식을 확인해 주세요.')
   const result = value as GradeResponse
+  const cellCount = request.cells?.length ?? (Array.isArray(result.cells) ? result.cells.length : 0)
   const marks = ['none', 'char', 'spacing', 'stroke']
   const cellIndex = (index: unknown) =>
-    Number.isInteger(index) && (index as number) >= 0 && (index as number) < request.cells.length
+    Number.isInteger(index) && (index as number) >= 0 && (index as number) < cellCount
   const indexes = (value: unknown) => Array.isArray(value) && value.every(cellIndex)
   if (
     typeof result.engineVersion !== 'string' ||
@@ -188,7 +194,7 @@ export function validateGradeResponse(value: unknown, request: GradeRequest): Gr
     typeof result.correct !== 'boolean' ||
     typeof result.perfect !== 'boolean' ||
     !Array.isArray(result.cells) ||
-    result.cells.length !== request.cells.length ||
+    result.cells.length !== cellCount ||
     !result.cells.every(
       (cell, index) =>
         cell &&
@@ -212,7 +218,7 @@ export function validateGradeResponse(value: unknown, request: GradeRequest): Gr
             (error.strokeIndex == null ||
               (Number.isInteger(error.strokeIndex) &&
                 error.strokeIndex >= 0 &&
-                error.strokeIndex < request.cells[index]!.strokes.length)),
+                (!request.cells || error.strokeIndex < request.cells[index]!.strokes.length))),
         ),
     ) ||
     !Array.isArray(result.alignment) ||

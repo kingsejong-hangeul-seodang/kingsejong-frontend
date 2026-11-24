@@ -1,5 +1,7 @@
+import { useUiText } from '@/app/useUiText'
 import { useRef, useState } from 'react'
 import { ApiError } from '@/api/backend'
+import { backend, studyApi } from '@/api/integration'
 import { useCompleteOnboarding } from './useCompleteOnboarding'
 import onboardingStyles from '@/features/onboarding/Onboarding.module.css'
 import { useSession } from '@/app/useSession'
@@ -21,6 +23,7 @@ const imgIcon2 = '/assets/figma/68c51.svg'
 const img3 = '/assets/figma/8b680.svg'
 
 export default function ModeSelect() {
+  const t = useUiText()
   const { preferences, update, notify, setAccessToken } = useSession()
   const completeOnboarding = useCompleteOnboarding()
   const [saving, setSaving] = useState(false)
@@ -33,7 +36,7 @@ export default function ModeSelect() {
   async function handleContinue() {
     if (pending.current) return
     notify('')
-    if (preferences.mode !== 'basic') {
+    if (preferences.mode !== 'basic' && (!backend || studyApi)) {
       navigate('taste')
       return
     }
@@ -47,7 +50,7 @@ export default function ModeSelect() {
         setAccessToken(null)
         navigate('login')
       }
-      notify(error instanceof Error ? error.message : '학습 설정을 저장하지 못했어요.')
+      notify(error instanceof Error ? error.message : t('학습 설정을 저장하지 못했어요.'))
     } finally {
       pending.current = false
       setSaving(false)
@@ -59,8 +62,8 @@ export default function ModeSelect() {
       <div className={onboardingStyles.mediaChoicePage} data-node-id="67:1189" data-name="page">
         <SejongMessage
           className={onboardingStyles.mediaChoiceGuide}
-          title={'무엇으로 쓸까요?'}
-          description={'홈에서 언제든 바꿀 수 있어요.'}
+          title={t('무엇으로 쓸까요?')}
+          description={t('홈에서 언제든 바꿀 수 있어요.')}
           src={'/assets/figma/fc462.png'}
           vertical={true}
           characterWidth={200}
@@ -72,7 +75,7 @@ export default function ModeSelect() {
             data-node-id="67:1198"
             data-name="choice"
             kind="choice"
-            label="K팝으로 좋아하는 노래 가사"
+            label={t('K팝으로 좋아하는 노래 가사')}
             selected={preferences.mode === 'pop'}
             disabled={saving}
             onClick={() => update({ mode: 'pop' })}
@@ -98,10 +101,10 @@ export default function ModeSelect() {
               </div>
             </Thumbnail>
             <p className={styles.sectionTitle} data-node-id="67:1205">
-              K팝으로
+              {t('K팝으로')}
             </p>
             <p className={styles.secondaryText} data-node-id="67:1206">
-              좋아하는 노래 가사
+              {t('좋아하는 노래 가사')}
             </p>
           </ChoiceCard>
           <ChoiceCard
@@ -109,7 +112,7 @@ export default function ModeSelect() {
             data-node-id="67:1207"
             data-name="choice"
             kind="choice"
-            label="K드라마로 드라마 명대사"
+            label={t('K드라마로 드라마 명대사')}
             selected={preferences.mode === 'drama'}
             disabled={saving}
             onClick={() => update({ mode: 'drama' })}
@@ -135,10 +138,10 @@ export default function ModeSelect() {
               </div>
             </Thumbnail>
             <p className={styles.sectionTitle} data-node-id="67:1213">
-              K드라마로
+              {t('K드라마로')}
             </p>
             <p className={styles.secondaryText} data-node-id="67:1214">
-              드라마 명대사
+              {t('드라마 명대사')}
             </p>
           </ChoiceCard>
           <ChoiceCard
@@ -146,7 +149,7 @@ export default function ModeSelect() {
             data-node-id="67:1215"
             data-name="choice"
             kind="choice"
-            label="가 기본 연습 자음·모음·단어·문장"
+            label={t('가 기본 연습 자음·모음·단어·문장')}
             selected={preferences.mode === 'basic'}
             disabled={saving}
             onClick={() => update({ mode: 'basic' })}
@@ -167,10 +170,10 @@ export default function ModeSelect() {
               </div>
             </Thumbnail>
             <p className={styles.sectionTitle} data-node-id="67:1219">
-              기본 연습
+              {t('기본 연습')}
             </p>
             <p className={styles.secondaryText} data-node-id="67:1220">
-              자음·모음·단어·문장
+              {t('자음·모음·단어·문장')}
             </p>
           </ChoiceCard>
         </div>
@@ -182,13 +185,13 @@ export default function ModeSelect() {
           data-name="버튼/주"
           variant="primary"
           data-action="버튼/주"
-          aria-label="다음"
+          aria-label={t('다음')}
           disabled={saving}
           aria-busy={saving}
           onClick={() => void handleContinue()}
         >
           <p className={styles.primaryButtonText} data-node-id="I67:1222;19:41">
-            다음
+            {t('다음')}
           </p>
         </Button>
       </div>

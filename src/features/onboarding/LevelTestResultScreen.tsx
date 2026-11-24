@@ -1,3 +1,4 @@
+import { useUiText } from '@/app/useUiText'
 import { AppBar } from '@/components/ui/AppBar'
 import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
@@ -14,6 +15,7 @@ import { engineStages } from '@/api/grading'
 const tasks = taskData as { stage: Stage; target: string; title: string }[]
 
 export function LevelTestResultScreen() {
+  const t = useUiText()
   const {
     testDrafts,
     testAssessment,
@@ -52,33 +54,33 @@ export function LevelTestResultScreen() {
     ? (testAssessment?.steps ?? []).map(({ step, title, passed }) => ({
         step,
         title,
-        label: passed ? '통과' : '연습 필요',
+        label: passed ? t('통과') : t('연습 필요'),
         tone: passed ? ('success' as const) : ('warning' as const),
       }))
     : tasks.map((task, index) => ({
         step: index + 1,
         title: task.title,
         label: !testDrafts[index]
-          ? '미제출'
+          ? t('미제출')
           : !graded
-            ? '미채점'
+            ? t('미채점')
             : grades[index]?.correct
-              ? '통과'
-              : '연습 필요',
+              ? t('통과')
+              : t('연습 필요'),
         tone: !graded
           ? ('neutral' as const)
           : grades[index]?.correct
             ? ('success' as const)
             : ('warning' as const),
       }))
-  const labels = { beginner: '초보', mid: '중수', pro: '고수' }
+  const labels = { beginner: t('초보'), mid: t('중수'), pro: t('고수') }
   async function start() {
     if (pending.current) return
     pending.current = true
     setSaving(true)
     try {
       if (backend && graded) {
-        if (!accessToken) throw new ApiError(401, 'UNAUTHORIZED', '로그인이 필요해요.')
+        if (!accessToken) throw new ApiError(401, 'UNAUTHORIZED', t('로그인이 필요해요.'))
         await backend.updateMe(accessToken, { stage: engineStages[recommended] })
         catalog.profiles.clear()
       }
@@ -89,7 +91,7 @@ export function LevelTestResultScreen() {
         setAccessToken(null)
         navigate('login')
       }
-      notify(error instanceof Error ? error.message : '난이도를 저장하지 못했어요.')
+      notify(error instanceof Error ? error.message : t('난이도를 저장하지 못했어요.'))
     } finally {
       pending.current = false
       setSaving(false)
@@ -101,15 +103,17 @@ export function LevelTestResultScreen() {
       data-name="leveltest-result — 레벨 테스트 결과"
       data-node-id="67:1143"
     >
-      <AppBar title="레벨 테스트 결과" onBack={handleBack} />
+      <AppBar title={t('레벨 테스트 결과')} onBack={handleBack} />
       <div className={styles.centeredPage}>
         <SejongMessage
           className={styles.verticalGuide}
-          title={graded ? `‘${labels[recommended]}’를 추천해요` : '썼던 글을 모두 확인했어요'}
+          title={
+            graded ? t('‘{0}’를 추천해요', labels[recommended]) : t('썼던 글을 모두 확인했어요')
+          }
           description={
             graded
-              ? '내게 맞는 난이도에서 차근차근 연습해 봐요.'
-              : '아직 미채점이에요. 난이도를 직접 골라 시작할 수 있어요.'
+              ? t('내게 맞는 난이도에서 차근차근 연습해 봐요.')
+              : t('아직 미채점이에요. 난이도를 직접 골라 시작할 수 있어요.')
           }
           src="/assets/figma/04d6d.png"
           vertical
@@ -128,7 +132,7 @@ export function LevelTestResultScreen() {
               </div>
             ))}
           </div>
-          <p className={styles.secondaryText}>난이도는 홈에서 언제든 바꿀 수 있어요.</p>
+          <p className={styles.secondaryText}>{t('난이도는 홈에서 언제든 바꿀 수 있어요.')}</p>
         </Panel>
       </div>
       <div className={styles.footer}>
@@ -139,10 +143,10 @@ export function LevelTestResultScreen() {
             disabled={saving}
             onClick={() => navigate('stage-select')}
           >
-            직접 고르기
+            {t('직접 고르기')}
           </Button>
           <Button className={styles.primaryAction} disabled={saving} onClick={() => void start()}>
-            {labels[graded ? recommended : preferences.stage]}로 시작
+            {t('{0}로 시작', t(labels[graded ? recommended : preferences.stage]))}
           </Button>
         </div>
       </div>
