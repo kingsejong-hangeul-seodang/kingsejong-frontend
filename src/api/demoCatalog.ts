@@ -1,4 +1,4 @@
-import { contents, practiceContents, targetCells, targetGroups } from '@/data/content'
+import { contents, practiceCellCount, practiceContents, targetGroups } from '@/data/content'
 import type { Mode, Stage } from '@/app/session'
 import { ApiError, apiModes, writeModes, type ContentDetail, type ContentItem } from './backend'
 import { engineStages } from './grading'
@@ -16,10 +16,6 @@ const entries = contents.map((content, index) => ({
   localId: content.id,
 }))
 const ids = new Map(entries.map((entry) => [entry.localId, entry.id]))
-
-function cellCount(target: string, stage: Stage) {
-  return targetCells(target, stage).length + (stage === 'pro' ? 2 : 0)
-}
 
 function contentKind(mode: Mode, target: string): ContentItem['kind'] {
   if (mode !== 'basic') return 'clip'
@@ -42,7 +38,7 @@ export function demoContents(mode: Mode, stage: Stage, favorite: string): Conten
         durationSec: artwork[item.id]?.durationSec ?? null,
         meaning: item.meaning,
         target: stage === 'pro' ? null : target,
-        cellCount: stage === 'pro' ? null : cellCount(target, stage),
+        cellCount: stage === 'pro' ? null : practiceCellCount(target, stage),
         wordCount: stage === 'pro' ? null : target.split(' ').length,
         tasteMatched: mode !== 'basic' && favorite !== '' && item.source.startsWith(favorite),
         completed: false,
@@ -73,7 +69,7 @@ export function demoContent(id: number, stage: Stage): ContentDetail {
       writeMode: writeModes[engineStages[stage]],
       target,
       meaning: item.meaning,
-      cellCount: cellCount(target, stage),
+      cellCount: practiceCellCount(target, stage),
       wordGroups: targetGroups(target, stage) ?? null,
       speech: item.mode === 'basic' ? { text: target, lang: 'ko-KR' } : null,
     },

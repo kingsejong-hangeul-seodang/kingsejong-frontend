@@ -77,7 +77,7 @@ export function ReferenceGlyph({
         const active = fraction > 0 && fraction < 1
         const labelX = Math.max(4, Math.min(96, first[0] * 100 - 4))
         const labelY = Math.max(4, Math.min(96, first[1] * 100 - 5))
-        const width = numbers ? 3.5 : 2
+        const width = numbers ? 8.5 : 2
         return (
           <g key={stroke.order}>
             {numbers && (

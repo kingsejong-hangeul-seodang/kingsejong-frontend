@@ -28,9 +28,9 @@ export default function JamoCollectionScreen() {
 
   return (
     <div className={styles.screen} data-name="dogam">
-      <div className={styles.sectionHeader}>
-        <h1 className={styles.singleLineHeading}>{t('자모 도감')}</h1>
-        <p className={styles.panelBody}>{t('자모를 누르면 쓰는 순서를 봐요.')}</p>
+      <div className={styles.pageHeader}>
+        <h1 className={styles.heading}>{t('자모 도감')}</h1>
+        <p className={styles.bodyText}>{t('자모를 누르면 쓰는 순서를 봐요.')}</p>
       </div>
       <div className={styles.pageWithNavigation}>
         {!data && (

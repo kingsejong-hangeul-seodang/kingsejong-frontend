@@ -19,7 +19,7 @@ export function useAnswerStrokes(target: string) {
   )
   const compatible = !dongguk || remoteDongguk
   for (const item of (compatible ? remote.data?.items : undefined) ?? []) {
-    if (item.strokes.length && (dongguk || !prefersLocal || !localStrokes[item.char]))
+    if (item.strokes.length && (!prefersLocal || !localStrokes[item.char]?.length))
       strokes[item.char] = item.strokes
   }
   const coveredLocally = chars.length > 0 && chars.every((char) => localStrokes[char]?.length)

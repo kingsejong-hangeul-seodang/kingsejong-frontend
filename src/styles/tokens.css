@@ -103,6 +103,7 @@
   --space-block-pad: 24px;
   --space-stack-l: 32px;
   --space-page-x: 40px;
+  --page-content-width: min(740px, calc(100% - 2 * var(--space-page-x)));
   --radius-s: 8px;
   --radius-m: 12px;
   --radius-l: 16px;

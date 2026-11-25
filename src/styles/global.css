@@ -6,6 +6,9 @@
 p {
   margin: 0;
 }
+html {
+  scrollbar-gutter: stable;
+}
 button {
   padding: 0;
   background: transparent;
@@ -149,7 +152,7 @@ a {
     width: auto;
   }
   #root [data-name='stats'] {
-    width: calc(100% - 2 * var(--space-page-x));
+    width: var(--page-content-width);
   }
   #root [data-name='stats'] > * {
     flex: 1;
@@ -157,7 +160,7 @@ a {
     min-width: 0;
   }
   #root [data-name='cards'] {
-    width: calc(100% - 2 * var(--space-page-x));
+    width: var(--page-content-width);
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }

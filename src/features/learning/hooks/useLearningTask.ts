@@ -1,5 +1,5 @@
 import { useSession, type Stage } from '@/app/useSession'
-import { learningContent, targetCells, targetGroups } from '@/data/content'
+import { learningContent, practiceCellCount, targetGroups } from '@/data/content'
 import { catalogId, screenModes, useCatalogDetail } from '@/hooks/useCatalog'
 import { writeModes } from '@/api/backend'
 import { engineStages } from '@/api/grading'
@@ -27,7 +27,8 @@ export function useLearningTask(stage: Stage) {
         target: data.task.target,
         writeMode: data.task.writeMode,
         speech: data.task.speech,
-        cellCount: data.task.cellCount,
+        cellCount:
+          stage === 'pro' ? practiceCellCount(data.task.target, stage) : data.task.cellCount,
         groups:
           stage === 'mid'
             ? (data.task.wordGroups ?? targetGroups(data.task.target, stage))
@@ -46,7 +47,7 @@ export function useLearningTask(stage: Stage) {
       target,
       writeMode: writeModes[engineStages[stage]],
       speech: null,
-      cellCount: targetCells(target, stage).length + (stage === 'pro' ? 2 : 0),
+      cellCount: practiceCellCount(target, stage),
       groups: targetGroups(target, stage),
       nextContentId: undefined,
       apiId: null,

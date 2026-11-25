@@ -8,20 +8,36 @@ import { SejongMessage } from '@/components/SejongMessage'
 import { Button } from '@/components/ui/Button'
 import styles from '@/styles/screens.module.css'
 
+function getPreviewLevel() {
+  if (!import.meta.env.DEV) return undefined
+  const value = new URLSearchParams(window.location.search).get('levelupPreview')
+  if (value === null) return undefined
+  const levelNo = Number(value)
+  return Number.isInteger(levelNo) && levelNo >= 2 && levelNo <= levels.length ? levelNo : 2
+}
+
 export default function LevelUpScreen() {
   const t = useUiText()
   const { draft, saveDraft, preferences } = useSession()
   const { goNext, label } = useNextContent()
   const reward = draft?.reward
-  const active = reward?.leveledUp ?? false
+  const previewLevel = getPreviewLevel()
+  const active = previewLevel !== undefined || (reward?.leveledUp ?? false)
   const levelNo =
-    reward?.level.no ?? levels.findLastIndex((item) => item.exp <= preferences.exp) + 1
+    previewLevel ??
+    reward?.level.no ??
+    levels.findLastIndex((item) => item.exp <= preferences.exp) + 1
   const character = levels[levelNo - 1]?.image ?? levels[0].image
-  const previous =
-    active && reward?.previousLevelNo ? levels[reward.previousLevelNo - 1]?.image : undefined
+  const previousLevel = previewLevel === undefined ? reward?.previousLevelNo : previewLevel - 1
+  const previous = active && previousLevel ? levels[previousLevel - 1]?.image : undefined
+  const name = previewLevel === undefined ? reward?.level.name : levels[previewLevel - 1]?.name
+  const exp =
+    previewLevel === undefined
+      ? (reward?.level.exp ?? preferences.exp)
+      : levels[previewLevel - 1]!.exp
 
   function acknowledge() {
-    if (draft?.reward?.leveledUp)
+    if (previewLevel === undefined && draft?.reward?.leveledUp)
       saveDraft({ ...draft, reward: { ...draft.reward, leveledUp: false } })
   }
 
@@ -30,8 +46,8 @@ export default function LevelUpScreen() {
       <div className={styles.fullHeightCenteredPage}>
         <SejongMessage
           className={styles.verticalGuide}
-          title={active ? t('레벨 업! ‘{0}’이 됐어요', reward?.level.name) : t('내 킹세종의 성장')}
-          description={t('누적 {0} EXP', reward?.level.exp ?? preferences.exp)}
+          title={active ? t('레벨 업! ‘{0}’이 됐어요', name) : t('내 킹세종의 성장')}
+          description={t('누적 {0} EXP', exp)}
           src={character}
           vertical
           characterWidth={200}
@@ -63,10 +79,11 @@ export default function LevelUpScreen() {
             className={styles.primaryAction}
             onClick={() => {
               acknowledge()
-              goNext()
+              if (previewLevel === undefined) goNext()
+              else navigate('home')
             }}
           >
-            {label}
+            {previewLevel === undefined ? label : t('홈으로')}
           </Button>
         </div>
       </div>

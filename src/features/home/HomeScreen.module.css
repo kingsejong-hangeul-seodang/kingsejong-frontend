@@ -92,7 +92,7 @@
   align-items: flex-start;
   position: relative;
   flex-shrink: 0;
-  width: 740px;
+  width: var(--page-content-width);
 }
 
 .popCard {
@@ -124,8 +124,7 @@
 .stats {
   display: flex;
   gap: var(--space-block-gap);
-  width: 740px;
-  max-width: calc(100% - 2 * var(--space-page-x));
+  width: var(--page-content-width);
 }
 .stats > * {
   flex: 1;
