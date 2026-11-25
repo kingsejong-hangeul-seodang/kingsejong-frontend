@@ -7,15 +7,7 @@ ROOT = Path(__file__).resolve().parents[1]
 ENGINE = ROOT / "repos.local/Python-correction-engine"
 
 
-def prepare_preview(font, output, guide):
-    sys.path.insert(0, str(ENGINE))
-    from app.core.stroke_vectorizer import compose as C, extract as E
-
-    info = C.font_info(str(font))
-    digest = sha256(font.read_bytes()).hexdigest()
-    if guide["sha256"] != digest:
-        raise ValueError("Reference font and guide font do not match")
-
+def practice_chars(jamo):
     demo = json.loads((ROOT / "src/data/content.json").read_text(encoding="utf-8"))
     levels = json.loads((ROOT / "src/features/onboarding/leveltest-tasks.json").read_text(encoding="utf-8"))
     server = []
@@ -26,8 +18,52 @@ def prepare_preview(font, output, guide):
     targets = [target for item in demo for target in item["targets"].values()]
     targets += [item["target"] for item in levels]
     targets += [task["target"] for item in server for task in item.get("tasks", [])]
-    chars = set("".join(targets)) | set(E.JAMO_TEMPLATES)
-    chars = sorted(ch for ch in chars if "가" <= ch <= "힣" or ch in E.JAMO_TEMPLATES)
+    chars = set("".join(targets)) | set(jamo)
+    return sorted(ch for ch in chars if "가" <= ch <= "힣" or ch in jamo)
+
+
+def write_preview(output, guide, characters, total):
+    dest = output / "reference.json"
+    temp = dest.with_suffix(".tmp")
+    temp.write_text(json.dumps(dict(schemaVersion=1, font=guide["font"], fontSha256=guide["sha256"],
+                                    totalGenerated=total, characters=characters),
+                              ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+    temp.replace(dest)
+    print(f"Saved {len(characters)} glyphs to {dest}")
+
+
+def import_composed(source, output, guide):
+    if guide["font"] != "DONGGUK UNIVERSITY":
+        raise ValueError("The curated Dongguk dictionary requires the Dongguk guide font")
+    data = json.loads(source.read_text(encoding="utf-8-sig"))
+    jamo = {chr(code) for code in range(0x3131, 0x3164)}
+    hangul = {chr(code) for code in range(0xAC00, 0xD7A4)}
+    if not isinstance(data, dict) or data.keys() != jamo | hangul:
+        raise ValueError("Expected all 11172 Hangul syllables and 51 standalone jamo")
+    characters = {char: data[char] for char in practice_chars(jamo)}
+    for char, strokes in characters.items():
+        if not isinstance(strokes, list) or not 1 <= len(strokes) <= 100 or any(
+            stroke["order"] != index or not isinstance(stroke["jamo"], str)
+            or stroke["role"] not in {"cho", "jung", "jong"}
+            or not 1 <= len(stroke["points"]) <= 1000
+            or any(len(point) != 2 or not all(0 <= value <= 1 for value in point)
+                   for point in stroke["points"])
+            for index, stroke in enumerate(strokes, 1)
+        ):
+            raise ValueError(f"Invalid reference strokes for {char}")
+    write_preview(output, guide, characters, len(data))
+
+
+def prepare_preview(font, output, guide):
+    sys.path.insert(0, str(ENGINE))
+    from app.core.stroke_vectorizer import compose as C, extract as E
+
+    info = C.font_info(str(font))
+    digest = sha256(font.read_bytes()).hexdigest()
+    if guide["sha256"] != digest:
+        raise ValueError("Reference font and guide font do not match")
+
+    chars = practice_chars(E.JAMO_TEMPLATES)
 
     out = {}
     dest = output / "reference.json"
@@ -82,9 +118,4 @@ def prepare_preview(font, output, guide):
 
     if not out:
         raise ValueError('No glyph strokes could be extracted')
-    temp = dest.with_suffix(".tmp")
-    temp.write_text(json.dumps(dict(schemaVersion=1, font=guide["font"], fontSha256=digest,
-                                    totalGenerated=len(out), characters=out),
-                              ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
-    temp.replace(dest)
-    print(f"Saved {len(out)} glyphs to {dest}")
+    write_preview(output, guide, out, len(out))

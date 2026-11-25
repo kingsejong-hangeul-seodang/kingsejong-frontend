@@ -18,13 +18,18 @@ def main():
     parser.add_argument("--workers", type=int, default=2)
     parser.add_argument("--export-only", action="store_true")
     parser.add_argument("--guide-only", action="store_true")
+    parser.add_argument("--composed", type=Path, help="Import the curated Dongguk composed_all.json")
     parser.add_argument("--preview-strokes", action="store_true",
                         help="Extract strokes for the current practice catalog and jamo")
     args = parser.parse_args()
+    if args.composed and (args.guide_only or args.export_only or args.preview_strokes):
+        parser.error("--composed replaces --guide-only, --export-only and --preview-strokes")
+    if args.composed and not args.composed.is_file():
+        parser.error("Provide an existing composed_all.json")
     source = args.font.resolve()
     if not source.is_file() or source.suffix.lower() not in (".ttf", ".otf"):
         parser.error("Provide an existing .ttf or .otf font with Korean glyphs")
-    if not (ENGINE / "app/core/stroke_vectorizer/extract.py").is_file():
+    if not args.composed and not (ENGINE / "app/core/stroke_vectorizer/extract.py").is_file():
         parser.error("Clone Python-correction-engine into repos.local first")
     destination = ENGINE / "data/fonts" / source.name
     destination.parent.mkdir(parents=True, exist_ok=True)
@@ -46,6 +51,10 @@ def main():
         return
     output_dir = ROOT / "repos.local/guide-font"
     guide = json.loads((output_dir / "guide-font.json").read_text(encoding="utf-8"))
+    if args.composed:
+        from prepare_reference_preview import import_composed
+        import_composed(args.composed, output_dir, guide)
+        return
     if args.preview_strokes or (guide["font"] == "DONGGUK UNIVERSITY" and not args.export_only):
         from prepare_reference_preview import prepare_preview
         prepare_preview(destination, output_dir, guide)

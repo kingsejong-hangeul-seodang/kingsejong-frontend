@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/Button'
 import { WritingTools } from '@/components/writing/WritingTools'
 import { PracticePaper } from '@/components/writing/PracticePaper'
 import { useSession, type Stage } from '@/app/useSession'
-import { listeningTitle, targetCells } from '@/data/content'
+import { listeningTitle, practiceColumns, targetCells } from '@/data/content'
 import { useLearningTask, type LearningTask } from './hooks/useLearningTask'
 import { LearningTaskStatus } from './components/LearningTaskStatus'
 import { ContentClip } from '@/components/content/ContentClip'
@@ -187,7 +187,7 @@ function WritingTask({ stage, task }: { stage: Stage; task: LearningTask }) {
         </div>
         <PracticePaper
           count={cellCount}
-          columns={Math.min(10, cellCount)}
+          columns={Math.min(practiceColumns, cellCount)}
           cellSize={cellSize}
           groups={groups}
           renderGuide={

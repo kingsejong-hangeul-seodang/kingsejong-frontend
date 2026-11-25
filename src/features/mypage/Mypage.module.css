@@ -12,6 +12,7 @@
   position: relative;
   border-radius: var(--radius-l);
   flex-shrink: 0;
+  width: var(--page-content-width);
 }
 
 .profileCharacter {
@@ -32,7 +33,7 @@
   color: var(--color-text-2);
   text-align: center;
   letter-spacing: -0.28px;
-  white-space: nowrap;
+  overflow-wrap: anywhere;
 }
 
 .experienceTrack {
@@ -45,5 +46,5 @@
   position: relative;
   border-radius: var(--radius-pill);
   flex-shrink: 0;
-  width: 692px;
+  width: 100%;
 }

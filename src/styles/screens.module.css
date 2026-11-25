@@ -275,7 +275,7 @@
   align-items: flex-end;
   position: relative;
   flex-shrink: 0;
-  width: min(740px, calc(100% - 2 * var(--space-page-x)));
+  width: var(--page-content-width);
 }
 
 .sectionTitle {
@@ -335,7 +335,7 @@
   position: relative;
   border-radius: var(--radius-l);
   flex-shrink: 0;
-  width: min(740px, calc(100% - 2 * var(--space-page-x)));
+  width: var(--page-content-width);
 }
 
 .stepRow {
@@ -520,7 +520,7 @@
   position: relative;
   border-radius: var(--radius-l);
   flex-shrink: 0;
-  width: min(740px, calc(100% - 2 * var(--space-page-x)));
+  width: var(--page-content-width);
 }
 
 .panelHeader {
@@ -682,7 +682,6 @@
   position: relative;
   flex-shrink: 0;
   width: 100%;
-  white-space: nowrap;
 }
 
 .heading {

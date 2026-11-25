@@ -38,6 +38,13 @@ export function targetCells(target: string, stage: Stage) {
   const text = target.normalize('NFC')
   return [...(stage === 'pro' ? text : text.replaceAll(' ', ''))]
 }
+export const practiceColumns = 10
+
+export function practiceCellCount(target: string, stage: Stage) {
+  const count = targetCells(target, stage).length
+  return stage === 'pro' ? Math.ceil(count / practiceColumns) * practiceColumns : count
+}
+
 export function targetGroups(target: string, stage: Stage) {
   return stage === 'mid' ? target.split(' ').map((word) => [...word].length) : undefined
 }
