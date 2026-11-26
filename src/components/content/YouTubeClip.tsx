@@ -12,6 +12,7 @@ type Player = {
   playVideo(): void
   pauseVideo(): void
   destroy(): void
+  unloadModule?(module: string): void
 }
 export type ClipSegment = { start: number; end: number; rate: number }
 export type ClipPlayback = { playSegment: (segment: ClipSegment) => void }
@@ -149,6 +150,7 @@ export function YouTubeClip({
             rel: 0,
             iv_load_policy: 3,
             modestbranding: 1,
+            cc_load_policy: 0,
           },
           events: {
             onReady({ target }) {
@@ -185,6 +187,8 @@ export function YouTubeClip({
                 target.seekTo(segmentStart.current, true)
                 target.pauseVideo()
               }
+              // 유튜브 자체 자막은 끈다 (아래 우리 자막과 겹치지 않게)
+              if (active && data === 1) target.unloadModule?.('captions')
               if (active && (data === 1 || data === 5)) {
                 const rates = target.getAvailablePlaybackRates()
                 if (data === 1 && firstPlay) {
