@@ -47,17 +47,22 @@ export function ContentClip({
             time >= line.startSec &&
             time < (line.endSec ?? lines[index + 1]?.startSec ?? clip?.endSec ?? Infinity),
         )
+  // 줄과 줄 사이(쉬는 부분)에는 방금 지나간 줄을 그대로 둔다
+  const passedLine =
+    time === null || activeLine ? undefined : lines.findLast((line) => time >= line.startSec)
   const targetLine = lines.find((line) => line.text.includes(target))
-  const line = activeLine ?? targetLine ?? lines[0]
+  const line = activeLine ?? passedLine ?? targetLine ?? lines[0]
   const caption = line?.text ?? target
   const highlight = caption.indexOf(target)
   // 재생 중인 줄은 노래방처럼 지나간 글자까지 배경을 칠한다
   const lineIndex = line ? lines.indexOf(line) : -1
   const lineEnd = line ? (line.endSec ?? lines[lineIndex + 1]?.startSec ?? clipEnd) : 0
   const sung =
-    activeLine && line === activeLine && time !== null && lineEnd > line.startSec
-      ? Math.min(1, Math.max(0, (time - line.startSec) / (lineEnd - line.startSec)))
-      : null
+    passedLine && line === passedLine
+      ? 1
+      : activeLine && line === activeLine && time !== null && lineEnd > line.startSec
+        ? Math.min(1, Math.max(0, (time - line.startSec) / (lineEnd - line.startSec)))
+        : null
   const speech = usePracticeSpeech(dictation ? target : caption)
 
   function play(rate: number, fullClip = false) {
