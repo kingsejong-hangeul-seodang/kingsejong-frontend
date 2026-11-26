@@ -117,3 +117,16 @@
   gap: 12px;
   align-items: center;
 }
+.paste {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+}
+.paste textarea {
+  font: inherit;
+  font-size: 14px;
+  padding: 8px 10px;
+  border: 1px solid var(--color-line, #d8cfc0);
+  border-radius: 8px;
+}

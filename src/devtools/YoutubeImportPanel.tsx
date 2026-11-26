@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import styles from './YoutubeImportPanel.module.css'
+import { parseSubtitles, type Line } from './parseSubtitles'
 
 // 개발용: 유튜브 영상 + 한국어 자막으로 학습 콘텐츠 만들기 (서버 관리자 API, X-Admin-Key).
 // 만든 콘텐츠는 일반 콘텐츠와 같아서 온보딩 취향 고르기 → 홈 목록 → 쓰기에 그대로 나온다.
@@ -12,7 +13,6 @@ const stageNames: Record<Stage, string> = {
   advanced: '고수',
 }
 
-type Line = { startSec: number; endSec: number; text: string }
 type Preview = {
   videoId: string
   title: string
@@ -21,6 +21,7 @@ type Preview = {
   embeddable: boolean
   lengthSec: number | null
   captionKind: 'manual' | 'asr' | null
+  captionsBlocked: boolean
   lines: Line[]
   suggestion: { startSec: number; endSec: number; targets: Partial<Record<Stage, string>> } | null
 }
@@ -96,6 +97,8 @@ export function YoutubeImportPanel() {
     advanced: '',
   })
   const [meaning, setMeaning] = useState('')
+  const [pasted, setPasted] = useState('')
+  const [manualLines, setManualLines] = useState<Line[] | null>(null)
   const [result, setResult] = useState<Imported | null>(null)
   const [done, setDone] = useState<Imported[]>([])
   const [busy, setBusy] = useState(false)
@@ -128,6 +131,7 @@ export function YoutubeImportPanel() {
     if (!value) return
     setPreview(value)
     setResult(null)
+    setManualLines(null)
     setStart(value.suggestion ? String(value.suggestion.startSec) : '')
     setEnd(value.suggestion ? String(value.suggestion.endSec) : '')
     setTargets({
@@ -152,12 +156,16 @@ export function YoutubeImportPanel() {
           },
         ]),
     )
+    const lines = manualLines
+      ?.filter((line) => line.startSec >= Number(start) && line.endSec <= Number(end))
+      .map((line) => ({ text: line.text, startSec: line.startSec, endSec: line.endSec }))
     const value = await run(() =>
       admin<Imported>(key, '/contents/youtube', 'POST', {
         url,
         mode,
         taste,
         ...(start && end ? { startSec: Number(start), endSec: Number(end) } : {}),
+        ...(lines ? { lines } : {}),
         tasks,
         dryRun,
       }),
@@ -176,12 +184,25 @@ export function YoutubeImportPanel() {
     if (ok) setDone((list) => list.filter((entry) => entry.contentId !== item.contentId))
   }
 
+  function applyPasted() {
+    const lines = parseSubtitles(pasted)
+    const first = lines[0]
+    if (!first) {
+      setError('자막을 읽지 못했어요. SRT·VTT 또는 "0:17 가사" 모양으로 한 줄씩 넣어 주세요.')
+      return
+    }
+    setError('')
+    setManualLines(lines)
+    pickLine(first)
+  }
+
   function pickLine(line: Line) {
     const s = Math.max(0, Math.floor(line.startSec - 1))
     setStart(String(s))
     setEnd(String(Math.min(s + 30, Math.ceil(line.endSec + 1))))
   }
 
+  const shownLines = manualLines ?? preview?.lines ?? []
   const s = Number(start)
   const e = Number(end)
   return (
@@ -245,13 +266,47 @@ export function YoutubeImportPanel() {
               </p>
             </div>
           </div>
-          {preview.lines.length > 0 && (
+          {preview.captionsBlocked && !manualLines && (
+            <p role="alert" className={styles.error}>
+              유튜브가 지금 이 네트워크의 자막 요청을 막았어요 (봇 확인). 잠시 뒤 다시 불러오거나,
+              아래에 자막을 붙여 넣으세요.
+            </p>
+          )}
+          <details open={preview.lines.length === 0}>
+            <summary>
+              자막 직접 넣기 {manualLines ? `(${manualLines.length}줄 적용됨)` : '(선택)'}
+            </summary>
+            <div className={styles.paste}>
+              <textarea
+                rows={6}
+                value={pasted}
+                placeholder={
+                  'SRT·VTT를 그대로 붙여 넣거나 한 줄에 하나씩:\n0:17 무슨 소리죠\n0:20 강고양이 씨'
+                }
+                onChange={(event) => setPasted(event.target.value)}
+              />
+              <div className={styles.row}>
+                <button className={styles.button} disabled={!pasted.trim()} onClick={applyPasted}>
+                  자막 적용
+                </button>
+                {manualLines && (
+                  <button
+                    className={`${styles.button} ${styles.secondary}`}
+                    onClick={() => setManualLines(null)}
+                  >
+                    유튜브 자막으로 되돌리기
+                  </button>
+                )}
+              </div>
+            </div>
+          </details>
+          {shownLines.length > 0 && (
             <>
               <p className={styles.muted}>
                 줄을 누르면 그 줄부터 재생 구간을 잡아요 (최대 30초). 초록 줄이 지금 구간이에요.
               </p>
               <div className={styles.lines}>
-                {preview.lines.map((line, index) => (
+                {shownLines.map((line, index) => (
                   <button
                     key={index}
                     type="button"
