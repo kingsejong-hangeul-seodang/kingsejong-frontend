@@ -149,6 +149,16 @@
   font-size: var(--font-size-title);
 }
 
+/* 재생 중인 줄에서 지나간 글자 (노래방처럼) */
+.subtitle .sung {
+  background: var(--color-brand-tint);
+  transition: background-color 0.1s linear;
+}
+
+.subtitle mark .sung {
+  background: color-mix(in srgb, var(--color-brand) 35%, var(--color-brand-tint));
+}
+
 .subtitle mark {
   border-radius: var(--radius-s);
   padding-inline: 0.08em;

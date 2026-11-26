@@ -19,7 +19,7 @@ type YouTubeApi = {
   Player: new (
     element: HTMLElement,
     options: {
-      playerVars: { origin: string; playsinline: number }
+      playerVars: Record<string, string | number>
       events: {
         onReady: (event: { target: Player }) => void
         onStateChange: (event: { target: Player; data: number }) => void
@@ -97,7 +97,9 @@ export function YouTubeClip({
   const t = useUiText()
   const container = useRef<HTMLDivElement>(null)
   const playerRef = useRef<Player>(null)
+  const segmentStart = useRef(initial.start)
   const segmentEnd = useRef(initial.end)
+  const finished = useRef(false)
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading')
   useImperativeHandle(
     ref,
@@ -105,7 +107,9 @@ export function YouTubeClip({
       playSegment(segment) {
         const player = playerRef.current
         if (!player) return
+        segmentStart.current = segment.start
         segmentEnd.current = segment.end
+        finished.current = false
         player.seekTo(segment.start, true)
         player.setPlaybackRate(segment.rate)
         player.playVideo()
@@ -135,7 +139,17 @@ export function YouTubeClip({
       .then((api) => {
         if (!active) return
         player = new api.Player(host, {
-          playerVars: { origin: window.location.origin, playsinline: 1 },
+          // 학습 구간만 보이게: 유튜브 재생 막대·키보드·관련 영상·전체 화면을 숨긴다 (재생은 우리 버튼으로)
+          playerVars: {
+            origin: window.location.origin,
+            playsinline: 1,
+            controls: 0,
+            disablekb: 1,
+            fs: 0,
+            rel: 0,
+            iv_load_policy: 3,
+            modestbranding: 1,
+          },
           events: {
             onReady({ target }) {
               if (!active) return
@@ -146,14 +160,31 @@ export function YouTubeClip({
               sample = window.setInterval(() => {
                 if (target.getPlayerState() !== 1) return
                 const time = target.getCurrentTime()
-                if (time >= Math.min(end, segmentEnd.current)) {
+                // 구간 앞으로 가 있으면 구간 처음으로
+                if (time < start - 0.3) {
+                  target.seekTo(segmentStart.current, true)
+                  return
+                }
+                // 구간 끝(샘플 간격만큼 미리)에서 멈춘다. 유튜브 끝 화면·다음 장면이 보이지 않게
+                if (time >= Math.min(end, segmentEnd.current) - 0.1) {
                   target.pauseVideo()
+                  finished.current = true
                   return
                 }
                 onTime(time >= start ? time : null)
-              }, 120)
+              }, 100)
             },
             onStateChange({ target, data }) {
+              // 끝난 뒤 영상을 눌러 다시 재생하면 그 구간 처음부터
+              if (active && data === 1 && finished.current) {
+                finished.current = false
+                target.seekTo(segmentStart.current, true)
+              }
+              if (active && data === 0) {
+                finished.current = true
+                target.seekTo(segmentStart.current, true)
+                target.pauseVideo()
+              }
               if (active && (data === 1 || data === 5)) {
                 const rates = target.getAvailablePlaybackRates()
                 if (data === 1 && firstPlay) {

@@ -51,6 +51,13 @@ export function ContentClip({
   const line = activeLine ?? targetLine ?? lines[0]
   const caption = line?.text ?? target
   const highlight = caption.indexOf(target)
+  // 재생 중인 줄은 노래방처럼 지나간 글자까지 배경을 칠한다
+  const lineIndex = line ? lines.indexOf(line) : -1
+  const lineEnd = line ? (line.endSec ?? lines[lineIndex + 1]?.startSec ?? clipEnd) : 0
+  const sung =
+    activeLine && line === activeLine && time !== null && lineEnd > line.startSec
+      ? Math.min(1, Math.max(0, (time - line.startSec) / (lineEnd - line.startSec)))
+      : null
   const speech = usePracticeSpeech(dictation ? target : caption)
 
   function play(rate: number, fullClip = false) {
@@ -112,15 +119,12 @@ export function ContentClip({
               captionFont ? { fontFamily: `"${captionFont}", var(--font-family-base)` } : undefined
             }
           >
-            {highlight < 0 ? (
-              caption
-            ) : (
-              <>
-                {caption.slice(0, highlight)}
-                <mark>{target}</mark>
-                {caption.slice(highlight + target.length)}
-              </>
-            )}
+            <KaraokeCaption
+              text={caption}
+              targetStart={highlight}
+              targetLength={target.length}
+              progress={sung}
+            />
           </p>
         )}
         <div className={styles.captionMeta}>
@@ -141,5 +145,36 @@ export function ContentClip({
         </div>
       </div>
     </section>
+  )
+}
+
+function KaraokeCaption({
+  text,
+  targetStart,
+  targetLength,
+  progress,
+}: {
+  text: string
+  targetStart: number
+  targetLength: number
+  progress: number | null
+}) {
+  const chars = Array.from(text)
+  const sungCount = progress === null ? 0 : Math.ceil(progress * chars.length)
+  const piece = (from: number, to: number) =>
+    chars.slice(from, to).map((char, offset) => (
+      <span key={from + offset} className={from + offset < sungCount ? styles.sung : undefined}>
+        {char}
+      </span>
+    ))
+  if (targetStart < 0) return <>{piece(0, chars.length)}</>
+  const end = targetStart + Array.from(text.slice(targetStart, targetStart + targetLength)).length
+  const start = Array.from(text.slice(0, targetStart)).length
+  return (
+    <>
+      {piece(0, start)}
+      <mark>{piece(start, end)}</mark>
+      {piece(end, chars.length)}
+    </>
   )
 }
