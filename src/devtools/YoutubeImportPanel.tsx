@@ -140,8 +140,6 @@ export function YoutubeImportPanel() {
       advanced: value.suggestion?.targets.advanced ?? '',
     })
     setMeaning('')
-    if (!taste && value.channel)
-      setTaste(value.channel.replace(/\s*(official|labels?)\b.*$/i, '').trim())
   }
 
   async function create(dryRun: boolean) {
@@ -193,7 +191,11 @@ export function YoutubeImportPanel() {
     }
     setError('')
     setManualLines(lines)
-    pickLine(first)
+    // 붙여 넣은 줄이 최대한 들어가게 (30초까지)
+    const from = Math.max(0, Math.floor(first.startSec - 1))
+    const last = lines.filter((line) => line.endSec <= from + 30).at(-1) ?? first
+    setStart(String(from))
+    setEnd(String(Math.min(from + 30, Math.ceil(last.endSec + 1))))
   }
 
   function pickLine(line: Line) {
@@ -281,7 +283,7 @@ export function YoutubeImportPanel() {
                 rows={6}
                 value={pasted}
                 placeholder={
-                  'SRT·VTT를 그대로 붙여 넣거나 한 줄에 하나씩:\n0:17 무슨 소리죠\n0:20 강고양이 씨'
+                  'SRT·VTT를 그대로 붙여 넣거나 한 줄에 하나씩:\n0:17 오늘도 너를 기다렸어\n0:20 보고 싶었어'
                 }
                 onChange={(event) => setPasted(event.target.value)}
               />
