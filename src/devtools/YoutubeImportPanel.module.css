@@ -1,0 +1,132 @@
+.body {
+  width: 860px;
+  max-width: calc(100% - 32px);
+  margin: 24px auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  color: var(--color-text-1, #28221b);
+}
+.card {
+  padding: 20px;
+  border: 1px solid var(--color-line, #d8cfc0);
+  border-radius: 16px;
+  background: var(--color-paper, #fffdf8);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.card h2 {
+  font-size: 20px;
+}
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+.row label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+  flex: 1 1 160px;
+}
+.row input,
+.row select {
+  font: inherit;
+  padding: 8px 10px;
+  border: 1px solid var(--color-line, #d8cfc0);
+  border-radius: 8px;
+  background: #fff;
+}
+.wide {
+  flex: 3 1 320px !important;
+}
+.button {
+  font: inherit;
+  padding: 8px 16px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--color-primary, #2f5d50);
+  color: #fff;
+  cursor: pointer;
+}
+.button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.secondary {
+  background: #8a7f70;
+}
+.muted {
+  color: #7a7064;
+  font-size: 13px;
+}
+.error {
+  color: #b3261e;
+  white-space: pre-wrap;
+}
+.video {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+.video img {
+  width: 200px;
+  border-radius: 8px;
+}
+.lines {
+  max-height: 280px;
+  overflow: auto;
+  border: 1px solid var(--color-line, #d8cfc0);
+  border-radius: 8px;
+  font-size: 14px;
+}
+.line {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+  padding: 4px 10px;
+  border: 0;
+  background: none;
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+}
+.line:hover {
+  background: #f3ece0;
+}
+.inWindow {
+  background: #e4efe9;
+}
+.time {
+  color: #7a7064;
+  font-variant-numeric: tabular-nums;
+  min-width: 56px;
+}
+.done {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.done li {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+.paste {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+}
+.paste textarea {
+  font: inherit;
+  font-size: 14px;
+  padding: 8px 10px;
+  border: 1px solid var(--color-line, #d8cfc0);
+  border-radius: 8px;
+}

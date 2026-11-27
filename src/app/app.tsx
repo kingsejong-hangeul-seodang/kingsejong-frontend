@@ -5,6 +5,7 @@ import { ScreenLayout } from '@/app/layouts/ScreenLayout'
 import { IPadPreview } from '@/app/layouts/IPadPreview'
 import { useIPadPreview } from '@/app/layouts/useIPadPreview'
 import { ReferenceDataPanel } from '@/devtools/ReferenceDataPanel'
+import { YoutubeImportPanel } from '@/devtools/YoutubeImportPanel'
 import { useSession } from '@/app/useSession'
 import { writingKey } from '@/data/writingDrafts'
 import type { ReactNode } from 'react'
@@ -33,6 +34,8 @@ export default function App() {
         <ReferenceDataPanel />
       </div>
     )
+  if (import.meta.env.DEV && new URLSearchParams(window.location.search).get('tools') === 'youtube')
+    return <YoutubeImportPanel />
   if (preview.enabled) return <IPadPreview scale={preview.scale} />
   return (
     <SessionProvider screen={screen}>
