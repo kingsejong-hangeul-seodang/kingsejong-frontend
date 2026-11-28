@@ -8,7 +8,7 @@ import { SejongMessage } from '@/components/SejongMessage'
 import { AppBar } from '@/components/ui/AppBar'
 import styles from '@/styles/screens.module.css'
 import { Button } from '@/components/ui/Button'
-import { skipCodeLogin } from '@/api/integration'
+import { skipCodeLogin } from '@/api/api'
 
 export default function Experience() {
   const t = useUiText()

@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { test } from 'node:test'
-import type { GradeResponse } from '../src/api/grading.ts'
+import type { GradeResponse } from '../src/api/api.ts'
 import {
   jamoAttempt,
   readJamoAttempts,

@@ -19,8 +19,7 @@ import { ListeningControls } from '@/components/content/ListeningControls'
 import { usePracticeSpeech } from '@/components/content/usePracticeSpeech'
 import { useGuideFont } from './reference/guideFont'
 import { useSavePreferences } from '@/hooks/useSavePreferences'
-import { backend, demoMode } from '@/api/integration'
-import type { EngineHealth } from '@/api/backend'
+import { backend, demoMode, type EngineHealth } from '@/api/api'
 import styles from '@/styles/screens.module.css'
 
 export function WritingScreen({ stage }: { stage: Stage }) {
@@ -83,7 +82,7 @@ function WritingTask({ stage, task }: { stage: Stage; task: LearningTask }) {
   const dictation = writeMode === 'dictation'
   const clipKind = content.mode === 'basic' ? null : content.mode
   const speech = usePracticeSpeech(task.speech?.text ?? target, task.speech?.lang)
-  const guideFont = useGuideFont()
+  const guideFont = useGuideFont(isBeginner || (clipKind !== null && !dictation))
   const cellSize = isBeginner ? 144 : stage === 'mid' ? 96 : 72
   const instruction = dictation
     ? t('띄어 쓸 자리는 한 칸 비워요')

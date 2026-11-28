@@ -1,3 +1,4 @@
+import { SessionExpiredError, gradeWriting, makeGradeRequest, studyApi, ApiError } from '@/api/api'
 import { useUiText } from '@/app/useUiText'
 import onboardingStyles from '@/features/onboarding/Onboarding.module.css'
 import { AppBar } from '@/components/ui/AppBar'
@@ -10,13 +11,10 @@ import { WritingTools } from '@/components/writing/WritingTools'
 import { useWriting } from '@/components/writing/useWriting'
 import { useSession, type Stage } from '@/app/useSession'
 import { navigate } from '@/app/router'
-import { gradeWriting, makeGradeRequest } from '@/api/grading'
 import { targetCells, targetGroups } from '@/data/content'
 import taskData from './leveltest-tasks.json'
 import styles from '@/styles/screens.module.css'
 import layout from '@/styles/sharedLayout.module.css'
-import { studyApi } from '@/api/integration'
-import { ApiError } from '@/api/backend'
 import { useLevelTestSteps } from '@/hooks/useStudy'
 const demoTasks = (taskData as { stage: Stage; target: string; title: string }[]).map(
   (task, index) => ({
@@ -28,15 +26,7 @@ const demoTasks = (taskData as { stage: Stage; target: string; title: string }[]
 const stages = { beginner: 'beginner', intermediate: 'mid', advanced: 'pro' } as const
 export function LevelTestScreen({ step }: { step: number }) {
   const t = useUiText()
-  const {
-    preferences,
-    saveTest,
-    notify,
-    testDrafts,
-    accessToken,
-    setAccessToken,
-    setTestAssessment,
-  } = useSession()
+  const { preferences, saveTest, notify, testDrafts, accessToken, setTestAssessment } = useSession()
   const writing = useWriting()
   const server = useLevelTestSteps()
   const tasks = studyApi
@@ -81,10 +71,7 @@ export function LevelTestScreen({ step }: { step: number }) {
         notify('')
         navigate(step === 0 ? 'leveltest-2' : step === 1 ? 'leveltest-3' : 'leveltest-result')
       } catch (error) {
-        if (error instanceof ApiError && error.status === 401) {
-          setAccessToken(null)
-          navigate('login')
-        }
+        if (error instanceof SessionExpiredError) return
         notify(error instanceof Error ? error.message : t('채점 요청 실패'))
       }
     })

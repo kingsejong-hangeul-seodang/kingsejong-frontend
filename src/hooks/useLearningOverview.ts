@@ -1,4 +1,4 @@
-import { backend } from '@/api/integration'
+import { backend } from '@/api/api'
 import { useSession } from '@/app/useSession'
 import { levels } from '@/data/levels'
 import { useLearningStats } from './useLearningStats'

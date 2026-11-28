@@ -1,4 +1,4 @@
-import type { GradeResponse, ReferenceStroke } from '../api/grading'
+import type { GradeResponse, ReferenceStroke } from '../api/api'
 import type { SubmittedCell } from './writingTypes'
 
 type StrokeMap = GradeResponse['cells'][number]['strokeMap']

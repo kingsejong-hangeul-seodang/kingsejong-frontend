@@ -8,7 +8,7 @@ import { SejongMessage } from '@/components/SejongMessage'
 
 import styles from '@/styles/screens.module.css'
 import { Button } from '@/components/ui/Button'
-import { skipCodeLogin } from '@/api/integration'
+import { skipCodeLogin } from '@/api/api'
 
 const img1 = '/assets/figma/45b63.svg'
 const img2 = '/assets/figma/4d2e5.svg'

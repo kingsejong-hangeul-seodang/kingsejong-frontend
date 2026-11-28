@@ -156,7 +156,7 @@ tests/          # 동작·데이터 검증
 
 ### 동국체 로컬 미리보기
 
-- 공개 빌드는 기본 글꼴로 따라쓰기 가이드와 자모 모양을 표시합니다. 동국체 변환 파일의 배포 범위를 확인할 때까지 웹폰트와 생성된 획 데이터는 `repos.local/guide-font/`에 보관합니다.
+- 공개 빌드는 `public/data/dongguk/`의 웹폰트, 글자 범위, 정답 획 데이터를 사용합니다. 로컬 주소로 개발 서버에 접속하면 `repos.local/guide-font/`에 새로 생성한 파일을 우선 읽습니다. 배포 파일을 갱신할 때는 같은 원본 폰트에서 생성한 세 파일을 함께 반영합니다.
 - 팀에서 받은 원본 폰트와 `scripts/reference-requirements.txt`의 Python 의존성을 준비한 뒤 `npm run data:guide -- --font <TTF 경로>`를 실행하면 로컬 개발 서버에서 동국체로 볼 수 있습니다. 폰트 사용 범위는 [동국체 공식 매뉴얼](https://www.dongguk.edu/resources/pdf/donggukfont/DONGGUK_font_manual.pdf)을 확인하세요.
 - `npm run data:generate -- --font <TTF 경로> --preview-strokes`는 연습 콘텐츠, 레벨 테스트, 자모 도감에서 사용하는 글자의 동국체 획을 추출합니다. 정답 비교, 획순 상세, 자모 도감, 미리보기가 같은 파일을 사용합니다. 획 추출에 실패한 글자는 글꼴이 제공하는 동국체 글자 모양을 표시합니다.
 - 수가공된 동국체 `composed_all.json`을 받았다면 `npm run data:generate -- --composed "<JSON 경로>"`로 적용합니다. 기본 경로에 원본 TTF가 없으면 `--font "<TTF 경로>"`를 추가합니다. 로컬 미리보기는 현재 연습·레벨 테스트·자모에 필요한 획을 원본 JSON에서 가져와 우선 사용합니다.

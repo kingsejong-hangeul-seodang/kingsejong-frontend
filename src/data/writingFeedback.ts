@@ -1,4 +1,4 @@
-import { DEMO_ENGINE_VERSION, type GradeResponse, type Mark } from '../api/grading.ts'
+import { DEMO_ENGINE_VERSION, type GradeResponse, type Mark } from '../api/api.ts'
 import type { WritingDraft } from './writingTypes'
 
 export function visibleGrade(grade: GradeResponse | null | undefined) {

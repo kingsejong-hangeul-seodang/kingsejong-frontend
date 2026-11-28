@@ -1,8 +1,7 @@
 import { useSession, type Stage } from '@/app/useSession'
 import { learningContent, practiceCellCount, targetGroups } from '@/data/content'
 import { catalogId, screenModes, useCatalogDetail } from '@/hooks/useCatalog'
-import { writeModes } from '@/api/backend'
-import { engineStages } from '@/api/grading'
+import { writeModes, engineStages } from '@/api/api'
 
 export function useLearningTask(stage: Stage) {
   const { contentId, practiceTarget, selectedThumbnail } = useSession()

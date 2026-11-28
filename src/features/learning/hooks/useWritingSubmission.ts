@@ -1,12 +1,19 @@
+import {
+  SessionExpiredError,
+  gradeWriting,
+  makeGradeRequest,
+  ApiError,
+  type WritingReward,
+  backend,
+  demoMode,
+  jamoRecordScope,
+  demoGrade,
+} from '@/api/api'
 import { useUiText } from '@/app/useUiText'
 import { useSession, type Stage } from '@/app/useSession'
 import { navigate } from '@/app/router'
 import { useWriting } from '@/components/writing/useWriting'
 import { clearWritingMemory, writingKey } from '@/data/writingDrafts'
-import { gradeWriting, makeGradeRequest } from '@/api/grading'
-import { ApiError, type WritingReward } from '@/api/backend'
-import { backend, demoMode, jamoRecordScope } from '@/api/integration'
-import { demoGrade } from '@/api/demo'
 import type { LearningTask } from './useLearningTask'
 import { addRecord } from '@/data/writingRecords'
 import { saveJamoAttempt } from '@/data/jamoMastery'
@@ -21,7 +28,6 @@ export function useWritingSubmission(stage: Stage, task: LearningTask) {
     practiceTarget,
     accessToken,
     accountId,
-    setAccessToken,
     catalog,
     preferences,
     update,
@@ -104,13 +110,8 @@ export function useWritingSubmission(stage: Stage, task: LearningTask) {
         update({ stage, ...(reward ? { exp: reward.level.exp } : {}) })
         navigate(visibleGrade(grade)?.perfect ? 'result-done' : `result-${stage}`)
       } catch (error) {
+        if (error instanceof SessionExpiredError) return
         if (error instanceof ApiError) {
-          if (error.status === 401) {
-            setAccessToken(null)
-            navigate('login')
-            notify(t('로그인한 뒤 다시 제출해 주세요. 쓴 글씨는 그대로 있어요.'))
-            return
-          }
           if (error.status >= 500) {
             notify(`${error.message} ${t('쓴 글씨는 그대로 있어요.')}`)
             return

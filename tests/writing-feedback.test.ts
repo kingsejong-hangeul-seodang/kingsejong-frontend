@@ -5,7 +5,7 @@ import { assignStroke } from '../src/components/writing/inkGeometry.ts'
 import { feedbackMarks, retryCellIndexes } from '../src/data/writingFeedback.ts'
 import type { WritingDraft } from '../src/data/writingTypes.ts'
 import { createStrokeReplay, strokeProgress } from '../src/data/strokeReplay.ts'
-import type { ReferenceStroke } from '../src/api/grading.ts'
+import type { ReferenceStroke } from '../src/api/api.ts'
 
 test('replay pairs stored strokes with the engine matches even when the order differs', () => {
   const references: ReferenceStroke[][] = [

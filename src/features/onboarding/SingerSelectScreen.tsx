@@ -1,7 +1,6 @@
+import { SessionExpiredError, ApiError, studyApi } from '@/api/api'
 import { useUiText } from '@/app/useUiText'
 import { useRef, useState } from 'react'
-import { ApiError } from '@/api/backend'
-import { studyApi } from '@/api/integration'
 import { navigate } from '@/app/router'
 import { homeScreen } from '@/app/learningFlow'
 import { AppBar } from '@/components/ui/AppBar'
@@ -16,16 +15,8 @@ import styles from '@/styles/screens.module.css'
 
 export default function Taste() {
   const t = useUiText()
-  const {
-    preferences,
-    update,
-    notify,
-    settingsOrigin,
-    setSettingsOrigin,
-    accessToken,
-    setAccessToken,
-    catalog,
-  } = useSession()
+  const { preferences, update, notify, settingsOrigin, setSettingsOrigin, accessToken, catalog } =
+    useSession()
   const completeOnboarding = useCompleteOnboarding()
   const mode = !settingsOrigin && preferences.mode === 'drama' ? 'kdrama' : 'kpop'
   const { data, error, retry } = useTastes(mode)
@@ -61,10 +52,7 @@ export default function Taste() {
       if (!settingsOrigin) await completeOnboarding()
       close(false)
     } catch (error) {
-      if (error instanceof ApiError && error.status === 401) {
-        setAccessToken(null)
-        navigate('login')
-      }
+      if (error instanceof SessionExpiredError) return
       notify(error instanceof Error ? error.message : t('취향을 저장하지 못했어요.'))
     } finally {
       pending.current = false

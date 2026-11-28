@@ -11,7 +11,7 @@ export function referencePlugin(): Plugin {
   return {
     name: 'local-font-reference',
     configureServer(server) {
-      server.middlewares.use('/data', async (req, res, next) => {
+      server.middlewares.use('/data/dongguk', async (req, res, next) => {
         const file = req.url
           ?.split('?')[0]
           ?.match(/^\/(guide-font\.(?:json|woff)|reference\.json)$/)?.[1]
@@ -32,8 +32,7 @@ export function referencePlugin(): Plugin {
           })
           res.end(content)
         } catch {
-          if (file === 'reference.json') return next()
-          res.writeHead(404).end()
+          next()
         }
       })
       server.middlewares.use('/__reference', async (req, res, next) => {

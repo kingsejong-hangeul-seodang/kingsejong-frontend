@@ -3,8 +3,7 @@ import { useRef, useState } from 'react'
 import { useSession } from '@/app/useSession'
 import { navigate } from '@/app/router'
 import { homeScreen } from '@/app/learningFlow'
-import { backend, demoMode } from '@/api/integration'
-import { demoLogin } from '@/api/demo'
+import { backend, demoMode, demoLogin } from '@/api/api'
 
 export function useEnterSchool() {
   const t = useUiText()

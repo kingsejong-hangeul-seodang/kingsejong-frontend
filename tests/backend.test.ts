@@ -1,14 +1,54 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import { readFileSync } from 'node:fs'
-import { ApiError, createBackend, requestBackend, writingBody } from '../src/api/backend.ts'
-import { demoGrade, demoLogin, DEMO_CODE } from '../src/api/demo.ts'
-import { createStudyApi } from '../src/api/study.ts'
-import { type GradeRequest, validateGradeResponse } from '../src/api/grading.ts'
+import {
+  ApiError,
+  createBackend,
+  requestBackend,
+  writingBody,
+  bindApiSession,
+  SessionExpiredError,
+  demoGrade,
+  demoLogin,
+  DEMO_CODE,
+  createStudyApi,
+  type GradeRequest,
+  validateGradeResponse,
+} from '../src/api/api.ts'
 
 const fixture = (name: string) =>
   JSON.parse(readFileSync(new URL(`./fixtures/${name}.json`, import.meta.url), 'utf8'))
 const request: GradeRequest = fixture('grade_request_beginner')
+
+test('only a 401 from the active authenticated session expires that session', async (t) => {
+  let token: string | null = 'old-token'
+  const expired: Array<[string, boolean]> = []
+  const unbind = bindApiSession({
+    currentToken: () => token,
+    expire(value, submittingWriting) {
+      expired.push([value, submittingWriting])
+      token = null
+    },
+  })
+  t.after(unbind)
+  const unauthorized = () => Response.json({ code: 'UNAUTHORIZED' }, { status: 401 })
+  t.mock.method(globalThis, 'fetch', async (_url: string, init?: RequestInit) => {
+    if (new Headers(init?.headers).get('Authorization') === 'Bearer old-token') token = 'new-token'
+    return unauthorized()
+  })
+  const base = 'https://backend.example'
+  await assert.rejects(
+    requestBackend(base, '/auth/login', { method: 'POST' }),
+    (error) => error instanceof ApiError && !(error instanceof SessionExpiredError),
+  )
+  await assert.rejects(requestBackend(base, '/me', { token: 'old-token' }), SessionExpiredError)
+  assert.deepEqual(expired, [])
+  await assert.rejects(
+    requestBackend(base, '/writings', { method: 'POST', token: 'new-token' }),
+    SessionExpiredError,
+  )
+  assert.deepEqual(expired, [['new-token', true]])
+})
 
 test('study routes encode jamo and cursors, and save tastes with an empty response', async (t) => {
   const fetch = t.mock.method(globalThis, 'fetch', async () =>

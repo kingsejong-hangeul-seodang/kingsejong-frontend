@@ -1,7 +1,6 @@
+import { SessionExpiredError, backend, studyApi } from '@/api/api'
 import { useUiText } from '@/app/useUiText'
 import { useRef, useState } from 'react'
-import { ApiError } from '@/api/backend'
-import { backend, studyApi } from '@/api/integration'
 import { useCompleteOnboarding } from './useCompleteOnboarding'
 import onboardingStyles from '@/features/onboarding/Onboarding.module.css'
 import { useSession } from '@/app/useSession'
@@ -24,7 +23,7 @@ const img3 = '/assets/figma/8b680.svg'
 
 export default function ModeSelect() {
   const t = useUiText()
-  const { preferences, update, notify, setAccessToken } = useSession()
+  const { preferences, update, notify } = useSession()
   const completeOnboarding = useCompleteOnboarding()
   const [saving, setSaving] = useState(false)
   const pending = useRef(false)
@@ -46,10 +45,7 @@ export default function ModeSelect() {
       await completeOnboarding()
       navigate(homeScreen(preferences.mode))
     } catch (error) {
-      if (error instanceof ApiError && error.status === 401) {
-        setAccessToken(null)
-        navigate('login')
-      }
+      if (error instanceof SessionExpiredError) return
       notify(error instanceof Error ? error.message : t('학습 설정을 저장하지 못했어요.'))
     } finally {
       pending.current = false

@@ -11,6 +11,7 @@ import { targetCells } from '@/data/content'
 import { visibleGrade } from '@/data/writingFeedback'
 import { createStrokeReplay, strokeProgress, strokeReplayStepMs } from '@/data/strokeReplay'
 import { ReferenceGlyph } from '@/features/learning/reference/ReferenceGlyph'
+import { useGuideFont } from './reference/guideFont'
 import { useAnswerStrokes } from './reference/useAnswerStrokes'
 import { useReplay } from '@/features/learning/reference/useReplay'
 import { ReplayControls } from '@/features/learning/reference/ReplayControls'
@@ -24,6 +25,7 @@ export default function Stroke() {
     navigate(`compare-${draft?.stage ?? preferences.stage}`)
   }
   const { strokes, error, retry } = useAnswerStrokes(jamo)
+  const { data: guideFont } = useGuideFont()
   const chars = draft ? targetCells(draft.target, draft.stage) : []
   const targetIndex =
     comparisonCell !== null && chars[comparisonCell] === jamo ? comparisonCell : chars.indexOf(jamo)
@@ -80,7 +82,9 @@ export default function Stroke() {
                   ? cell?.strokes.length
                     ? t('대응하는 정답 획')
                     : t('바른 순서')
-                  : t('동국체 글씨')}
+                  : guideFont?.bounds[jamo]
+                    ? t('동국체 글씨')
+                    : t('글자 모양')}
               </p>
             </div>
           </div>
@@ -100,7 +104,7 @@ export default function Stroke() {
           <p className={styles.panelBody}>
             {count
               ? t('주황색은 지금 그리는 획이고, 번호는 바른 획순이에요.')
-              : t('동국체 글씨와 모양을 비교해 보세요. 정답 획순은 준비 중이에요.')}
+              : t('이 글자는 아직 획순 데이터가 없어요. 글자 모양을 먼저 살펴보세요.')}
           </p>
           {gradedCell?.errors.map(({ type, expected, actual }, index) =>
             type === 'ORDER' && expected != null && actual != null ? (

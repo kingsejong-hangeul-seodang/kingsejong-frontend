@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { backend, jamoRecordScope, studyApi } from '@/api/integration'
+import { backend, jamoRecordScope, studyApi } from '@/api/api'
 import { useSession } from '@/app/useSession'
 import {
   jamoAttempt,

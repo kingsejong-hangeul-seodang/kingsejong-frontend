@@ -1,8 +1,14 @@
 import { useCallback } from 'react'
-import { ApiError } from '@/api/backend'
-import { backend, serverStudyApi, studyApi, writingHistoryApi } from '@/api/integration'
-import { demoJamoDetail, demoJamoList } from '@/api/demoJamo'
-import type { TasteItem } from '@/api/study'
+import {
+  ApiError,
+  backend,
+  serverStudyApi,
+  studyApi,
+  writingHistoryApi,
+  demoJamoDetail,
+  demoJamoList,
+  type TasteItem,
+} from '@/api/api'
 import { useSession } from '@/app/useSession'
 import { useCatalogRequest } from './useCatalog'
 

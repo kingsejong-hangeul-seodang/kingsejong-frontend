@@ -1,5 +1,5 @@
 import { lazy } from 'react'
-import { skipCodeLogin } from '@/api/integration'
+import { skipCodeLogin } from '@/api/api'
 
 const LanguageScreen = lazy(() => import('../../features/onboarding/LanguageScreen'))
 
