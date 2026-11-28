@@ -54,14 +54,17 @@ function publish(next: State) {
   state = next
   listeners.forEach((listener) => listener())
 }
+export function guideAssetBase() {
+  return `${import.meta.env.BASE_URL}data/dongguk/`
+}
 export function loadGuideFont(force = false): Promise<void> {
-  if (!import.meta.env.DEV) return Promise.resolve()
   if (pending) return pending
   if (state.data && !force) return Promise.resolve()
   publish({ ...state, loading: true, error: '' })
   pending = (async () => {
     try {
-      const response = await fetch(`${import.meta.env.BASE_URL}data/guide-font.json`, {
+      const base = guideAssetBase()
+      const response = await fetch(`${base}guide-font.json`, {
         cache: 'no-store',
         signal: AbortSignal.timeout(15000),
       })
@@ -72,10 +75,7 @@ export function loadGuideFont(force = false): Promise<void> {
         return
       }
       const family = `HangeulGuide-${data.sha256.slice(0, 16)}`
-      const face = new FontFace(
-        family,
-        `url("${import.meta.env.BASE_URL}data/guide-font.woff?v=${data.sha256}")`,
-      )
+      const face = new FontFace(family, `url("${base}guide-font.woff?v=${data.sha256}")`)
       await face.load()
       document.fonts.add(face)
       if (activeFace) document.fonts.delete(activeFace)
@@ -94,10 +94,10 @@ export function loadGuideFont(force = false): Promise<void> {
   })()
   return pending
 }
-export function useGuideFont() {
+export function useGuideFont(enabled = true) {
   const current = useSyncExternalStore(subscribe, () => state)
   useEffect(() => {
-    if (!state.data && !state.error && !state.loading) void loadGuideFont()
-  }, [])
+    if (enabled && !state.data && !state.error && !state.loading) void loadGuideFont()
+  }, [enabled])
   return current
 }

@@ -1,5 +1,5 @@
 import { jamoParts } from './hangul.ts'
-import type { Mastery } from '../api/study'
+import type { Mastery } from '../api/api'
 import type { WritingDraft } from './writingTypes'
 
 type Outcome = 'ungraded' | 'pass' | 'retry'

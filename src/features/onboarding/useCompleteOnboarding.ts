@@ -1,7 +1,5 @@
 import { useUiText } from '@/app/useUiText'
-import { ApiError, apiModes } from '@/api/backend'
-import { engineStages } from '@/api/grading'
-import { backend } from '@/api/integration'
+import { ApiError, apiModes, engineStages, backend } from '@/api/api'
 import { useSession } from '@/app/useSession'
 
 export function useCompleteOnboarding() {

@@ -111,12 +111,13 @@ export function YouTubeClip({
         segmentStart.current = segment.start
         segmentEnd.current = segment.end
         finished.current = false
+        onTime(segment.start)
         player.seekTo(segment.start, true)
         player.setPlaybackRate(segment.rate)
         player.playVideo()
       },
     }),
-    [],
+    [onTime],
   )
 
   useEffect(() => {
@@ -168,7 +169,9 @@ export function YouTubeClip({
                   return
                 }
                 // 구간 끝(샘플 간격만큼 미리)에서 멈춘다. 유튜브 끝 화면·다음 장면이 보이지 않게
-                if (time >= Math.min(end, segmentEnd.current) - 0.1) {
+                const stopAt = Math.min(end, segmentEnd.current)
+                if (time >= stopAt - 0.1) {
+                  onTime(Math.max(segmentStart.current, stopAt - 0.001))
                   target.pauseVideo()
                   finished.current = true
                   return
@@ -180,6 +183,7 @@ export function YouTubeClip({
               // 끝난 뒤 영상을 눌러 다시 재생하면 그 구간 처음부터
               if (active && data === 1 && finished.current) {
                 finished.current = false
+                onTime(segmentStart.current)
                 target.seekTo(segmentStart.current, true)
               }
               if (active && data === 0) {

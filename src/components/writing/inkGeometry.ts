@@ -1,4 +1,4 @@
-import type { InkPoint } from '@/api/grading'
+import type { InkPoint } from '@/api/api'
 
 type Bounds = { left: number; top: number; width: number; height: number }
 

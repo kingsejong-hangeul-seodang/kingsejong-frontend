@@ -1,11 +1,12 @@
-import { useCallback, useMemo, useState, type ReactNode } from 'react'
+import { useCallback, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import type { ScreenName } from './routes/screens'
 import { SessionContext } from './useSession'
 import type { WritingDraft } from '@/data/writingTypes'
 import { clearWritingMemory, writingKey, writingMemory } from '@/data/writingDrafts'
 import { retryCellIndexes } from '@/data/writingFeedback'
-import { createCatalogCache } from '@/api/catalogCache'
-import type { LevelAssessment } from '@/api/study'
+import { createCatalogCache, type LevelAssessment, bindApiSession } from '@/api/api'
+import { replaceScreen } from './router'
+import { translateUi } from './uiText'
 
 export type Stage = 'beginner' | 'mid' | 'pro'
 export type Mode = 'pop' | 'drama' | 'basic'
@@ -66,9 +67,31 @@ export function SessionProvider({ screen, children }: { screen: ScreenName; chil
     accountId: number | null
   } | null>(null)
   const accessToken = authentication?.token ?? null
+  const activeToken = useRef<string | null>(null)
   const setAccessToken = useCallback((token: string | null, accountId?: number) => {
+    activeToken.current = token
     setAuthentication(token ? { token, accountId: accountId ?? null } : null)
   }, [])
+  useLayoutEffect(
+    () =>
+      bindApiSession({
+        currentToken: () => activeToken.current,
+        expire(token, submittingWriting) {
+          if (activeToken.current !== token) return
+          setAccessToken(null)
+          notify(
+            translateUi(
+              preferences.language,
+              submittingWriting
+                ? '로그인한 뒤 다시 제출해 주세요. 쓴 글씨는 그대로 있어요.'
+                : '로그인이 필요해요.',
+            ),
+          )
+          replaceScreen('login')
+        },
+      }),
+    [preferences.language, setAccessToken],
+  )
   const catalog = useMemo(() => {
     // Each authenticated session owns its cache.
     return { ...createCatalogCache(), token: accessToken }

@@ -8,7 +8,7 @@ import { ChoiceCard } from '@/components/ui/ChoiceCard'
 import { AppBar } from '@/components/ui/AppBar'
 import styles from '@/styles/screens.module.css'
 import { Button } from '@/components/ui/Button'
-import { backend, studyApi } from '@/api/integration'
+import { backend, studyApi } from '@/api/api'
 
 export default function StageSelect() {
   const t = useUiText()

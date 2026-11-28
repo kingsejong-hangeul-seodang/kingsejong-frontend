@@ -13,7 +13,7 @@ import { contentById } from '@/data/content'
 import { listRecords, type WritingRecord } from '@/data/writingRecords'
 import styles from '@/styles/screens.module.css'
 import recordsLayout from '@/features/records/Records.module.css'
-import { writingHistoryApi } from '@/api/integration'
+import { writingHistoryApi } from '@/api/api'
 import { ServerRecordsScreen } from './ServerRecordsScreen'
 export default function Records() {
   return writingHistoryApi ? <ServerRecordsScreen /> : <LocalRecordsScreen />

@@ -1,3 +1,4 @@
+import { SessionExpiredError, backend, ApiError, engineStages } from '@/api/api'
 import { useUiText } from '@/app/useUiText'
 import { AppBar } from '@/components/ui/AppBar'
 import { Button } from '@/components/ui/Button'
@@ -9,23 +10,12 @@ import { navigate } from '@/app/router'
 import taskData from './leveltest-tasks.json'
 import styles from '@/styles/screens.module.css'
 import layout from '@/styles/sharedLayout.module.css'
-import { backend } from '@/api/integration'
-import { ApiError } from '@/api/backend'
-import { engineStages } from '@/api/grading'
 const tasks = taskData as { stage: Stage; target: string; title: string }[]
 
 export function LevelTestResultScreen() {
   const t = useUiText()
-  const {
-    testDrafts,
-    testAssessment,
-    update,
-    preferences,
-    notify,
-    catalog,
-    accessToken,
-    setAccessToken,
-  } = useSession()
+  const { testDrafts, testAssessment, update, preferences, notify, catalog, accessToken } =
+    useSession()
   const pending = useRef(false)
   const [saving, setSaving] = useState(false)
   function handleBack() {
@@ -87,10 +77,7 @@ export function LevelTestResultScreen() {
       if (graded) update({ stage: recommended })
       navigate('mode-select')
     } catch (error) {
-      if (error instanceof ApiError && error.status === 401) {
-        setAccessToken(null)
-        navigate('login')
-      }
+      if (error instanceof SessionExpiredError) return
       notify(error instanceof Error ? error.message : t('난이도를 저장하지 못했어요.'))
     } finally {
       pending.current = false

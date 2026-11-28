@@ -2,7 +2,7 @@ import { useUiText } from '@/app/useUiText'
 import { useMemo } from 'react'
 import simplify from 'simplify-js'
 import type { SubmittedCell } from '@/data/writingTypes'
-import type { GradeError, InkStroke } from '@/api/grading'
+import type { GradeError, InkStroke } from '@/api/api'
 
 // Tolerance in the 288 × 288 ink coordinate space, for display only.
 const DISPLAY_TOLERANCE = 0.5

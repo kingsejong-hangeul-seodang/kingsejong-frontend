@@ -4,7 +4,7 @@ import type { Stage } from '@/app/session'
 import { useSession } from '@/app/useSession'
 import { targetCells, targetGroups } from '@/data/content'
 import { ReferenceGlyph } from '@/features/learning/reference/ReferenceGlyph'
-import type { ReferenceStroke } from '@/api/grading'
+import type { ReferenceStroke } from '@/api/api'
 import layout from '@/features/learning/FigmaLearning.module.css'
 export function AnswerPaper({
   stage,

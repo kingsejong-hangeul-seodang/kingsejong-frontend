@@ -1,17 +1,19 @@
+import {
+  SessionExpiredError,
+  inkCanvas,
+  validateGradeResponse,
+  writingHistoryApi,
+  type WritingSummary,
+} from '@/api/api'
 import { useUiText } from '@/app/useUiText'
 import { useRef, useState } from 'react'
-import { ApiError } from '@/api/backend'
-import { inkCanvas, validateGradeResponse } from '@/api/grading'
-import { writingHistoryApi } from '@/api/integration'
-import type { WritingSummary } from '@/api/study'
 import { navigate } from '@/app/router'
 import { useSession } from '@/app/useSession'
 import { catalogKey, screenModes } from './useCatalog'
 
 export function useOpenWriting() {
   const t = useUiText()
-  const { accessToken, setAccessToken, notify, selectContent, saveDraft, setResultOrigin } =
-    useSession()
+  const { accessToken, notify, selectContent, saveDraft, setResultOrigin } = useSession()
   const [opening, setOpening] = useState<number | null>(null)
   const pending = useRef(false)
 
@@ -68,10 +70,7 @@ export function useOpenWriting() {
       navigate(`result-${stage}`)
     } catch (error) {
       if (window.location.hash !== route) return
-      if (error instanceof ApiError && error.status === 401 && error.code === 'UNAUTHORIZED') {
-        setAccessToken(null)
-        navigate('login')
-      }
+      if (error instanceof SessionExpiredError) return
       notify(error instanceof Error ? error.message : t('쓰기 결과를 불러오지 못했어요.'))
     } finally {
       pending.current = false

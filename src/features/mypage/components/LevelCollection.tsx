@@ -29,6 +29,7 @@ export function LevelCollection({
                 <img
                   className={`${local.art} ${unlocked ? '' : local.silhouette}`}
                   src={image}
+                  loading="lazy"
                   alt=""
                 />
               ) : null}

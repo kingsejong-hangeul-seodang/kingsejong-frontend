@@ -3,8 +3,7 @@ import type { ScreenName } from './routes/screens'
 import type { Preferences } from './session'
 import type { WritingDraft } from '@/data/writingTypes'
 import type { Stage } from './session'
-import type { CatalogCache } from '@/api/catalogCache'
-import type { LevelAssessment } from '@/api/study'
+import type { CatalogCache, LevelAssessment } from '@/api/api'
 export type { Stage, Mode } from './session'
 
 export const SessionContext = createContext<{

@@ -1,6 +1,6 @@
 import { useEffect, useSyncExternalStore } from 'react'
-import type { ReferenceStroke } from '@/api/grading'
-import { useGuideFont } from './guideFont.ts'
+import type { ReferenceStroke } from '@/api/api'
+import { guideAssetBase, useGuideFont } from './guideFont.ts'
 export type ReferencePack = {
   schemaVersion: number
   font: string
@@ -80,12 +80,12 @@ export async function loadReference() {
   if (state.loading) return
   publish({ ...state, loading: true, error: '' })
   try {
-    const response = await fetch(`${import.meta.env.BASE_URL}data/reference.json`, {
+    const base = guideAssetBase()
+    const response = await fetch(`${base}reference.json`, {
       cache: 'no-store',
       signal: AbortSignal.timeout(15000),
     })
-    if (!response.ok)
-      throw new Error('정답 데이터가 없어요. npm run data:generate 명령으로 생성해 주세요.')
+    if (!response.ok) throw new Error('정답 데이터를 불러오지 못했어요.')
     installReference(await response.json())
   } catch (error) {
     publish({

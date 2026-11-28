@@ -1,7 +1,7 @@
 import { useUiText } from '@/app/useUiText'
 import { useReference } from './reference'
 import { useGuideFont } from './guideFont'
-import type { ReferenceStroke } from '@/api/grading'
+import type { ReferenceStroke } from '@/api/api'
 export function ReferenceGlyph({
   char,
   progress = Infinity,

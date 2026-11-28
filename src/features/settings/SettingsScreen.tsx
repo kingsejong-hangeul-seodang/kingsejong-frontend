@@ -11,7 +11,7 @@ import { LogoutButton } from './components/LogoutButton'
 import { useSession } from '@/app/useSession'
 import { useProfile } from '@/hooks/useStudy'
 import { useSavePreferences } from '@/hooks/useSavePreferences'
-import { backend, studyApi } from '@/api/integration'
+import { backend, studyApi } from '@/api/api'
 
 const imgIcon1 = '/assets/figma/f651f.svg'
 

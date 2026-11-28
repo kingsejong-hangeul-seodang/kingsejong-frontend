@@ -1,6 +1,6 @@
 import { createContext, useContext } from 'react'
 import type { SubmittedCell } from '@/data/writingTypes'
-import type { InkPoint } from '@/api/grading'
+import type { InkPoint } from '@/api/api'
 export type Command = 'undo' | 'cell' | 'clear'
 export type Cell = {
   index: number

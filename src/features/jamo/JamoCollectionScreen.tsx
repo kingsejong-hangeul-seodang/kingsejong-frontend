@@ -9,7 +9,7 @@ import { homeScreen } from '@/app/learningFlow'
 import { useJamoList } from '@/hooks/useStudy'
 import { useJamoMastery } from '@/hooks/useJamoMastery'
 import { masteryLabels } from '@/data/jamoMastery'
-import { studyApi } from '@/api/integration'
+import { studyApi } from '@/api/api'
 import { useGuideFont } from '@/features/learning/reference/guideFont'
 import styles from '@/styles/screens.module.css'
 

@@ -1,9 +1,15 @@
+import {
+  SessionExpiredError,
+  ApiError,
+  apiModes,
+  type ApiMode,
+  backend,
+  demoMode,
+  demoContent,
+  demoContents,
+  engineStages,
+} from '@/api/api'
 import { useCallback, useEffect, useState } from 'react'
-import { ApiError, apiModes, type ApiMode } from '@/api/backend'
-import { backend, demoMode } from '@/api/integration'
-import { demoContent, demoContents } from '@/api/demoCatalog'
-import { engineStages } from '@/api/grading'
-import { navigate } from '@/app/router'
 import { useSession, type Mode, type Stage } from '@/app/useSession'
 
 export const catalogEnabled = Boolean(backend || demoMode)
@@ -22,7 +28,6 @@ export function useCatalogRequest<T>(
   cache: Map<string, Promise<T>>,
   load: () => Promise<T>,
 ) {
-  const { setAccessToken, notify } = useSession()
   const [attempt, setAttempt] = useState(0)
   const [result, setResult] = useState<{
     key: string
@@ -48,12 +53,7 @@ export function useCatalogRequest<T>(
       (error: unknown) => {
         if (cache.get(key) === request) cache.delete(key)
         if (!active) return
-        if (error instanceof ApiError && error.status === 401) {
-          setAccessToken(null)
-          navigate('login')
-          notify('로그인한 뒤 다시 확인해 주세요.')
-          return
-        }
+        if (error instanceof SessionExpiredError) return
         setResult({
           key,
           cache,
@@ -65,7 +65,7 @@ export function useCatalogRequest<T>(
     return () => {
       active = false
     }
-  }, [attempt, cache, key, load, notify, setAccessToken])
+  }, [attempt, cache, key, load])
 
   const current =
     result && result.key === key && result.cache === cache && result.attempt === attempt

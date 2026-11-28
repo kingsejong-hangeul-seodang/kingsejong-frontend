@@ -7,7 +7,7 @@ import {
   validateGradeResponse,
   type GradeResponse,
   type GradeRequest,
-} from '../src/api/grading.ts'
+} from '../src/api/api.ts'
 import { parseReference } from '../src/features/learning/reference/reference.ts'
 const ink = {
   strokes: [

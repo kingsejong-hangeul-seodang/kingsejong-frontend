@@ -3,10 +3,15 @@ import { Suspense, useEffect, useRef } from 'react'
 import { screens, type ScreenName } from '@/app/routes/screens'
 import { useSession } from '@/app/useSession'
 import styles from './ScreenLayout.module.css'
-import { isScreen, navigate } from '@/app/router'
-export function ScreenLayout({ screen }: { screen: ScreenName }) {
+import { isScreen, navigate, replaceScreen } from '@/app/router'
+import { backend } from '@/api/api'
+export function ScreenLayout({ screen: requestedScreen }: { screen: ScreenName }) {
   const t = useUiText()
-  const { notice, preferences } = useSession()
+  const { accessToken, notice, preferences } = useSession()
+  const screen = backend && !accessToken && requestedScreen !== 'lang' ? 'login' : requestedScreen
+  useEffect(() => {
+    if (screen !== requestedScreen) replaceScreen(screen)
+  }, [requestedScreen, screen])
   const entry = screens[screen]
   const Page = entry.component
   const main = useRef<HTMLElement>(null)

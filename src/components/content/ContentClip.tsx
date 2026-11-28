@@ -1,6 +1,6 @@
 import { useUiText } from '@/app/useUiText'
 import { useCallback, useRef, useState } from 'react'
-import type { ContentVideo, SubtitleLine } from '@/api/backend'
+import type { ContentVideo, SubtitleLine } from '@/api/api'
 import { ContentPoster } from './ContentPoster'
 import { YouTubeClip, type ClipPlayback, type ClipSegment } from './YouTubeClip'
 import { ListeningControls } from './ListeningControls'
@@ -173,8 +173,8 @@ function KaraokeCaption({
       </span>
     ))
   if (targetStart < 0) return <>{piece(0, chars.length)}</>
-  const end = targetStart + Array.from(text.slice(targetStart, targetStart + targetLength)).length
   const start = Array.from(text.slice(0, targetStart)).length
+  const end = start + Array.from(text.slice(targetStart, targetStart + targetLength)).length
   return (
     <>
       {piece(0, start)}

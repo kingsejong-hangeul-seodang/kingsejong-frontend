@@ -1,4 +1,4 @@
-import catalog from './content.json'
+import catalog from './content.json' with { type: 'json' }
 import type { Stage, Mode } from '@/app/session'
 export type Content = {
   id: string
